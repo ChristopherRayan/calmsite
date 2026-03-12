@@ -160,7 +160,7 @@ export default function HomePage() {
   const resBg = normalizeImageSource(settings.home.reservation_bg_image) || '/images/hero-placeholder.png';
 
   return (
-    <div className="bg-cream dark:bg-[#0a0604] min-h-screen text-ink dark:text-white overflow-hidden selection:bg-amber-600/30 -mt-14">
+    <div className="bg-cream dark:bg-[#0a0604] min-h-screen text-ink dark:text-ink dark:text-white overflow-hidden selection:bg-amber-600/30 -mt-14">
       
       {/* ─── Hero Section ────────────────────────────────────────────── */}
       <section className="relative h-[100dvh] flex items-center justify-center overflow-hidden">
@@ -177,7 +177,7 @@ export default function HomePage() {
         
         {/* Gradients to blend into dark background */}
         <div className="absolute inset-0 bg-cream/60 dark:bg-[#0a0604]/40 backdrop-blur-[2px]" />
-        <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-[#0a0604] to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-cream dark:from-[#0a0604] to-transparent" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,#0a0604_100%)] opacity-70" />
 
         <div className="page-shell relative z-10 flex flex-col items-center justify-center text-center">
@@ -198,14 +198,14 @@ export default function HomePage() {
               <br className="max-sm:hidden" />
               {settings.home.hero_title_suffix}
             </motion.h1>
-            <motion.p variants={fadeInUp} className="mt-8 mx-auto max-w-2xl text-sm text-white/70 sm:text-base leading-relaxed font-light">
+            <motion.p variants={fadeInUp} className="mt-8 mx-auto max-w-2xl text-sm text-ink dark:text-white/70 sm:text-base leading-relaxed font-light">
               {settings.home.hero_description}
             </motion.p>
             
             <motion.div variants={fadeInUp} className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-5">
               <Link 
                 href="/book" 
-                className="group relative inline-flex items-center justify-center overflow-hidden rounded-full bg-amber-600 px-8 py-4 font-bold uppercase tracking-[0.15em] text-[10px] text-white transition-all hover:bg-amber-500 hover:shadow-xl hover:shadow-amber-900/40 w-full sm:w-auto"
+                className="group relative inline-flex items-center justify-center overflow-hidden rounded-full bg-amber-600 px-8 py-4 font-bold uppercase tracking-[0.15em] text-[10px] text-ink dark:text-white transition-all hover:bg-amber-500 hover:shadow-xl hover:shadow-amber-900/40 w-full sm:w-auto"
               >
                 <span className="relative z-10">Reserve a Table</span>
                 <div className="absolute inset-0 flex h-full w-full justify-center [transform:skew(-12deg)_translateX(-100%)] group-hover:duration-1000 group-hover:[transform:skew(-12deg)_translateX(100%)]">
@@ -214,7 +214,7 @@ export default function HomePage() {
               </Link>
               <Link 
                 href="/menu" 
-                className="inline-flex items-center justify-center rounded-full border border-white/20 bg-white/5 backdrop-blur-sm px-8 py-4 font-bold uppercase tracking-[0.15em] text-[10px] text-white transition-all hover:bg-white/10 w-full sm:w-auto hover:border-white/40"
+                className="inline-flex items-center justify-center rounded-full border border-white/20 bg-white/5 backdrop-blur-sm px-8 py-4 font-bold uppercase tracking-[0.15em] text-[10px] text-ink dark:text-white transition-all hover:bg-white/10 w-full sm:w-auto hover:border-white/40"
               >
                 Explore Menu
               </Link>
@@ -242,7 +242,7 @@ export default function HomePage() {
                   className="object-cover transition-transform duration-1000 hover:scale-105"
                   unoptimized={shouldSkipImageOptimization(aboutImage)}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0a0604]/80 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-cream dark:from-[#0a0604]/80 via-transparent to-transparent" />
               </div>
               {/* Floating Badge */}
               <motion.div 
@@ -253,7 +253,7 @@ export default function HomePage() {
                   <span className="block text-4xl font-bold text-amber-500 font-heading">
                     {settings.home.stats.years_serving}
                   </span>
-                  <span className="block text-[10px] font-bold uppercase tracking-[0.2em] text-white/70 mt-2">
+                  <span className="block text-[10px] font-bold uppercase tracking-[0.2em] text-ink dark:text-white/70 mt-2">
                     Years Serving
                   </span>
                 </div>
@@ -272,11 +272,11 @@ export default function HomePage() {
               
               <motion.div variants={fadeInUp} className="w-16 h-[1px] bg-gradient-to-r from-amber-500 to-transparent mb-8" />
               
-              <motion.blockquote variants={fadeInUp} className="text-xl sm:text-2xl font-light italic text-white/90 leading-relaxed mb-8 border-l-2 border-amber-500/40 pl-6">
+              <motion.blockquote variants={fadeInUp} className="text-xl sm:text-2xl font-light italic text-ink dark:text-white/90 leading-relaxed mb-8 border-l-2 border-amber-500/40 pl-6">
                 &quot;{settings.home.story_quote}&quot;
               </motion.blockquote>
               
-              <motion.p variants={fadeInUp} className="text-white/60 leading-relaxed mb-10 text-sm sm:text-base">
+              <motion.p variants={fadeInUp} className="text-ink dark:text-white/60 leading-relaxed mb-10 text-sm sm:text-base">
                 {settings.home.story_description}
               </motion.p>
 
@@ -284,7 +284,7 @@ export default function HomePage() {
                 {settings.home.about_features.map((feature, i) => (
                   <motion.div variants={fadeInUp} key={i}>
                     <p className="font-bold text-amber-100 mb-2 font-heading tracking-wide">{feature.title}</p>
-                    <p className="text-sm text-white/50 leading-relaxed">{feature.description}</p>
+                    <p className="text-sm text-ink dark:text-white/50 leading-relaxed">{feature.description}</p>
                   </motion.div>
                 ))}
               </div>
@@ -312,7 +312,7 @@ export default function HomePage() {
             </div>
             <Link 
               href="/menu" 
-              className="group inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.1em] text-white/70 hover:text-amber-400 transition-colors"
+              className="group inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.1em] text-ink dark:text-white/70 hover:text-amber-400 transition-colors"
             >
               View Full Menu 
               <span className="transition-transform group-hover:translate-x-1">→</span>
@@ -345,7 +345,7 @@ export default function HomePage() {
                   <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-amber-500/80 mb-2">
                     {dish.category}
                   </p>
-                  <h3 className="font-bold text-lg text-white mb-2 leading-tight">
+                  <h3 className="font-bold text-lg text-ink dark:text-white mb-2 leading-tight">
                     {dish.name}
                   </h3>
                   <div className="flex items-center justify-between mt-4">
@@ -354,7 +354,7 @@ export default function HomePage() {
                     </p>
                     <Link 
                       href="/menu" 
-                      className="h-8 w-8 rounded-full bg-white/5 flex items-center justify-center text-white/50 group-hover:bg-amber-600 group-hover:text-white transition-colors"
+                      className="h-8 w-8 rounded-full bg-white/5 flex items-center justify-center text-ink dark:text-white/50 group-hover:bg-amber-600 group-hover:text-ink dark:text-white transition-colors"
                       aria-label={`Order ${dish.name}`}
                     >
                       +
@@ -388,17 +388,17 @@ export default function HomePage() {
             <motion.h2 variants={fadeInUp} className="font-heading text-4xl sm:text-5xl font-bold leading-tight mb-6">
               {settings.home.reservation_banner_title} <em className="text-amber-400">{settings.home.reservation_banner_emphasis}</em>
             </motion.h2>
-            <motion.p variants={fadeInUp} className="text-white/70 leading-relaxed mb-10">
+            <motion.p variants={fadeInUp} className="text-ink dark:text-white/70 leading-relaxed mb-10">
               {settings.home.reservation_banner_description}
             </motion.p>
             
             <motion.div variants={fadeInUp} className="flex gap-10">
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/40 mb-2">Call Us</p>
+                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-ink dark:text-white/40 mb-2">Call Us</p>
                 <p className="text-lg font-bold">{settings.contact.phone}</p>
               </div>
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/40 mb-2">WhatsApp</p>
+                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-ink dark:text-white/40 mb-2">WhatsApp</p>
                 <p className="text-lg font-bold">{settings.contact.whatsapp}</p>
               </div>
             </motion.div>
@@ -416,24 +416,24 @@ export default function HomePage() {
                 <input
                   type="text" placeholder="Your Name" value={resForm.name}
                   onChange={(e) => setResForm({ ...resForm, name: e.target.value })}
-                  className="w-full rounded-xl border border-white/10 bg-[#1a0f08]/60 px-4 py-3.5 text-sm text-white placeholder-white/40 focus:border-amber-500/50 focus:outline-none"
+                  className="w-full rounded-xl border border-white/10 bg-[#1a0f08]/60 px-4 py-3.5 text-sm text-ink dark:text-white placeholder-white/40 focus:border-amber-500/50 focus:outline-none"
                 />
                 <input
                   type="tel" placeholder="Phone" value={resForm.phone}
                   onChange={(e) => setResForm({ ...resForm, phone: e.target.value })}
-                  className="w-full rounded-xl border border-white/10 bg-[#1a0f08]/60 px-4 py-3.5 text-sm text-white placeholder-white/40 focus:border-amber-500/50 focus:outline-none"
+                  className="w-full rounded-xl border border-white/10 bg-[#1a0f08]/60 px-4 py-3.5 text-sm text-ink dark:text-white placeholder-white/40 focus:border-amber-500/50 focus:outline-none"
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <input
                   type="date" min={new Date().toISOString().split('T')[0]} value={resForm.date}
                   onChange={(e) => setResForm({ ...resForm, date: e.target.value })}
-                  className="w-full rounded-xl border border-white/10 bg-[#1a0f08]/60 px-4 py-3.5 text-sm text-white placeholder-white/40 focus:border-amber-500/50 focus:outline-none [color-scheme:dark]"
+                  className="w-full rounded-xl border border-white/10 bg-[#1a0f08]/60 px-4 py-3.5 text-sm text-ink dark:text-white placeholder-white/40 focus:border-amber-500/50 focus:outline-none [color-scheme:dark]"
                 />
                 <select
                   value={resForm.time}
                   onChange={(e) => setResForm({ ...resForm, time: e.target.value })}
-                  className="w-full rounded-xl border border-white/10 bg-[#1a0f08]/60 px-4 py-3.5 text-sm text-white focus:border-amber-500/50 focus:outline-none appearance-none"
+                  className="w-full rounded-xl border border-white/10 bg-[#1a0f08]/60 px-4 py-3.5 text-sm text-ink dark:text-white focus:border-amber-500/50 focus:outline-none appearance-none"
                 >
                   <option value="" disabled hidden>Time</option>
                   <option value="17:00">05:00 PM</option>
@@ -445,7 +445,7 @@ export default function HomePage() {
               <select
                 value={resForm.guests}
                 onChange={(e) => setResForm({ ...resForm, guests: e.target.value })}
-                className="w-full rounded-xl border border-white/10 bg-[#1a0f08]/60 px-4 py-3.5 text-sm text-white focus:border-amber-500/50 focus:outline-none appearance-none"
+                className="w-full rounded-xl border border-white/10 bg-[#1a0f08]/60 px-4 py-3.5 text-sm text-ink dark:text-white focus:border-amber-500/50 focus:outline-none appearance-none"
               >
                 <option value="" disabled hidden>Party Size</option>
                 <option value="1">1 Guest</option>
@@ -459,7 +459,7 @@ export default function HomePage() {
                 type="button"
                 onClick={onReservationSubmit}
                 disabled={booking}
-                className="mt-4 w-full rounded-xl bg-amber-600 py-4 text-xs font-bold uppercase tracking-[0.15em] text-white transition-colors hover:bg-amber-500 disabled:opacity-70"
+                className="mt-4 w-full rounded-xl bg-amber-600 py-4 text-xs font-bold uppercase tracking-[0.15em] text-ink dark:text-white transition-colors hover:bg-amber-500 disabled:opacity-70"
               >
                 {booking ? 'Confirming...' : 'Confirm Reservation'}
               </button>
@@ -474,19 +474,19 @@ export default function HomePage() {
           <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-4">
             <div className="lg:col-span-2">
               <p className="font-heading text-2xl font-bold text-amber-500 mb-4">{settings.brand_name}</p>
-              <p className="text-sm text-white/50 max-w-sm leading-relaxed">{settings.brand_tagline}</p>
+              <p className="text-sm text-ink dark:text-white/50 max-w-sm leading-relaxed">{settings.brand_tagline}</p>
             </div>
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.15em] text-white mb-6">Navigation</p>
-              <div className="flex flex-col gap-4 text-sm text-white/60">
+              <p className="text-xs font-bold uppercase tracking-[0.15em] text-ink dark:text-white mb-6">Navigation</p>
+              <div className="flex flex-col gap-4 text-sm text-ink dark:text-white/60">
                 <Link href="/" className="hover:text-amber-400 transition-colors w-fit">Home</Link>
                 <Link href="/menu" className="hover:text-amber-400 transition-colors w-fit">Menu</Link>
                 <Link href="/book" className="hover:text-amber-400 transition-colors w-fit">Reservations</Link>
               </div>
             </div>
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.15em] text-white mb-6">Contact</p>
-              <div className="flex flex-col gap-4 text-sm text-white/60">
+              <p className="text-xs font-bold uppercase tracking-[0.15em] text-ink dark:text-white mb-6">Contact</p>
+              <div className="flex flex-col gap-4 text-sm text-ink dark:text-white/60">
                 <p>{settings.contact.address_line_1}</p>
                 <p>{settings.contact.address_line_2}</p>
                 <p>{settings.contact.email}</p>
@@ -494,7 +494,7 @@ export default function HomePage() {
             </div>
           </div>
           <div className="mt-16 border-t border-white/10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p className="text-xs text-white/40">© 2026 {settings.brand_name}. All rights reserved.</p>
+            <p className="text-xs text-ink dark:text-white/40">© 2026 {settings.brand_name}. All rights reserved.</p>
           </div>
         </div>
       </footer>
