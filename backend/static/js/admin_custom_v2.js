@@ -267,11 +267,82 @@
     });
   }
 
+  function activateTabFromQuery() {
+    var params = new URLSearchParams(window.location.search);
+    var target = params.get("tab");
+    if (!target) {
+      return;
+    }
+
+    var links = Array.prototype.slice.call(
+      document.querySelectorAll("ul.nav.nav-tabs a.nav-link[href^='#']")
+    );
+    if (!links.length) {
+      return;
+    }
+
+    var match = null;
+    links.forEach(function (link) {
+      var href = link.getAttribute("href") || "";
+      if (href.charAt(0) !== "#") {
+        return;
+      }
+      var id = href.slice(1);
+      var key = id.replace(/^tab-/, "");
+      if (id === target || key === target) {
+        match = link;
+      }
+    });
+
+    if (match) {
+      match.click();
+    }
+  }
+
+  function attachInlineTabs() {
+    var body = document.body;
+    if (!body || !body.classList.contains("model-aboutus")) {
+      return;
+    }
+
+    var tabList = document.querySelector("ul.nav.nav-tabs");
+    var tabContent = document.querySelector(".tab-content");
+    if (!tabList || !tabContent) {
+      return;
+    }
+
+    function moveInline(headingText, tabId) {
+      var inlineGroups = Array.prototype.slice.call(document.querySelectorAll(".inline-group"));
+      var targetInline = inlineGroups.find(function (group) {
+        var heading = group.querySelector("h2");
+        if (!heading) {
+          return false;
+        }
+        return heading.textContent.toLowerCase().indexOf(headingText) !== -1;
+      });
+
+      if (!targetInline) {
+        return;
+      }
+
+      var pane = document.getElementById(tabId);
+      if (pane) {
+        pane.appendChild(targetInline);
+      }
+    }
+
+    moveInline("services", "tab-services");
+    moveInline("gallery", "tab-gallery");
+    moveInline("our team", "tab-team");
+  }
+
   function boot() {
     initMonthlyChart();
     attachLiveClock();
     pollNotificationBadge();
     initJazzminTabFallback();
+    activateTabFromQuery();
+    attachInlineTabs();
     enableAutoRefresh();
   }
 

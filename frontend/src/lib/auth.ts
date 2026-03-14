@@ -59,6 +59,9 @@ export function getAccessToken(): string {
   return window.localStorage.getItem(ACCESS_TOKEN_KEY) ?? '';
 }
 
+// Alias for backward compatibility
+export const getAuthToken = getAccessToken;
+
 export function getRefreshToken(): string {
   if (typeof window === 'undefined') {
     return '';

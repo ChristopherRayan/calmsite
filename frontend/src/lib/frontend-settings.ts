@@ -25,7 +25,7 @@ export const defaultFrontendSettings: FrontendContentPayload = {
     hero_title_suffix: 'and unforgettable flavors.',
     hero_description:
       'Join us for handcrafted dishes, warm hospitality, and premium ambiance near Simso Filling Station, Luwinga, Mzuzu.',
-    hero_bg_image: '/images/hero-placeholder.svg',
+    hero_bg_image: '/images/hero-placeholder.png',
     about_image: '/images/hero-placeholder.png',
     story_quote: 'Good food is the foundation of genuine happiness - we serve both.',
     story_description:
@@ -66,11 +66,12 @@ export const defaultFrontendSettings: FrontendContentPayload = {
       },
     ],
     gallery_images: [
-      '/images/gallery-1.png',
-      '/images/gallery-2.svg',
-      '/images/gallery-3.svg',
-      '/images/gallery-4.svg',
-      '/images/gallery-5.svg',
+      { src: '/images/gallery-1.png', title: 'Warm Interiors', description: 'Warm interior lighting and dining ambience.' },
+      { src: '/images/gallery-2.svg', title: 'Signature Plate', description: 'Signature plated dish with seasonal garnish.' },
+      { src: '/images/gallery-3.svg', title: 'Fresh Prep', description: 'Fresh ingredients prepared for today’s service.' },
+      { src: '/images/gallery-4.svg', title: 'Table Setting', description: 'Elegant table setting for evening guests.' },
+      { src: '/images/gallery-5.svg', title: 'Chef Craft', description: 'Chef finishing touches on a premium course.' },
+      { src: '/images/reservation-bg.png', title: 'Cozy Dining', description: 'Cozy dining space with intimate seating.' },
     ],
   },
   about: {

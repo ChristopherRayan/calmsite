@@ -27,8 +27,10 @@ from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 
 from .filters import MenuItemFilter
 from .models import (
+    AboutUs,
     AdminNotification,
     FrontendSettings,
+    GalleryImage,
     MenuItem,
     Order,
     OrderItem,
@@ -38,8 +40,10 @@ from .models import (
     UserProfile,
 )
 from .serializers import (
+    AboutUsSerializer,
     AdminNotificationSerializer,
     FrontendSettingsSerializer,
+    GalleryImageSerializer,
     LoginSerializer,
     MenuItemSerializer,
     OrderCreateSerializer,
@@ -319,6 +323,81 @@ class FrontendSettingsAPIView(APIView):
         settings_obj = FrontendSettings.get_solo()
         serializer = FrontendSettingsSerializer(settings_obj)
         return Response(serializer.data)
+
+
+class GalleryImageViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet):
+    """CRUD endpoints for Gallery Images. Public can list, only admin can modify."""
+
+    serializer_class = GalleryImageSerializer
+    queryset = GalleryImage.objects.all()
+    parser_classes = (MultiPartParser, FormParser, JSONParser)
+
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve']:
+            return [permissions.AllowAny()]
+        return [permissions.IsAdminUser()]
+
+    def get_queryset(self):
+        about_us = AboutUs.get_solo()
+        queryset = GalleryImage.objects.filter(about_us=about_us, is_active=True).order_by('order', '-created_at')
+        return queryset
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        # Convert to format expected by frontend
+        gallery_data = [
+            {
+                "src": item.get("image_url", ""),
+                "title": item.get("title", ""),
+                "description": item.get("description", "")
+            }
+            for item in serializer.data
+            if item.get('image_url')
+        ]
+        return Response(gallery_data)
+
+    def create(self, request, *args, **kwargs):
+        # Check if we already have 6 active images
+        about_us = AboutUs.get_solo()
+        count = GalleryImage.objects.filter(about_us=about_us, is_active=True).count()
+        if count >= 6:
+            return Response(
+                {"error": "Maximum of 6 gallery images allowed. Please update or delete an existing image first."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        return super().create(request, *args, **kwargs)
+
+    def perform_create(self, serializer):
+        serializer.save(about_us=AboutUs.get_solo())
+
+
+class AboutUsAPIView(APIView):
+    """API endpoints for About Us section. Public can view, only admin can update."""
+
+    permission_classes = [permissions.AllowAny]
+    authentication_classes = []
+
+    def get(self, request):
+        about_us = AboutUs.get_solo()
+        serializer = AboutUsSerializer(about_us)
+        return Response(serializer.data)
+
+    def put(self, request):
+        if not request.user.is_staff:
+            return Response(
+                {"error": "Admin permission required"},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        about_us = AboutUs.get_solo()
+        serializer = AboutUsSerializer(about_us, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def patch(self, request):
+        return self.put(request)
 
 
 @method_decorator(cache_page(60), name="list")

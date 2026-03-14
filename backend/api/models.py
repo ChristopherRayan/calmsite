@@ -67,11 +67,12 @@ def default_frontend_content() -> dict:
                 {"quote": "Best Masamba Otendera in Mzuzu. Authentic taste and consistently professional service.", "author": "Takondwa Mwale"},
             ],
             "gallery_images": [
-                "/images/gallery-1.png",
-                "/images/gallery-2.png",
-                "/images/gallery-3.png",
-                "/images/gallery-1.png",
-                "/images/gallery-2.png",
+                {"src": "/images/gallery-1.png", "title": "Warm Interiors", "description": "Warm interior lighting and dining ambience."},
+                {"src": "/images/gallery-2.png", "title": "Signature Plate", "description": "Signature plated dish with seasonal garnish."},
+                {"src": "/images/gallery-3.png", "title": "Fresh Prep", "description": "Fresh ingredients prepared for today’s service."},
+                {"src": "/images/gallery-4.svg", "title": "Table Setting", "description": "Elegant table setting for evening guests."},
+                {"src": "/images/gallery-5.svg", "title": "Chef Craft", "description": "Chef finishing touches on a premium course."},
+                {"src": "/images/reservation-bg.png", "title": "Cozy Dining", "description": "Cozy dining space with intimate seating."},
             ],
         },
         "about": {
@@ -205,6 +206,116 @@ class FrontendSettings(models.Model):
     def resolved_content(self) -> dict:
         """Return content merged with defaults to keep older payloads compatible."""
         return deep_merge_dict(default_frontend_content(), self.content or {})
+
+
+class GalleryImage(models.Model):
+    """Gallery image with description for the About Us section."""
+
+    about_us = models.ForeignKey(
+        "AboutUs",
+        on_delete=models.CASCADE,
+        related_name="gallery_images",
+        null=True,
+        blank=True,
+    )
+    title = models.CharField(max_length=120, blank=True, help_text="Image title shown on hover")
+    image = models.ImageField(upload_to="gallery/", help_text="Upload gallery image")
+    description = models.CharField(max_length=255, blank=True, help_text="Description shown on hover")
+    order = models.PositiveSmallIntegerField(default=0, help_text="Display order (0-5, max 6 images)")
+    is_active = models.BooleanField(default=True, help_text="Show this image in gallery")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["order", "-created_at"]
+        verbose_name = "Gallery Image"
+        verbose_name_plural = "Gallery Images"
+
+    def __str__(self) -> str:
+        return f"Gallery Image {self.order}: {self.description[:30] if self.description else 'No description'}"
+
+    def clean(self):
+        from django.core.exceptions import ValidationError
+        if self.order < 0 or self.order > 5:
+            raise ValidationError({"order": "Order must be between 0 and 5 (max 6 images)"})
+
+    def save(self, *args, **kwargs):
+        if not self.about_us_id:
+            self.about_us = AboutUs.get_solo()
+        self.clean()
+        super().save(*args, **kwargs)
+
+
+class AboutUs(models.Model):
+    """About Us section content management."""
+
+    about_image = models.ImageField(upload_to="about/", blank=True, null=True)
+    title = models.CharField(max_length=255, default="Where Every Meal Is A Celebration")
+    subtitle = models.CharField(max_length=100, default="Our Heritage", help_text="Small eyebrow text")
+    description = models.TextField(help_text="Main description text")
+    quote = models.TextField(help_text="Featured quote")
+    vision_title = models.CharField(max_length=100, default="Vision")
+    vision_body = models.TextField(help_text="Vision card content")
+    cuisine_title = models.CharField(max_length=100, default="Cuisine")
+    cuisine_body = models.TextField(help_text="Cuisine card content")
+    service_title = models.CharField(max_length=100, default="Service")
+    service_body = models.TextField(help_text="Service card content")
+    years_serving = models.CharField(max_length=20, default="12+", help_text="Years serving stat")
+    menu_items = models.CharField(max_length=20, default="80+", help_text="Menu items stat")
+    rating = models.CharField(max_length=20, default="4.9★", help_text="Rating stat")
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "About Us"
+        verbose_name_plural = "About Us"
+
+    def __str__(self) -> str:
+        return "About Us Section"
+
+    @classmethod
+    def get_solo(cls):
+        """Return singleton About Us, creating defaults if missing."""
+        obj, _ = cls.objects.get_or_create(
+            id=1,
+            defaults={
+                "title": "Where Every Meal Is A Celebration",
+                "subtitle": "Our Heritage",
+                "description": "Near Simso Filling Station in Luwinga, we serve premium dishes in a warm family-restaurant setting.",
+                "quote": "Good food is the foundation of genuine happiness - we serve both.",
+                "vision_title": "Vision",
+                "vision_body": "Build a modern Malawian dining brand where consistency, comfort, and quality define every table.",
+                "cuisine_title": "Cuisine",
+                "cuisine_body": "Local favorites and signature mains from chambo to goat dishes, with curated snacks and beverages.",
+                "service_title": "Service",
+                "service_body": "Fast reservations, smooth checkout, and attentive hosting for both casual and formal dining moments.",
+                "years_serving": "12+",
+                "menu_items": "80+",
+                "rating": "4.9★",
+            }
+        )
+        return obj
+
+
+class AboutService(models.Model):
+    """Service cards displayed on the About Us page."""
+
+    about_us = models.ForeignKey(
+        AboutUs,
+        on_delete=models.CASCADE,
+        related_name="services",
+    )
+    title = models.CharField(max_length=120)
+    description = models.TextField()
+    order = models.PositiveSmallIntegerField(default=0)
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ["order", "id"]
+        verbose_name = "About Service"
+        verbose_name_plural = "About Services"
+
+    def __str__(self) -> str:
+        return self.title
 
 
 class Table(models.Model):
@@ -584,6 +695,13 @@ class OrderItem(models.Model):
 class StaffMember(models.Model):
     """Admin-managed staff profile cards for the public members page."""
 
+    about_us = models.ForeignKey(
+        "AboutUs",
+        on_delete=models.CASCADE,
+        related_name="team_members",
+        null=True,
+        blank=True,
+    )
     class Role(models.TextChoices):
         CHEF = "chef", "Chef"
         WAITER = "waiter", "Waiter / Waitress"
@@ -610,3 +728,8 @@ class StaffMember(models.Model):
 
     def __str__(self) -> str:
         return f"{self.full_name} ({self.get_role_display()})"
+
+    def save(self, *args, **kwargs):
+        if not self.about_us_id:
+            self.about_us = AboutUs.get_solo()
+        return super().save(*args, **kwargs)

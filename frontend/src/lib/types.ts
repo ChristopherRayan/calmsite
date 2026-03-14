@@ -240,6 +240,12 @@ export interface FrontendTestimonial {
   author: string;
 }
 
+export interface FrontendGalleryItem {
+  src: string;
+  title?: string;
+  description: string;
+}
+
 export interface FrontendStats {
   years_serving: string;
   menu_items: string;
@@ -264,7 +270,7 @@ export interface FrontendHomeContent {
   reservation_banner_description: string;
   reservation_bg_image: string;
   testimonials: FrontendTestimonial[];
-  gallery_images: string[];
+  gallery_images: FrontendGalleryItem[];
 }
 
 export interface FrontendAboutCard {

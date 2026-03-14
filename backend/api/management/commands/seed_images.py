@@ -13,11 +13,30 @@ RESERVATION_IMAGES = [
 ]
 
 GALLERY_IMAGES = [
-    "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=800&auto=format&fit=crop", # Salad/healthy
-    "https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=800&auto=format&fit=crop", # Feast
-    "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=800&auto=format&fit=crop", # Grilling
-    "https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=800&auto=format&fit=crop", # Ribs
-    "https://images.unsplash.com/photo-1560963689-02e82017fb3c?q=80&w=800&auto=format&fit=crop", # Spices/prep
+    {
+        "src": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=800&auto=format&fit=crop",
+        "description": "Fresh seasonal salad and vibrant produce.",
+    },
+    {
+        "src": "https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=800&auto=format&fit=crop",
+        "description": "A full table feast with shared plates.",
+    },
+    {
+        "src": "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=800&auto=format&fit=crop",
+        "description": "Live grilling for a smoky signature finish.",
+    },
+    {
+        "src": "https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=800&auto=format&fit=crop",
+        "description": "Slow-cooked ribs with a rich glaze.",
+    },
+    {
+        "src": "https://images.unsplash.com/photo-1560963689-02e82017fb3c?q=80&w=800&auto=format&fit=crop",
+        "description": "Spice and prep station for today’s menu.",
+    },
+    {
+        "src": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=800&auto=format&fit=crop",
+        "description": "Warm dining room ready for guests.",
+    },
 ]
 
 ABOUT_IMAGE = "https://images.unsplash.com/photo-1552566626-52f8b828add9?q=80&w=1000&auto=format&fit=crop" # People dining/enjoying

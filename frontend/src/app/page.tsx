@@ -8,7 +8,7 @@ import toast from 'react-hot-toast';
 import { motion, useScroll, useTransform } from 'framer-motion';
 
 import { defaultFrontendSettings } from '@/lib/frontend-settings';
-import { fetchBestOrderedMenuItems, fetchFrontendSettings } from '@/lib/services';
+import { fetchAboutUs, fetchBestOrderedMenuItems, fetchFrontendSettings } from '@/lib/services';
 import { formatKwacha } from '@/lib/currency';
 import { normalizeImageSource, shouldSkipImageOptimization } from '@/lib/image';
 import type { FrontendContentPayload, MenuItem } from '@/lib/types';
@@ -64,6 +64,7 @@ const staggerContainer = {
 
 export default function HomePage() {
   const [bestOrderedItems, setBestOrderedItems] = useState<MenuItem[]>([]);
+  const [aboutUsImage, setAboutUsImage] = useState<string>('');
   const [settings, setSettings] = useState<FrontendContentPayload>(defaultFrontendSettings);
 
   // Parallax effect for hero background
@@ -126,9 +127,38 @@ export default function HomePage() {
     };
   }, []);
 
+  useEffect(() => {
+    let active = true;
+    async function loadAboutUs() {
+      try {
+        const data = await fetchAboutUs();
+        if (active && data?.about_image) {
+          setAboutUsImage(data.about_image);
+        }
+      } catch (_error) {
+        // Keep fallback image.
+      }
+    }
+
+    void loadAboutUs();
+    return () => {
+      active = false;
+    };
+  }, []);
+
   const heroBg = normalizeImageSource(settings.home.hero_bg_image) || '/images/hero-placeholder.png';
-  const aboutImage = normalizeImageSource(settings.home.about_image) || '/images/hero-placeholder.png';
+  const aboutImage =
+    normalizeImageSource(aboutUsImage) ||
+    normalizeImageSource(settings.home.about_image) ||
+    '/images/hero-placeholder.png';
   const resBg = normalizeImageSource(settings.home.reservation_bg_image) || '/images/hero-placeholder.png';
+  const openingHours = settings.contact.opening_hours?.length
+    ? settings.contact.opening_hours
+    : [
+        { day: 'Monday - Thursday', hours: '8:00 AM - 10:00 PM' },
+        { day: 'Friday - Saturday', hours: '8:00 AM - 11:00 PM' },
+        { day: 'Sunday', hours: '9:00 AM - 9:00 PM' },
+      ];
 
   return (
     <div className="bg-cream dark:bg-[#0a0604] min-h-screen text-ink dark:text-white overflow-hidden selection:bg-amber-600/30 -mt-14">
@@ -147,9 +177,9 @@ export default function HomePage() {
         </motion.div>
 
         {/* Gradients to blend into dark background */}
-        <div className="absolute inset-0 bg-cream/60 dark:bg-[#0a0604] backdrop-blur-[2px]" />
-        <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-cream dark:from-[#0a0604] to-transparent" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,#0a0604_100%)] opacity-70" />
+        <div className="absolute inset-0 bg-cream/35 dark:bg-[#0a0604]/55 backdrop-blur-[2px]" />
+        <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-cream/70 dark:from-[#0a0604]/70 to-transparent" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,#0a0604_100%)] opacity-45" />
 
         <div className="page-shell relative z-10 flex flex-col items-center justify-center text-center">
           <motion.div
@@ -305,14 +335,14 @@ export default function HomePage() {
                 </div>
 
                 <div className="px-2 pb-4">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-amber-700 dark:text-amber-500/80 mb-2">
+                  <p className="text-[11px] sm:text-xs font-semibold uppercase tracking-[0.22em] text-amber-700 dark:text-amber-400/90 mb-2">
                     {dish.category}
                   </p>
-                  <h3 className="font-bold text-lg text-ink dark:text-white mb-2 leading-tight">
+                  <h3 className="font-heading font-semibold text-[1.12rem] sm:text-[1.25rem] text-ink dark:text-white mb-2 leading-snug tracking-tight">
                     {dish.name}
                   </h3>
                   <div className="flex items-center justify-between mt-4">
-                    <p className="text-amber-600 dark:text-amber-400 font-heading font-bold text-lg">
+                    <p className="font-heading font-semibold text-lg sm:text-xl text-amber-600 dark:text-amber-400 tracking-tight">
                       {formatKwacha(dish.price)}
                     </p>
                   </div>
@@ -347,22 +377,30 @@ export default function HomePage() {
             </Link>
           </motion.div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {['/images/gallery-1.png', '/images/gallery-2.png', '/images/gallery-3.png', '/images/reservation-bg.png'].map((src, i) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 auto-rows-[170px] sm:auto-rows-[190px] lg:auto-rows-[210px] gap-4">
+            {[
+              { src: '/images/gallery-1.png', span: 'lg:col-span-3 lg:row-span-2' },
+              { src: '/images/gallery-2.png', span: 'lg:col-span-2 lg:row-span-1' },
+              { src: '/images/gallery-3.png', span: 'lg:col-span-1 lg:row-span-1' },
+              { src: '/images/dish-meat.png', span: 'lg:col-span-2 lg:row-span-1' },
+              { src: '/images/dish-snack.png', span: 'lg:col-span-1 lg:row-span-1' },
+            ].map((tile, i) => (
               <motion.div
-                key={i}
+                key={tile.src}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
-                className="relative aspect-square overflow-hidden rounded-2xl"
+                transition={{ duration: 0.5, delay: i * 0.08 }}
+                className={`group relative overflow-hidden rounded-3xl border border-stone-200/70 dark:border-white/10 bg-stone-100/40 dark:bg-[#120a05] shadow-[0_18px_40px_-24px_rgba(38,24,12,0.6)] ${tile.span}`}
               >
                 <Image
-                  src={src}
+                  src={tile.src}
                   alt={`Gallery image ${i + 1}`}
                   fill
-                  className="object-cover transition-transform duration-500 hover:scale-110"
+                  className="object-cover transition-transform duration-700 group-hover:scale-110"
                 />
+                <div className="absolute inset-0 bg-gradient-to-tr from-black/35 via-black/10 to-transparent opacity-60 dark:opacity-70" />
+                <div className="absolute inset-0 ring-1 ring-white/30 dark:ring-white/10" />
               </motion.div>
             ))}
           </div>
@@ -419,18 +457,12 @@ export default function HomePage() {
             <h3 className="font-heading text-2xl font-bold mb-8 text-ink dark:text-white">Opening Hours</h3>
 
             <div className="space-y-4">
-              <div className="flex justify-between items-center py-2 border-b border-stone-200 dark:border-white/10">
-                <span className="text-ink dark:text-white/70">Monday - Thursday</span>
-                <span className="font-bold text-amber-600 dark:text-amber-400">8:00 AM - 10:00 PM</span>
-              </div>
-              <div className="flex justify-between items-center py-2 border-b border-stone-200 dark:border-white/10">
-                <span className="text-ink dark:text-white/70">Friday - Saturday</span>
-                <span className="font-bold text-amber-600 dark:text-amber-400">8:00 AM - 11:00 PM</span>
-              </div>
-              <div className="flex justify-between items-center py-2 border-b border-stone-200 dark:border-white/10">
-                <span className="text-ink dark:text-white/70">Sunday</span>
-                <span className="font-bold text-amber-600 dark:text-amber-400">9:00 AM - 9:00 PM</span>
-              </div>
+              {openingHours.map((slot, index) => (
+                <div key={`${slot.day}-${index}`} className="flex justify-between items-center py-2 border-b border-stone-200 dark:border-white/10">
+                  <span className="text-ink dark:text-white/70">{slot.day}</span>
+                  <span className="font-bold text-amber-600 dark:text-amber-400">{slot.hours}</span>
+                </div>
+              ))}
             </div>
 
             <div className="mt-8 pt-6 border-t border-stone-200 dark:border-white/10">
@@ -455,7 +487,6 @@ export default function HomePage() {
               <div className="flex flex-col gap-4 text-sm text-ink dark:text-white/60">
                 <Link href="/" className="hover:text-amber-400 transition-colors w-fit">Home</Link>
                 <Link href="/menu" className="hover:text-amber-400 transition-colors w-fit">Menu</Link>
-                <Link href="/gallery" className="hover:text-amber-400 transition-colors w-fit">Gallery</Link>
                 <Link href="/about" className="hover:text-amber-400 transition-colors w-fit">About</Link>
                 <Link href="/contact" className="hover:text-amber-400 transition-colors w-fit">Contact</Link>
               </div>

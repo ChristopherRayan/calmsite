@@ -4,6 +4,7 @@ from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenRefreshView
 
 from .views import (
+    AboutUsAPIView,
     AdminNotificationViewSet,
     AdminSSOView,
     AnalyticsAPIView,
@@ -13,6 +14,7 @@ from .views import (
     AvailableTablesAPIView,
     ChangePasswordAPIView,
     FrontendSettingsAPIView,
+    GalleryImageViewSet,
     LoginAPIView,
     LogoutAPIView,
     MeAPIView,
@@ -38,10 +40,12 @@ router.register("notifications", AdminNotificationViewSet, basename="admin-notif
 router.register("staff/users", StaffUserViewSet, basename="staff-users")
 router.register("staff/members", StaffMemberViewSet, basename="staff-members")
 router.register("tables", TableViewSet, basename="tables")
+router.register("gallery", GalleryImageViewSet, basename="gallery")
 
 urlpatterns = [
     path("", include(router.urls)),
     re_path(r"^frontend-settings/?$", FrontendSettingsAPIView.as_view(), name="frontend-settings"),
+    re_path(r"^about-us/?$", AboutUsAPIView.as_view(), name="about-us"),
     re_path(r"^available-slots/?$", AvailableSlotsAPIView.as_view(), name="available-slots"),
     re_path(r"^available-tables/?$", AvailableTablesAPIView.as_view(), name="available-tables"),
     re_path(r"^orders/(?P<order_number>[^/.]+)/receipt/?$", OrderReceiptAPIView.as_view(), name="order-receipt"),

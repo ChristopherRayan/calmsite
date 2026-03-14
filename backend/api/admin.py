@@ -21,7 +21,10 @@ from django.utils.html import format_html
 
 from .models import (
     AdminNotification,
+    AboutService,
+    AboutUs,
     FrontendSettings,
+    GalleryImage,
     MenuItem,
     Order,
     OrderItem,
@@ -924,6 +927,19 @@ class FrontendSettingsForm(forms.Form):
     gallery_image_3 = forms.ImageField(required=False, label="Gallery Image 3", widget=JSONImageWidget)
     gallery_image_4 = forms.ImageField(required=False, label="Gallery Image 4", widget=JSONImageWidget)
     gallery_image_5 = forms.ImageField(required=False, label="Gallery Image 5", widget=JSONImageWidget)
+    gallery_image_6 = forms.ImageField(required=False, label="Gallery Image 6", widget=JSONImageWidget)
+    gallery_desc_1 = forms.CharField(max_length=200, required=False, label="Gallery Description 1")
+    gallery_desc_2 = forms.CharField(max_length=200, required=False, label="Gallery Description 2")
+    gallery_desc_3 = forms.CharField(max_length=200, required=False, label="Gallery Description 3")
+    gallery_desc_4 = forms.CharField(max_length=200, required=False, label="Gallery Description 4")
+    gallery_desc_5 = forms.CharField(max_length=200, required=False, label="Gallery Description 5")
+    gallery_desc_6 = forms.CharField(max_length=200, required=False, label="Gallery Description 6")
+    gallery_clear_1 = forms.BooleanField(required=False, label="Remove Image 1")
+    gallery_clear_2 = forms.BooleanField(required=False, label="Remove Image 2")
+    gallery_clear_3 = forms.BooleanField(required=False, label="Remove Image 3")
+    gallery_clear_4 = forms.BooleanField(required=False, label="Remove Image 4")
+    gallery_clear_5 = forms.BooleanField(required=False, label="Remove Image 5")
+    gallery_clear_6 = forms.BooleanField(required=False, label="Remove Image 6")
 
     # ── Contact ──
     contact_address_line_1 = forms.CharField(max_length=200, required=False, label="Address Line 1")
@@ -983,69 +999,76 @@ class FrontendSettingsAdmin(BaseModelAdmin):
             'admin/js/change_form.js',
         )
 
-    fieldsets = (
-        ("Brand", {"fields": ("brand_name", "brand_tagline"), "classes": ("tab-brand",)}),
+    site_fieldsets = (
+        ("Brand", {"fields": ("brand_name", "brand_tagline")}),
+    )
+
+    home_fieldsets = (
         ("Hero Section", {"fields": (
             "hero_eyebrow", "hero_title_prefix", "hero_title_emphasis",
             "hero_title_suffix", "hero_description", "hero_bg_image",
-        )}),
-        ("Stats Bar", {"fields": ("stat_years_serving", "stat_menu_items", "stat_rating")}),
+        ), "classes": ("tab-hero",)}),
+        ("Stats Bar", {"fields": ("stat_years_serving", "stat_menu_items", "stat_rating"), "classes": ("tab-stats",)}),
         ("Our Story", {"fields": (
             "story_quote", "story_description",
             "about_feature_1_title", "about_feature_1_desc",
             "about_feature_2_title", "about_feature_2_desc",
             "about_feature_3_title", "about_feature_3_desc",
-        )}),
-        ("Why Us", {"fields": (
-            "why_1_title", "why_1_desc",
-            "why_2_title", "why_2_desc",
-            "why_3_title", "why_3_desc",
-            "why_4_title", "why_4_desc",
-        )}),
-        ("Reservation Banner", {"fields": (
-            "reservation_banner_title", "reservation_banner_emphasis",
-            "reservation_banner_description", "reservation_bg_image",
-        )}),
+        ), "classes": ("tab-story",)}),
         ("Testimonials", {"fields": (
             "testimonial_1_quote", "testimonial_1_author",
             "testimonial_2_quote", "testimonial_2_author",
             "testimonial_3_quote", "testimonial_3_author",
-        )}),
-        ("Gallery Images", {
-            "fields": (
-                "gallery_image_1", "gallery_image_2", "gallery_image_3",
-                "gallery_image_4", "gallery_image_5",
-            ),
-            "description": "Upload new images to replace the current ones. Current images are shown if available.",
-        }),
-        ("Contact Info", {"fields": (
+        ), "classes": ("tab-testimonials",)}),
+    )
+
+    contact_fieldsets = (
+        ("Contact Details", {"fields": (
             "contact_address_line_1", "contact_address_line_2",
             "contact_phone", "contact_email", "contact_whatsapp",
-            "contact_map_embed_url",
+        ), "classes": ("tab-contact-details",)}),
+        ("Opening Hours", {"fields": (
             "contact_hours_1_day", "contact_hours_1_hours",
             "contact_hours_2_day", "contact_hours_2_hours",
             "contact_hours_3_day", "contact_hours_3_hours",
-        )}),
+        ), "classes": ("tab-contact-hours",)}),
+        ("Map Embed", {"fields": ("contact_map_embed_url",), "classes": ("tab-contact-map",)}),
+    )
+
+    about_fieldsets = (
         ("About Page", {"fields": (
             "about_description", "about_image",
             "about_card_1_title", "about_card_1_body",
             "about_card_2_title", "about_card_2_body",
             "about_card_3_title", "about_card_3_body",
         )}),
-        ("Members Page", {"fields": (
-            "members_description",
-            "members_benefit_1_title", "members_benefit_1_desc",
-            "members_benefit_2_title", "members_benefit_2_desc",
-            "members_benefit_3_title", "members_benefit_3_desc",
-            "members_benefit_4_title", "members_benefit_4_desc",
-        )}),
+        ("Gallery Images", {
+            "fields": (
+                "gallery_image_1", "gallery_desc_1", "gallery_clear_1",
+                "gallery_image_2", "gallery_desc_2", "gallery_clear_2",
+                "gallery_image_3", "gallery_desc_3", "gallery_clear_3",
+                "gallery_image_4", "gallery_desc_4", "gallery_clear_4",
+                "gallery_image_5", "gallery_desc_5", "gallery_clear_5",
+                "gallery_image_6", "gallery_desc_6", "gallery_clear_6",
+            ),
+            "description": "Upload new images or update descriptions. Use “Remove Image” to clear a slot.",
+        }),
     )
 
     def get_form(self, request, obj=None, **kwargs):
         return FrontendSettingsForm
 
     def get_fieldsets(self, request, obj=None):
-        return self.fieldsets
+        section = request.GET.get("section")
+        if section == "site":
+            return self.site_fieldsets
+        if section == "home":
+            return self.home_fieldsets
+        if section == "contact":
+            return self.contact_fieldsets
+        if section == "about":
+            return self.about_fieldsets
+        return self.home_fieldsets
 
     def get_object(self, request, object_id, from_field=None):
         return FrontendSettings.get_solo()
@@ -1065,6 +1088,19 @@ class FrontendSettingsAdmin(BaseModelAdmin):
         hours = contact.get("opening_hours", [])
         about_cards = about.get("cards", [])
         benefits = members.get("benefits", [])
+
+        def _gallery_src(index):
+            if index < len(gallery):
+                item = gallery[index]
+                if isinstance(item, dict):
+                    return item.get("src") or item.get("image") or ""
+                return item or ""
+            return ""
+
+        def _gallery_desc(index):
+            if index < len(gallery) and isinstance(gallery[index], dict):
+                return gallery[index].get("description", "") or ""
+            return ""
 
         return {
             "brand_name": content.get("brand_name", ""),
@@ -1104,11 +1140,18 @@ class FrontendSettingsAdmin(BaseModelAdmin):
             "testimonial_2_author": _safe_list_item(testimonials, 1, "author"),
             "testimonial_3_quote": _safe_list_item(testimonials, 2, "quote"),
             "testimonial_3_author": _safe_list_item(testimonials, 2, "author"),
-            "gallery_image_1": gallery[0] if len(gallery) > 0 else "",
-            "gallery_image_2": gallery[1] if len(gallery) > 1 else "",
-            "gallery_image_3": gallery[2] if len(gallery) > 2 else "",
-            "gallery_image_4": gallery[3] if len(gallery) > 3 else "",
-            "gallery_image_5": gallery[4] if len(gallery) > 4 else "",
+            "gallery_image_1": _gallery_src(0),
+            "gallery_desc_1": _gallery_desc(0),
+            "gallery_image_2": _gallery_src(1),
+            "gallery_desc_2": _gallery_desc(1),
+            "gallery_image_3": _gallery_src(2),
+            "gallery_desc_3": _gallery_desc(2),
+            "gallery_image_4": _gallery_src(3),
+            "gallery_desc_4": _gallery_desc(3),
+            "gallery_image_5": _gallery_src(4),
+            "gallery_desc_5": _gallery_desc(4),
+            "gallery_image_6": _gallery_src(5),
+            "gallery_desc_6": _gallery_desc(5),
             "about_image": home.get("about_image", ""),
             "contact_address_line_1": contact.get("address_line_1", ""),
             "contact_address_line_2": contact.get("address_line_2", ""),
@@ -1143,23 +1186,29 @@ class FrontendSettingsAdmin(BaseModelAdmin):
     def changeform_view(self, request, object_id=None, form_url="", extra_context=None):
         obj = FrontendSettings.get_solo()
         FormClass = self.get_form(request, obj)
+        section = request.GET.get("section") or "home"
 
         if request.method == "POST":
             form = FormClass(request.POST, request.FILES)
             if form.is_valid():
-                self._save_form_to_json(obj, form.cleaned_data, form.initial)
+                self._save_form_to_json(obj, form.cleaned_data, form.initial, section=section)
                 self.message_user(request, "Homepage settings saved successfully.")
                 from django.http import HttpResponseRedirect
-                return HttpResponseRedirect(request.path)
+                return HttpResponseRedirect(request.get_full_path())
         else:
             form = FormClass(initial=self.get_initial(obj))
 
         fieldsets = self.get_fieldsets(request, obj)
         admin_form = admin.helpers.AdminForm(form, fieldsets, {}, model_admin=self)
 
+        title_map = {
+            "site": "Edit Site Settings",
+            "home": "Edit Homepage Content",
+            "contact": "Edit Contact Content",
+        }
         context = {
             **self.admin_site.each_context(request),
-            "title": "Edit Homepage Settings",
+            "title": title_map.get(section, "Edit Homepage Settings"),
             "adminform": admin_form,
             "media": self.media + form.media,
             "form": form,
@@ -1181,7 +1230,7 @@ class FrontendSettingsAdmin(BaseModelAdmin):
             context.update(extra_context)
         return self.render_change_form(request, context, change=True, obj=obj)
 
-    def _save_form_to_json(self, obj, data, initial_data):
+    def _save_form_to_json(self, obj, data, initial_data, section="home"):
         """Reassemble form field values into the FrontendSettings JSON blob."""
         from django.core.files.storage import default_storage
         import os
@@ -1207,68 +1256,97 @@ class FrontendSettingsAdmin(BaseModelAdmin):
                     result.append(item)
             return result
 
-        content = {
-            "brand_name": data.get("brand_name", ""),
-            "brand_tagline": data.get("brand_tagline", ""),
-            "contact": {
-                "address_line_1": data.get("contact_address_line_1", ""),
-                "address_line_2": data.get("contact_address_line_2", ""),
-                "phone": data.get("contact_phone", ""),
-                "email": data.get("contact_email", ""),
-                "whatsapp": data.get("contact_whatsapp", ""),
-                "map_embed_url": data.get("contact_map_embed_url", ""),
-                "opening_hours": _build_list("contact_hours", 3, ["day", "hours"]),
-            },
-            "home": {
-                "hero_eyebrow": data.get("hero_eyebrow", ""),
-                "hero_title_prefix": data.get("hero_title_prefix", ""),
-                "hero_title_emphasis": data.get("hero_title_emphasis", ""),
-                "hero_title_suffix": data.get("hero_title_suffix", ""),
-                "hero_description": data.get("hero_description", ""),
-                "hero_bg_image": handle_image("hero_bg_image"),
-                "story_quote": data.get("story_quote", ""),
-                "story_description": data.get("story_description", ""),
-                "about_features": _build_list("about_feature", 3, ["title", "desc"]),
-                "why_items": _build_list("why", 4, ["title", "desc"]),
-                "stats": {
-                    "years_serving": data.get("stat_years_serving", ""),
-                    "menu_items": data.get("stat_menu_items", ""),
-                    "rating": data.get("stat_rating", ""),
-                },
-                "reservation_banner_title": data.get("reservation_banner_title", ""),
-                "reservation_banner_emphasis": data.get("reservation_banner_emphasis", ""),
-                "reservation_banner_description": data.get("reservation_banner_description", ""),
-                "reservation_bg_image": handle_image("reservation_bg_image"),
-                "testimonials": _build_list("testimonial", 3, ["quote", "author"]),
-                "gallery_images": [
-                    handle_image("gallery_image_1"),
-                    handle_image("gallery_image_2"),
-                    handle_image("gallery_image_3"),
-                    handle_image("gallery_image_4"),
-                    handle_image("gallery_image_5"),
-                ],
-                "about_image": handle_image("about_image"),
-            },
-            "about": {
-                "description": data.get("about_description", ""),
-                "cards": _build_list("about_card", 3, ["title", "body"]),
-            },
-            "members": {
-                "description": data.get("members_description", ""),
-                "benefits": _build_list("members_benefit", 4, ["title", "desc"]),
-            },
-        }
+        def _build_gallery_items():
+            items = []
+            for i in range(1, 7):
+                if data.get(f"gallery_clear_{i}"):
+                    continue
+                src = handle_image(f"gallery_image_{i}")
+                desc = data.get(f"gallery_desc_{i}", "")
+                if src:
+                    items.append({"src": src, "description": desc})
+            return items
+
+        content = obj.resolved_content() if obj else {}
+        content.setdefault("home", {})
+        content.setdefault("contact", {})
+
+        if section == "site":
+            content["brand_name"] = data.get("brand_name", "")
+            content["brand_tagline"] = data.get("brand_tagline", "")
+
+        if section == "home":
+            home = content.get("home", {})
+            existing_why_items = home.get("why_items", [])
+            new_why_items = _build_list("why", 4, ["title", "desc"])
+            should_update_why = any(
+                data.get(key)
+                for key in (
+                    "why_1_title",
+                    "why_1_desc",
+                    "why_2_title",
+                    "why_2_desc",
+                    "why_3_title",
+                    "why_3_desc",
+                    "why_4_title",
+                    "why_4_desc",
+                )
+            )
+            existing_reservation = {
+                "reservation_banner_title": home.get("reservation_banner_title", ""),
+                "reservation_banner_emphasis": home.get("reservation_banner_emphasis", ""),
+                "reservation_banner_description": home.get("reservation_banner_description", ""),
+                "reservation_bg_image": home.get("reservation_bg_image", ""),
+            }
+            home.update(
+                {
+                    "hero_eyebrow": data.get("hero_eyebrow", ""),
+                    "hero_title_prefix": data.get("hero_title_prefix", ""),
+                    "hero_title_emphasis": data.get("hero_title_emphasis", ""),
+                    "hero_title_suffix": data.get("hero_title_suffix", ""),
+                    "hero_description": data.get("hero_description", ""),
+                    "hero_bg_image": handle_image("hero_bg_image"),
+                    "story_quote": data.get("story_quote", ""),
+                    "story_description": data.get("story_description", ""),
+                    "about_features": _build_list("about_feature", 3, ["title", "desc"]),
+                    "why_items": new_why_items if should_update_why else existing_why_items,
+                    "stats": {
+                        "years_serving": data.get("stat_years_serving", ""),
+                        "menu_items": data.get("stat_menu_items", ""),
+                        "rating": data.get("stat_rating", ""),
+                    },
+                    "reservation_banner_title": existing_reservation.get("reservation_banner_title", ""),
+                    "reservation_banner_emphasis": existing_reservation.get("reservation_banner_emphasis", ""),
+                    "reservation_banner_description": existing_reservation.get("reservation_banner_description", ""),
+                    "reservation_bg_image": existing_reservation.get("reservation_bg_image", ""),
+                    "testimonials": _build_list("testimonial", 3, ["quote", "author"]),
+                }
+            )
+            content["home"] = home
+
+        if section == "contact":
+            contact = content.get("contact", {})
+            contact.update(
+                {
+                    "address_line_1": data.get("contact_address_line_1", ""),
+                    "address_line_2": data.get("contact_address_line_2", ""),
+                    "phone": data.get("contact_phone", ""),
+                    "email": data.get("contact_email", ""),
+                    "whatsapp": data.get("contact_whatsapp", ""),
+                    "map_embed_url": data.get("contact_map_embed_url", ""),
+                    "opening_hours": _build_list("contact_hours", 3, ["day", "hours"]),
+                }
+            )
+            content["contact"] = contact
 
         # Remap 'desc' keys back to 'description' for content sections that use it
-        for feature in content["home"]["about_features"]:
-            if "desc" in feature:
-                feature["description"] = feature.pop("desc")
-        for item in content["home"]["why_items"]:
-            if "desc" in item:
-                item["description"] = item.pop("desc")
-        for benefit in content["members"]["benefits"]:
-            if "desc" in benefit:
-                benefit["description"] = benefit.pop("desc")
+        if "home" in content:
+            for feature in content["home"].get("about_features", []):
+                if "desc" in feature:
+                    feature["description"] = feature.pop("desc")
+            for item in content["home"].get("why_items", []):
+                if "desc" in item:
+                    item["description"] = item.pop("desc")
 
         obj.content = content
         obj.save()
@@ -1299,6 +1377,81 @@ custom_admin_site.register(Order, OrderAdmin)
 custom_admin_site.register(AdminNotification, AdminNotificationAdmin)
 custom_admin_site.register(FrontendSettings, FrontendSettingsAdmin)
 custom_admin_site.register(StaffMember, StaffMemberAdmin)
+
+
+class AboutUsAdmin(BaseModelAdmin):
+    """Singleton About Us editor."""
+
+    list_display = ("__str__", "updated_at")
+    ordering = ("-updated_at",)
+    fieldsets = (
+        ("Overview", {"fields": ("about_image", "title", "subtitle", "description", "quote"), "classes": ("tab-overview",)}),
+        ("Vision", {"fields": ("vision_title", "vision_body"), "classes": ("tab-vision",)}),
+        ("Cuisine", {"fields": ("cuisine_title", "cuisine_body"), "classes": ("tab-cuisine",)}),
+        ("Service", {"fields": ("service_title", "service_body"), "classes": ("tab-service",)}),
+        ("Stats", {"fields": ("years_serving", "menu_items", "rating"), "classes": ("tab-stats",)}),
+    )
+
+    class GalleryImageInline(admin.TabularInline):
+        model = GalleryImage
+        fields = ("image", "title", "description")
+        extra = 0
+        show_change_link = True
+        classes = ("tab-gallery",)
+        verbose_name = "Gallery"
+        verbose_name_plural = "Gallery"
+        max_num = 6
+
+    class AboutServiceInline(admin.TabularInline):
+        model = AboutService
+        fields = ("title", "description")
+        extra = 0
+        show_change_link = True
+        classes = ("tab-services",)
+        verbose_name = "Why Us item"
+        verbose_name_plural = "Why Us"
+
+    class StaffMemberInline(admin.TabularInline):
+        model = StaffMember
+        fields = ("full_name", "role", "bio", "photo", "is_active", "display_on_website")
+        extra = 0
+        show_change_link = True
+        classes = ("tab-team",)
+        verbose_name = "Team member"
+        verbose_name_plural = "Our Team"
+
+    inlines = (AboutServiceInline, GalleryImageInline, StaffMemberInline)
+
+
+    def get_object(self, request, object_id, from_field=None):
+        return AboutUs.get_solo()
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def changelist_view(self, request, extra_context=None):
+        """Redirect list view to the singleton change form."""
+        obj = AboutUs.get_solo()
+        from django.http import HttpResponseRedirect
+        from django.urls import reverse
+        return HttpResponseRedirect(
+            reverse(f"{self.admin_site.name}:{obj._meta.app_label}_{obj._meta.model_name}_change", args=[obj.pk])
+        )
+
+
+class GalleryImageAdmin(BaseModelAdmin):
+    """Gallery images for About page."""
+
+    list_display = ("title", "description", "updated_at")
+    ordering = ("order", "-updated_at")
+    fields = ("image", "title", "description", "order", "is_active")
+
+
+custom_admin_site.register(AboutUs, AboutUsAdmin)
+custom_admin_site.register(GalleryImage, GalleryImageAdmin)
 
 
 class LogEntryAdmin(BaseModelAdmin):

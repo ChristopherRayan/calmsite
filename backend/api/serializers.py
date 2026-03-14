@@ -6,8 +6,11 @@ from django.core.files.storage import default_storage
 from rest_framework import serializers
 
 from .models import (
+    AboutService,
+    AboutUs,
     AdminNotification,
     FrontendSettings,
+    GalleryImage,
     MenuItem,
     Order,
     OrderItem,
@@ -173,6 +176,7 @@ class FrontendSettingsSerializer(serializers.ModelSerializer):
     def get_content(self, obj):
         content = obj.resolved_content()
         home = content.get("home") or {}
+        has_gallery_key = "gallery_images" in home
         gallery_images = home.get("gallery_images") or []
         # ensure hero and about images have sensible fallbacks so frontend
         # never sees an empty string or missing key
@@ -186,24 +190,111 @@ class FrontendSettingsSerializer(serializers.ModelSerializer):
         # Normalize legacy/external gallery URLs to bundled local assets so
         # frontend images always render even when external CDNs fail.
         fallback_gallery = [
-            "/images/gallery-1.png",
-            "/images/gallery-2.svg",
-            "/images/gallery-3.svg",
-            "/images/gallery-4.svg",
-            "/images/gallery-5.svg",
+            {"src": "/images/gallery-1.png", "title": "Warm Interiors", "description": "Warm interior lighting and dining ambience."},
+            {"src": "/images/gallery-2.svg", "title": "Signature Plate", "description": "Signature plated dish with seasonal garnish."},
+            {"src": "/images/gallery-3.svg", "title": "Fresh Prep", "description": "Fresh ingredients prepared for today’s service."},
+            {"src": "/images/gallery-4.svg", "title": "Table Setting", "description": "Elegant table setting for evening guests."},
+            {"src": "/images/gallery-5.svg", "title": "Chef Craft", "description": "Chef finishing touches on a premium course."},
+            {"src": "/images/reservation-bg.png", "title": "Cozy Dining", "description": "Cozy dining space with intimate seating."},
         ]
         normalized_gallery = []
-        for index in range(5):
-            source = ""
-            if index < len(gallery_images):
-                source = str(gallery_images[index] or "").strip()
-            if source.startswith("https://images.unsplash.com"):
-                source = ""
-            normalized_gallery.append(source or fallback_gallery[index])
+        for item in gallery_images:
+            if isinstance(item, dict):
+                src = str(item.get("src") or item.get("image") or "").strip()
+                title = str(item.get("title") or item.get("heading") or "").strip()
+                desc = str(item.get("description") or item.get("caption") or "").strip()
+            else:
+                src = str(item or "").strip()
+                title = ""
+                desc = ""
+            if src:
+                normalized_gallery.append({"src": src, "title": title, "description": desc})
 
-        home["gallery_images"] = normalized_gallery
+        if not normalized_gallery and not has_gallery_key:
+            normalized_gallery = fallback_gallery
+
+        home["gallery_images"] = normalized_gallery[:6]
         content["home"] = home
         return content
+
+
+class GalleryImageSerializer(serializers.ModelSerializer):
+    """Serializer for Gallery Image CRUD operations."""
+
+    image_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = GalleryImage
+        fields = (
+            "id",
+            "image",
+            "image_url",
+            "title",
+            "description",
+            "order",
+            "is_active",
+            "created_at",
+            "updated_at",
+        )
+        read_only_fields = ("id", "created_at", "updated_at")
+
+    def get_image_url(self, obj):
+        if not obj.image:
+            return ""
+        if default_storage.exists(obj.image.name):
+            return obj.image.url
+        return ""
+
+    def validate_order(self, value):
+        if value < 0 or value > 5:
+            raise serializers.ValidationError("Order must be between 0 and 5 (max 6 images)")
+        return value
+
+    def create(self, validated_data):
+        # Check if we already have 6 images
+        about_us = validated_data.get("about_us")
+        base_qs = GalleryImage.objects.all()
+        if about_us is not None:
+            base_qs = base_qs.filter(about_us=about_us)
+        count = base_qs.count()
+        if count >= 6 and validated_data.get('order', 0) not in base_qs.values_list('order', flat=True):
+            raise serializers.ValidationError({"order": "Maximum of 6 gallery images allowed. Please update an existing image instead."})
+        return super().create(validated_data)
+
+
+class AboutServiceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AboutService
+        fields = ("id", "title", "description", "order", "is_active")
+
+
+class AboutUsSerializer(serializers.ModelSerializer):
+    """Serializer for About Us content management."""
+
+    services = AboutServiceSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = AboutUs
+        fields = (
+            "id",
+            "about_image",
+            "title",
+            "subtitle",
+            "description",
+            "quote",
+            "vision_title",
+            "vision_body",
+            "cuisine_title",
+            "cuisine_body",
+            "service_title",
+            "service_body",
+            "years_serving",
+            "menu_items",
+            "rating",
+            "services",
+            "updated_at",
+        )
+        read_only_fields = ("id", "updated_at")
 
 
 class UserProfileUpdateSerializer(serializers.Serializer):

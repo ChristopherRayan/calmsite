@@ -20,6 +20,7 @@ import type {
   ReservationCreatePayload,
   Review,
   ReviewCreatePayload,
+  Table,
 } from '@/lib/types';
 
 interface CacheEntry<T> {
@@ -87,6 +88,97 @@ export async function fetchFrontendSettings(): Promise<FrontendContentPayload> {
 
   const response = await api.get<FrontendSettingsResponse>('/frontend-settings/');
   return writeCache(cacheKey, response.data.content);
+}
+
+// Gallery image types
+export interface GalleryImage {
+  id?: number;
+  src: string;
+  title?: string;
+  description: string;
+  order?: number;
+  is_active?: boolean;
+}
+
+// About Us types
+export interface AboutUsData {
+  id: number;
+  about_image?: string | null;
+  title: string;
+  subtitle: string;
+  description: string;
+  quote: string;
+  services?: { id?: number; title: string; description: string; order?: number; is_active?: boolean }[];
+  vision_title: string;
+  vision_body: string;
+  cuisine_title: string;
+  cuisine_body: string;
+  service_title: string;
+  service_body: string;
+  years_serving: string;
+  menu_items: string;
+  rating: string;
+  updated_at: string;
+}
+
+// Fetch gallery images (public - for display on website)
+export async function fetchGalleryImages(): Promise<GalleryImage[]> {
+  const cacheKey = 'gallery:images';
+  const cached = readCache<GalleryImage[]>(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
+  const response = await api.get<GalleryImage[]>('/gallery/');
+  return writeCache(cacheKey, response.data);
+}
+
+// Fetch About Us data (public - for display on website)
+export async function fetchAboutUs(): Promise<AboutUsData> {
+  const cacheKey = 'aboutus:data';
+  const cached = readCache<AboutUsData>(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
+  const response = await api.get<AboutUsData>('/about-us/');
+  return writeCache(cacheKey, response.data);
+}
+
+// Admin: Create gallery image
+export async function createGalleryImage(data: FormData): Promise<GalleryImage> {
+  const response = await api.post<GalleryImage>('/gallery/', data, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  clearCacheByPrefix('gallery:');
+  return response.data;
+}
+
+// Admin: Update gallery image
+export async function updateGalleryImage(id: number, data: FormData): Promise<GalleryImage> {
+  const response = await api.patch<GalleryImage>(`/gallery/${id}/`, data, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  clearCacheByPrefix('gallery:');
+  return response.data;
+}
+
+// Admin: Delete gallery image
+export async function deleteGalleryImage(id: number): Promise<void> {
+  await api.delete(`/gallery/${id}/`);
+  clearCacheByPrefix('gallery:');
+}
+
+// Admin: Update About Us
+export async function updateAboutUs(data: Partial<AboutUsData>): Promise<AboutUsData> {
+  const response = await api.patch<AboutUsData>('/about-us/', data);
+  clearCacheByPrefix('aboutus:');
+  clearCacheByPrefix('frontend:settings');
+  return response.data;
 }
 
 export async function fetchBestOrderedMenuItems(): Promise<MenuItem[]> {
@@ -341,4 +433,17 @@ export async function updateTable(id: number, data: { table_number?: string; cap
 
 export async function deleteTable(id: number): Promise<void> {
   await api.delete(`/tables/${id}/`);
+}
+
+/**
+ * Redirects to admin SSO login.
+ * This will validate the JWT token, create a Django session, and redirect to /admin/
+ */
+export function redirectToAdminSSO(accessToken: string): void {
+  if (!accessToken || typeof accessToken !== 'string') {
+    console.error('Invalid access token provided');
+    return;
+  }
+  const ssoUrl = `/api/auth/login/admin/?token=${encodeURIComponent(accessToken)}`;
+  window.location.href = ssoUrl;
 }

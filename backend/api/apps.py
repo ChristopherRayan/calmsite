@@ -7,6 +7,7 @@ class ApiConfig(AppConfig):
 
     default_auto_field = "django.db.models.BigAutoField"
     name = "api"
+    verbose_name = "Pages"
 
     def ready(self):
         # Import signal handlers during app startup.

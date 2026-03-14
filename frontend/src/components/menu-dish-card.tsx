@@ -44,17 +44,17 @@ export function MenuDishCard({ item, onAddToCart }: MenuDishCardProps) {
           </div>
         )}
       </div>
-      <div className="space-y-3 p-4">
+      <div className="space-y-2 p-4">
         <div className="flex items-start justify-between gap-3">
-          <h3 className="font-heading font-bold text-xl text-ink dark:text-white mb-2 leading-tight">{item.name}</h3>
-          <span className="text-amber-600 dark:text-amber-400 font-heading font-bold text-lg">{formatKwacha(item.price)}</span>
+          <h3 className="font-heading text-lg text-tableBrown dark:text-white leading-tight">{item.name}</h3>
+          <Badge tone="accent">{formatKwacha(item.price)}</Badge>
         </div>
         {typeof item.average_rating === 'number' ? (
           <StarRatingDisplay rating={item.average_rating} />
         ) : (
-          <p className="text-xs text-tableBrown/70">No reviews yet</p>
+          <p className="text-xs font-medium uppercase tracking-wide text-tableBrown/60">No reviews yet</p>
         )}
-        <p className="text-sm text-ink/80">{item.description}</p>
+        <p className="line-clamp-2 text-sm text-muted leading-relaxed">{item.description}</p>
         {item.dietary_tags.length > 0 && (
           <div className="flex flex-wrap gap-2">
             {item.dietary_tags.map((tag) => (

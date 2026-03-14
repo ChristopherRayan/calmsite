@@ -1,4 +1,4 @@
-"""Django settings for Calm Table backend with env-driven configuration."""
+﻿"""Django settings for Calm Table backend with env-driven configuration."""
 from datetime import timedelta
 from pathlib import Path
 
@@ -123,6 +123,12 @@ CSRF_TRUSTED_ORIGINS = env.list(
     default=["http://localhost", "http://127.0.0.1", "http://localhost:3000"],
 )
 
+# Session configuration for admin SSO
+SESSION_COOKIE_HTTPONLY = True
+# Allow session cookie to be sent on cross-origin redirects for admin SSO
+SESSION_COOKIE_SAMESITE = None
+SESSION_COOKIE_SECURE = not DEBUG
+
 REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "DEFAULT_AUTHENTICATION_CLASSES": (
@@ -206,7 +212,6 @@ JAZZMIN_SETTINGS = {
     "topmenu_links": [
         {"name": "Home", "url": "admin:index"},
         {"name": "View Site", "url": "/", "new_window": True},
-        {"model": "api.order"},
         {"model": "api.adminnotification"},
     ],
     "icons": {
@@ -218,6 +223,8 @@ JAZZMIN_SETTINGS = {
         "api.userprofile": "fas fa-user-circle",
         "api.adminnotification": "fas fa-bell",
         "api.frontendsettings": "fas fa-sliders-h",
+        "api.aboutus": "fas fa-info-circle",
+        "api.galleryimage": "fas fa-images",
         "api.staffmember": "fas fa-id-badge",
         "auth.user": "fas fa-users-cog",
         "auth.group": "fas fa-user-shield",
@@ -227,21 +234,51 @@ JAZZMIN_SETTINGS = {
     "custom_css": "css/admin_custom.css",
     "custom_js": "js/admin_custom_v2.js",
     "show_ui_builder": False,
-    "hide_apps": ["auth"],
-    "hide_models": ["api.orderitem", "api.userprofile", "auth.group"],
+    "hide_apps": ["auth", "admin", "token_blacklist"],
+    "hide_models": [
+        "api.menuitem",
+        "api.frontendsettings",
+        "api.aboutus",
+        "api.aboutservice",
+        "api.galleryimage",
+        "api.staffmember",
+        "api.table",
+        "api.reservation",
+        "api.review",
+        "api.order",
+        "api.orderitem",
+        "api.adminnotification",
+        "api.userprofile",
+        "auth.user",
+        "auth.group",
+        "admin.logentry",
+    ],
     "custom_links": {
         "api": [
             {
-                "name": "Users",
-                "url": "calmtable_admin:auth_user_changelist",
-                "icon": "fas fa-users-cog",
-                "permissions": ["auth.view_user"],
+                "name": "Site Settings",
+                "url": "/admin/api/frontendsettings/1/change/?section=site",
+                "icon": "fas fa-sliders-h",
             },
             {
-                "name": "Site Settings",
-                "url": "/admin/api/frontendsettings/1/change/",
-                "icon": "fas fa-sliders-h",
-                "permissions": ["api.view_frontendsettings"],
+                "name": "Home",
+                "url": "/admin/api/frontendsettings/1/change/?section=home",
+                "icon": "fas fa-home",
+            },
+            {
+                "name": "Menu",
+                "url": "/admin/api/menuitem/",
+                "icon": "fas fa-utensils",
+            },
+            {
+                "name": "About Us",
+                "url": "/admin/api/aboutus/1/change/",
+                "icon": "fas fa-info-circle",
+            },
+            {
+                "name": "Contact",
+                "url": "/admin/api/frontendsettings/1/change/?section=contact",
+                "icon": "fas fa-phone",
             },
         ],
     },
