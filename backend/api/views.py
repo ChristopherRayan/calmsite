@@ -346,9 +346,16 @@ class GalleryImageViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, mixins
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
         # Convert to format expected by frontend
+        def _absolute(url: str) -> str:
+            if not url:
+                return ""
+            if url.startswith("http://") or url.startswith("https://"):
+                return url
+            return request.build_absolute_uri(url)
+
         gallery_data = [
             {
-                "src": item.get("image_url", ""),
+                "src": _absolute(item.get("image_url", "")),
                 "title": item.get("title", ""),
                 "description": item.get("description", "")
             }
