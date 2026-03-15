@@ -16,10 +16,11 @@
 }
 
 [data-theme='dark'] {
-  --table-brown-rgb: 158 96 48;
-  --table-brown-light-rgb: 214 150 92;
-  --wood-accent-rgb: 220 144 74;
-  --cream-rgb: 10 7 5;
+  /* Main brand color (assuming #C16632). */
+  --table-brown-rgb: 193 102 50;
+  --table-brown-light-rgb: 220 138 82;
+  --wood-accent-rgb: 193 102 50;
+  --cream-rgb: 12 8 6;
   --warm-gray-rgb: 24 16 11;
   --ink-rgb: 246 234 219;
   --muted-rgb: 186 152 122;
