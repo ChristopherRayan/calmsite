@@ -256,12 +256,12 @@ export default function AboutPage() {
                 </div>
             </nav>
 
-            <nav className="fixed bottom-6 left-1/2 z-50 flex h-12 -translate-x-1/2 items-center gap-4 border border-woodAccent/25 bg-transparent px-4 shadow-[0_18px_40px_-30px_rgba(18,10,5,0.6)] backdrop-blur-md dark:border-woodAccent/30 lg:hidden" aria-label="About sections">
+            <nav className="fixed left-1/2 top-20 z-50 flex h-12 max-w-[92vw] -translate-x-1/2 items-center gap-5 overflow-x-auto rounded-full border border-woodAccent/25 bg-cream/85 px-5 shadow-[0_18px_40px_-30px_rgba(18,10,5,0.6)] backdrop-blur-md dark:border-woodAccent/30 dark:bg-[#0a0604]/85 lg:hidden" aria-label="About sections">
                 {sectionShortcuts.map((link) => (
                     <a
                         key={link.id}
                         href={`#${link.id}`}
-                        className="group relative flex h-10 items-center text-[9px] font-semibold uppercase tracking-[0.28em] text-ink/70 transition-all hover:text-woodAccent dark:text-woodAccent/70 dark:hover:text-woodAccent"
+                        className="group relative flex h-10 items-center whitespace-nowrap text-[9px] font-semibold uppercase tracking-[0.28em] text-ink/70 transition-all hover:text-woodAccent dark:text-woodAccent/70 dark:hover:text-woodAccent"
                     >
                         {link.label}
                         <span className="absolute -bottom-1 left-0 h-[1px] w-0 bg-woodAccent/80 transition-all duration-300 group-hover:w-full" />

@@ -591,11 +591,18 @@
   }
 
   .menuGrid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
   }
 
   .featuredCta {
     width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .menuGrid {
+    grid-template-columns: 1fr;
   }
 }
 
