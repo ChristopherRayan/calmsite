@@ -31,6 +31,14 @@ const nextConfig = {
         hostname: '**.supabase.co',
       },
       {
+        protocol: 'https',
+        hostname: 'calmsite.onrender.com',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.onrender.com',
+      },
+      {
         protocol: 'http',
         hostname: 'localhost',
       },
