@@ -6,23 +6,33 @@
 :root {
   --font-inter: 'Montserrat', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   --font-playfair: 'Times New Roman', Georgia, serif;
-  --table-brown-rgb: 146 86 40;
-  --table-brown-light-rgb: 206 150 88;
-  --wood-accent-rgb: 214 140 72;
-  --cream-rgb: 12 8 6;
-  --warm-gray-rgb: 26 17 12;
-  --ink-rgb: 245 234 220;
-  --muted-rgb: 180 150 120;
+  --table-brown-rgb: 158 96 48;
+  --table-brown-light-rgb: 214 150 92;
+  --wood-accent-rgb: 220 144 74;
+  --cream-rgb: 10 7 5;
+  --warm-gray-rgb: 24 16 11;
+  --ink-rgb: 246 234 219;
+  --muted-rgb: 186 152 122;
+}
+
+[data-theme='dark'] {
+  --table-brown-rgb: 158 96 48;
+  --table-brown-light-rgb: 214 150 92;
+  --wood-accent-rgb: 220 144 74;
+  --cream-rgb: 10 7 5;
+  --warm-gray-rgb: 24 16 11;
+  --ink-rgb: 246 234 219;
+  --muted-rgb: 186 152 122;
 }
 
 [data-theme='light'] {
-  --table-brown-rgb: 160 100 52;
-  --table-brown-light-rgb: 214 156 98;
-  --wood-accent-rgb: 188 122 68;
-  --cream-rgb: 247 239 227;
-  --warm-gray-rgb: 233 220 202;
-  --ink-rgb: 58 40 26;
-  --muted-rgb: 140 108 82;
+  --table-brown-rgb: 168 108 58;
+  --table-brown-light-rgb: 220 158 100;
+  --wood-accent-rgb: 192 126 70;
+  --cream-rgb: 246 237 224;
+  --warm-gray-rgb: 231 218 200;
+  --ink-rgb: 60 42 26;
+  --muted-rgb: 142 110 84;
 }
 
 *,
@@ -43,8 +53,8 @@ body {
   font-family: var(--font-inter), sans-serif;
   color: rgb(var(--ink-rgb));
   background:
-    radial-gradient(circle at 10% 10%, rgb(var(--wood-accent-rgb) / 0.11), transparent 34%),
-    radial-gradient(circle at 90% 18%, rgb(var(--table-brown-rgb) / 0.18), transparent 28%),
+    radial-gradient(circle at 12% 12%, rgb(var(--wood-accent-rgb) / 0.2), transparent 35%),
+    radial-gradient(circle at 88% 14%, rgb(var(--table-brown-rgb) / 0.28), transparent 30%),
     rgb(var(--cream-rgb));
 }
 

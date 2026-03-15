@@ -161,7 +161,7 @@ export default function HomePage() {
       ];
 
   return (
-    <div className="bg-cream dark:bg-[#0a0604] min-h-screen text-ink dark:text-white overflow-hidden selection:bg-amber-600/30 -mt-14">
+    <div className="bg-cream dark:bg-cream min-h-screen text-ink dark:text-white overflow-hidden selection:bg-amber-600/30 -mt-14">
 
       {/* ─── Hero Section ────────────────────────────────────────────── */}
       <section className="relative h-[100dvh] flex items-center justify-center overflow-hidden">
@@ -177,9 +177,9 @@ export default function HomePage() {
         </motion.div>
 
         {/* Gradients to blend into dark background */}
-        <div className="absolute inset-0 bg-cream/35 dark:bg-[#0a0604]/55 backdrop-blur-[2px]" />
-        <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-cream/70 dark:from-[#0a0604]/70 to-transparent" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,#0a0604_100%)] opacity-45" />
+        <div className="absolute inset-0 bg-cream/35 dark:bg-cream/55 backdrop-blur-[2px]" />
+        <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-cream/70 dark:from-cream/70 to-transparent" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgb(var(--cream-rgb))_100%)] opacity-45" />
 
         <div className="page-shell relative z-10 flex flex-col items-center justify-center text-center">
           <motion.div
@@ -235,12 +235,12 @@ export default function HomePage() {
                   className="object-cover transition-transform duration-1000 hover:scale-105"
                   unoptimized={shouldSkipImageOptimization(aboutImage)}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-cream dark:from-[#0a0604]/80 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-cream dark:from-cream/80 via-transparent to-transparent" />
               </div>
               {/* Floating Badge */}
               <motion.div
                 variants={fadeInUp}
-                className="absolute -bottom-8 -right-8 sm:-right-12 rounded-2xl bg-gradient-to-br from-[#2a1810]/95 to-[#1a0f08]/95 p-6 backdrop-blur-md border border-amber-500/20 shadow-2xl"
+                className="absolute -bottom-8 -right-8 sm:-right-12 rounded-2xl bg-gradient-to-br from-tableBrown/80 to-warmGray/90 p-6 backdrop-blur-md border border-woodAccent/20 shadow-2xl"
               >
                 <div className="text-center">
                   <span className="block text-4xl font-bold text-amber-500 font-heading">
@@ -320,9 +320,9 @@ export default function HomePage() {
                 viewport={{ once: true, margin: "-50px" }}
                 transition={{ duration: 0.7, delay: i * 0.1, ease: [0.25, 1, 0.5, 1] }}
                 key={dish.id}
-                className="group relative rounded-3xl bg-white dark:bg-[#1a0f08] p-4 ring-1 ring-stone-200 dark:ring-white/5 hover:ring-amber-300 dark:hover:ring-white/20 hover:bg-stone-50 dark:hover:bg-[#22130a] transition-all duration-500"
+                className="group relative rounded-3xl bg-white dark:bg-warmGray p-4 ring-1 ring-stone-200 dark:ring-white/5 hover:ring-amber-300 dark:hover:ring-white/20 hover:bg-stone-50 dark:hover:bg-tableBrown/70 transition-all duration-500"
               >
-                <div className="relative aspect-square overflow-hidden rounded-2xl mb-6 bg-cream dark:bg-[#0a0604]">
+                <div className="relative aspect-square overflow-hidden rounded-2xl mb-6 bg-cream dark:bg-cream">
                   <Image
                     src={dish.image_url}
                     alt={dish.name}
@@ -391,7 +391,7 @@ export default function HomePage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: i * 0.08 }}
-                className={`group relative overflow-hidden rounded-3xl border border-stone-200/70 dark:border-white/10 bg-stone-100/40 dark:bg-[#120a05] shadow-[0_18px_40px_-24px_rgba(38,24,12,0.6)] ${tile.span}`}
+                className={`group relative overflow-hidden rounded-3xl border border-stone-200/70 dark:border-white/10 bg-stone-100/40 dark:bg-warmGray shadow-[0_18px_40px_-24px_rgba(38,24,12,0.6)] ${tile.span}`}
               >
                 <Image
                   src={tile.src}
@@ -417,7 +417,7 @@ export default function HomePage() {
             className="object-cover"
             unoptimized={shouldSkipImageOptimization(resBg)}
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-white/80 via-white/60 to-transparent dark:from-[#0a0604] dark:via-[#0a0604]/90 dark:to-[#0a0604]/60 backdrop-blur-sm" />
+          <div className="absolute inset-0 bg-gradient-to-r from-white/80 via-white/60 to-transparent dark:from-cream dark:via-cream/90 dark:to-cream/60 backdrop-blur-sm" />
         </div>
 
         <div className="relative z-10 grid lg:grid-cols-2 gap-16 lg:gap-8 items-center p-8 sm:p-16">
@@ -452,7 +452,7 @@ export default function HomePage() {
           {/* Hours & Location Info */}
           <motion.div
             initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} transition={{ duration: 0.8 }} viewport={{ once: true }}
-            className="relative rounded-3xl border border-stone-200 dark:border-white/10 bg-white/80 dark:bg-[#2a1810]/40 p-8 sm:p-10 backdrop-blur-xl shadow-xl"
+            className="relative rounded-3xl border border-stone-200 dark:border-white/10 bg-white/80 dark:bg-tableBrown/25 p-8 sm:p-10 backdrop-blur-xl shadow-xl"
           >
             <h3 className="font-heading text-2xl font-bold mb-8 text-ink dark:text-white">Opening Hours</h3>
 
@@ -475,7 +475,7 @@ export default function HomePage() {
       </section>
 
       {/* ─── Footer ────────────────────────────────────────────── */}
-      <footer className="border-t border-white/10 dark:border-white/10 bg-cream dark:bg-[#060302] py-16">
+      <footer className="border-t border-white/10 dark:border-white/10 bg-cream dark:bg-cream py-16">
         <div className="page-shell">
           <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-4">
             <div className="lg:col-span-2">

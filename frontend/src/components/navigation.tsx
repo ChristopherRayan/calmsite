@@ -62,14 +62,14 @@ export function Navigation() {
         'fixed left-0 right-0 top-0 z-50 transition-all duration-300',
         isTransparentNav
           ? 'border-b border-transparent bg-transparent'
-          : 'border-b border-woodAccent/20 dark:border-woodAccent/20 bg-gradient-to-b from-cream/95 to-cream/85 dark:from-[#0a0604] dark:to-[#0a0604] backdrop-blur-md'
+          : 'border-b border-woodAccent/20 dark:border-woodAccent/20 bg-gradient-to-b from-cream/95 to-cream/85 dark:from-cream dark:to-cream backdrop-blur-md'
       )}
     >
       <nav className="page-shell flex h-14 items-center justify-between" aria-label="Main">
         <Link
           href="/"
           className={cn(
-            'inline-flex items-center -ml-4 sm:-ml-6 lg:-ml-8',
+            'inline-flex items-center -ml-6 sm:-ml-8 lg:-ml-10 translate-y-2',
             isTransparentNav ? 'text-white' : 'text-woodAccent dark:text-woodAccent'
           )}
         >
@@ -77,11 +77,11 @@ export function Navigation() {
           <Image
             src="/calmtable-logo.png"
             alt="The CalmTable"
-            width={576}
-            height={154}
+            width={230}
+            height={62}
             priority
             className={cn(
-              'h-52 w-auto origin-left object-contain',
+              'h-[5.2rem] w-auto origin-left object-contain',
               isTransparentNav ? 'brightness-110 drop-shadow-[0_2px_6px_rgba(0,0,0,0.35)]' : 'brightness-100'
             )}
           />
@@ -111,7 +111,7 @@ export function Navigation() {
           <button
             type="button"
             className={cn(
-              'inline-flex h-10 w-10 items-center justify-center rounded-full border border-woodAccent/35 dark:border-woodAccent/35 hover:bg-woodAccent/10 dark:hover:bg-[#2a1810]/60',
+              'inline-flex h-10 w-10 items-center justify-center rounded-full border border-woodAccent/35 dark:border-woodAccent/35 hover:bg-woodAccent/10 dark:hover:bg-tableBrown/60',
               isTransparentNav ? 'text-white' : 'text-woodAccent dark:text-woodAccent'
             )}
             onClick={toggleTheme}
@@ -140,7 +140,7 @@ export function Navigation() {
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
-            className="border-t border-woodAccent/20 dark:border-woodAccent/20 bg-cream dark:bg-[#0a0604] md:hidden"
+            className="border-t border-woodAccent/20 dark:border-woodAccent/20 bg-cream dark:bg-cream md:hidden"
           >
             <ul className="page-shell flex flex-col gap-1 py-4">
               {navLinks.map((link) => (
@@ -151,8 +151,8 @@ export function Navigation() {
                     className={cn(
                       'block rounded-lg px-4 py-3 text-xs font-semibold uppercase tracking-[0.14em]',
                       isActive(link.href)
-                        ? 'bg-woodAccent/18 dark:bg-[#2a1810]/70 text-woodAccent dark:text-woodAccent'
-                        : 'text-ink/80 dark:text-ink/70 hover:bg-woodAccent/10 dark:hover:bg-[#2a1810]/60'
+                        ? 'bg-woodAccent/18 dark:bg-tableBrown/70 text-woodAccent dark:text-woodAccent'
+                        : 'text-ink/80 dark:text-ink/70 hover:bg-woodAccent/10 dark:hover:bg-tableBrown/60'
                     )}
                   >
                     {link.label}
