@@ -63,6 +63,9 @@ def seed_menu_item_images(apps, schema_editor):
         if not filename:
             continue
 
+        if item.image_url:
+            continue
+
         item.image_url = f"/menu/{quote(filename)}"
         item.save(update_fields=["image_url"])
 
