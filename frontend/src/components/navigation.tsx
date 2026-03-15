@@ -77,11 +77,11 @@ export function Navigation() {
           <Image
             src="/calmtable-logo.png"
             alt="The CalmTable"
-            width={180}
-            height={48}
+            width={720}
+            height={192}
             priority
             className={cn(
-              'h-12 w-auto object-contain',
+              'h-64 w-auto origin-left object-contain',
               isTransparentNav ? 'brightness-110 drop-shadow-[0_2px_6px_rgba(0,0,0,0.35)]' : 'brightness-100'
             )}
           />
