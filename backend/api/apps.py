@@ -18,7 +18,10 @@ class ApiConfig(AppConfig):
         from . import signals  # noqa: F401
 
         # Optionally bootstrap a superuser in managed environments (e.g., Render).
-        if os.getenv("CREATE_SUPERUSER", "").lower() not in {"1", "true", "yes", "y"}:
+        create_enabled = os.getenv("CREATE_SUPERUSER", "").lower() in {"1", "true", "yes", "y"}
+        reset_enabled = os.getenv("RESET_SUPERUSER_PASSWORD", "").lower() in {"1", "true", "yes", "y"}
+
+        if not create_enabled and not reset_enabled:
             return
 
         username = os.getenv("DJANGO_SUPERUSER_USERNAME", "").strip()
@@ -38,7 +41,7 @@ class ApiConfig(AppConfig):
                     "is_superuser": True,
                 },
             )
-            if created:
+            if created or reset_enabled:
                 user.set_password(password)
                 user.is_staff = True
                 user.is_superuser = True
