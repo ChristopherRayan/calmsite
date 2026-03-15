@@ -266,7 +266,7 @@ export default function HomePage() {
               <motion.div variants={fadeInUp} className="w-16 h-[1px] bg-gradient-to-r from-amber-500 to-transparent mb-8" />
 
               <motion.blockquote variants={fadeInUp} className="text-xl sm:text-2xl font-light italic text-ink dark:text-white/90 leading-relaxed mb-8 border-l-2 border-amber-500/40 pl-6">
-                "{settings.home.story_quote}"
+                &ldquo;{settings.home.story_quote}&rdquo;
               </motion.blockquote>
 
               <motion.p variants={fadeInUp} className="text-ink dark:text-white/60 leading-relaxed mb-10 text-sm sm:text-base">
@@ -428,10 +428,10 @@ export default function HomePage() {
             <motion.h2 variants={fadeInUp} className="font-heading text-4xl sm:text-5xl font-bold leading-tight mb-6">
               We Look Forward to <em className="text-amber-400">Serving You</em>
             </motion.h2>
-            <motion.p variants={fadeInUp} className="text-ink dark:text-white/70 leading-relaxed mb-10">
-              Come experience our warm ambiance and delicious cuisine.
-              Whether it's a casual lunch or a special celebration, we're here to make your visit memorable.
-            </motion.p>
+              <motion.p variants={fadeInUp} className="text-ink dark:text-white/70 leading-relaxed mb-10">
+                Come experience our warm ambiance and delicious cuisine.{" "}
+                {"Whether it's a casual lunch or a special celebration, we're here to make your visit memorable."}
+              </motion.p>
 
             <motion.div variants={fadeInUp} className="flex flex-wrap gap-10">
               <div>

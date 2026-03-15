@@ -151,17 +151,17 @@ export default function AboutPage() {
 
     const serviceIcons = [
         (
-            <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg key="service-icon-1" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
         ),
         (
-            <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg key="service-icon-2" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
             </svg>
         ),
         (
-            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg key="service-icon-3" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
             </svg>
         ),
@@ -315,7 +315,7 @@ export default function AboutPage() {
                             <div className="w-16 h-[1px] bg-gradient-to-r from-amber-500 to-transparent mb-6" />
 
                             <blockquote className="text-lg sm:text-xl font-light italic text-ink dark:text-white/90 leading-relaxed mb-6 border-l-2 border-amber-500/40 pl-4 sm:pl-6">
-                                "{resolvedQuote}"
+                                &ldquo;{resolvedQuote}&rdquo;
                             </blockquote>
 
                             <p className="text-ink dark:text-white/60 leading-relaxed mb-8 text-sm sm:text-base">

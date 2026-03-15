@@ -161,7 +161,7 @@ export default function MenuPage() {
               )}
             </div>
             <div className={styles.featuredBody}>
-              <p className={styles.featuredEyebrow}>Chef's Signature</p>
+              <p className={styles.featuredEyebrow}>{"Chef's Signature"}</p>
               <p className={styles.featuredName}>
                 {featuredItem.name}
                 <em>{formatKwacha(featuredItem.price)}</em>
