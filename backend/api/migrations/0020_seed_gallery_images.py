@@ -8,7 +8,7 @@ def seed_gallery_images(apps, schema_editor):
     AboutUs = apps.get_model("api", "AboutUs")
     GalleryImage = apps.get_model("api", "GalleryImage")
 
-    about_us = AboutUs.get_solo()
+    about_us, _ = AboutUs.objects.get_or_create(id=1)
     if GalleryImage.objects.filter(about_us=about_us).exists():
         return
 
@@ -47,7 +47,7 @@ def seed_gallery_images(apps, schema_editor):
 def unseed_gallery_images(apps, schema_editor):
     AboutUs = apps.get_model("api", "AboutUs")
     GalleryImage = apps.get_model("api", "GalleryImage")
-    about_us = AboutUs.get_solo()
+    about_us, _ = AboutUs.objects.get_or_create(id=1)
     GalleryImage.objects.filter(about_us=about_us).delete()
 
 
