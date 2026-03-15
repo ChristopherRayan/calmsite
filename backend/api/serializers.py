@@ -241,9 +241,10 @@ class GalleryImageSerializer(serializers.ModelSerializer):
     def get_image_url(self, obj):
         if not obj.image:
             return ""
-        if default_storage.exists(obj.image.name):
+        try:
             return obj.image.url
-        return ""
+        except Exception:
+            return ""
 
     def validate_order(self, value):
         if value < 0 or value > 5:
@@ -522,7 +523,7 @@ class OrderItemSerializer(serializers.ModelSerializer):
             "item_price",
             "quantity",
             "subtotal",
-            "unit_price",
+            "unit_pyerice",
             "line_total",
         )
 

@@ -240,7 +240,7 @@ export default function AboutPage() {
     return (
         <div className="min-h-screen bg-cream dark:bg-[#0a0604] pt-20">
             {/* Floating Section Shortcuts */}
-            <nav className="fixed left-1/2 top-14 z-50 hidden -translate-x-1/2 lg:flex" aria-label="About sections">
+            <nav className="about-shortcuts fixed left-1/2 top-14 z-50 hidden -translate-x-1/2 lg:flex" aria-label="About sections">
                 <div className="relative flex h-14 items-center gap-6 rounded-full border border-woodAccent/25 bg-transparent px-4 shadow-[0_20px_50px_-35px_rgba(18,10,5,0.6)] backdrop-blur-md dark:border-woodAccent/30">
                     {sectionShortcuts.map((link) => (
                         <a
@@ -256,7 +256,7 @@ export default function AboutPage() {
                 </div>
             </nav>
 
-            <nav className="fixed left-1/2 top-20 z-50 flex h-12 max-w-[92vw] -translate-x-1/2 items-center gap-5 overflow-x-auto rounded-full border border-woodAccent/25 bg-cream/85 px-5 shadow-[0_18px_40px_-30px_rgba(18,10,5,0.6)] backdrop-blur-md dark:border-woodAccent/30 dark:bg-[#0a0604]/85 lg:hidden" aria-label="About sections">
+            <nav className="about-shortcuts fixed left-1/2 top-[calc(env(safe-area-inset-top)+4.5rem)] z-40 flex h-12 max-w-[92vw] -translate-x-1/2 items-center gap-5 overflow-x-auto rounded-full border border-woodAccent/25 bg-cream/90 px-5 shadow-[0_18px_40px_-30px_rgba(18,10,5,0.6)] backdrop-blur-md dark:border-woodAccent/30 dark:bg-[#0a0604]/85 lg:hidden" aria-label="About sections">
                 {sectionShortcuts.map((link) => (
                     <a
                         key={link.id}

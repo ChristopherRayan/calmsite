@@ -133,3 +133,9 @@ a {
 :where(.rounded-\[2rem\]) {
   border-radius: 1rem !important;
 }
+
+body.mobile-nav-open .about-shortcuts {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}

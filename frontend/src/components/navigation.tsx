@@ -41,6 +41,13 @@ export function Navigation() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  useEffect(() => {
+    document.body.classList.toggle('mobile-nav-open', mobileOpen);
+    return () => {
+      document.body.classList.remove('mobile-nav-open');
+    };
+  }, [mobileOpen]);
+
   function isActive(path: string) {
     if (path === '/') {
       return pathname === path;

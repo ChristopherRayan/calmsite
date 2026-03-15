@@ -191,7 +191,7 @@ export default function MenuPage() {
 
       <section className={styles.menuSection}>
         {isLoading && (
-          <div className={styles.menuGrid}>
+          <div className={cn(styles.menuGrid, 'grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3')}>
             {Array.from({ length: 9 }).map((_, index) => (
               <div key={index} className={styles.skeletonCard} />
             ))}
@@ -205,7 +205,7 @@ export default function MenuPage() {
         )}
 
         {!isLoading && visibleItems.length > 0 && (
-          <div className={styles.menuGrid}>
+          <div className={cn(styles.menuGrid, 'grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3')}>
             {visibleItems.map((item) => {
               const resolvedImage = resolveImageUrl(item);
               const badges = buildBadges(item);
