@@ -69,7 +69,7 @@ export function Navigation() {
         <Link
           href="/"
           className={cn(
-            'inline-flex items-center',
+            'inline-flex items-center -ml-4 sm:-ml-6 lg:-ml-8',
             isTransparentNav ? 'text-white' : 'text-woodAccent dark:text-woodAccent'
           )}
         >
@@ -77,11 +77,11 @@ export function Navigation() {
           <Image
             src="/calmtable-logo.png"
             alt="The CalmTable"
-            width={720}
-            height={192}
+            width={576}
+            height={154}
             priority
             className={cn(
-              'h-64 w-auto origin-left object-contain',
+              'h-52 w-auto origin-left object-contain',
               isTransparentNav ? 'brightness-110 drop-shadow-[0_2px_6px_rgba(0,0,0,0.35)]' : 'brightness-100'
             )}
           />
