@@ -6,23 +6,23 @@
 :root {
   --font-inter: 'Montserrat', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   --font-playfair: 'Times New Roman', Georgia, serif;
-  --table-brown-rgb: 119 70 33;
-  --table-brown-light-rgb: 165 107 58;
-  --wood-accent-rgb: 198 152 102;
-  --cream-rgb: 21 16 12;
-  --warm-gray-rgb: 33 24 18;
-  --ink-rgb: 240 227 210;
-  --muted-rgb: 165 140 120;
+  --table-brown-rgb: 110 63 28;
+  --table-brown-light-rgb: 176 118 65;
+  --wood-accent-rgb: 186 134 84;
+  --cream-rgb: 16 13 10;
+  --warm-gray-rgb: 28 20 15;
+  --ink-rgb: 242 230 213;
+  --muted-rgb: 172 146 122;
 }
 
 [data-theme='light'] {
-  --table-brown-rgb: 140 85 40;
-  --table-brown-light-rgb: 191 129 74;
-  --wood-accent-rgb: 176 128 80;
-  --cream-rgb: 250 245 236;
-  --warm-gray-rgb: 240 231 219;
-  --ink-rgb: 50 34 22;
-  --muted-rgb: 124 94 70;
+  --table-brown-rgb: 131 78 38;
+  --table-brown-light-rgb: 198 136 78;
+  --wood-accent-rgb: 165 120 76;
+  --cream-rgb: 248 241 230;
+  --warm-gray-rgb: 235 224 208;
+  --ink-rgb: 52 35 23;
+  --muted-rgb: 126 96 72;
 }
 
 *,

@@ -81,7 +81,7 @@ export function Navigation() {
             height={48}
             priority
             className={cn(
-              'h-8 w-auto object-contain',
+              'h-12 w-auto object-contain',
               isTransparentNav ? 'brightness-110 drop-shadow-[0_2px_6px_rgba(0,0,0,0.35)]' : 'brightness-100'
             )}
           />
