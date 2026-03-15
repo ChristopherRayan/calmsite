@@ -500,7 +500,7 @@ export default function AdminAboutPage() {
                                         )}
                                     </div>
                                     <div className="p-4">
-                                        {editingImage?.id === image.id ? (
+                                        {editingImage && editingImage.id === image.id ? (
                                             <div className="space-y-3">
                                                 <input
                                                     type="text"

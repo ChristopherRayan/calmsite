@@ -95,7 +95,9 @@ export function getStoredUser(): AuthUser | null {
       phone: String(parsed.phone ?? ''),
       profile_image_url: normalizeImageSource(String(parsed.profile_image_url ?? '')),
       is_staff: Boolean(parsed.is_staff),
+      is_active: parsed.is_active ?? true,
       role,
+      must_change_password: parsed.must_change_password ?? false,
     };
   } catch (_error) {
     return null;

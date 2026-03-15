@@ -336,6 +336,69 @@
     moveInline("our team", "tab-team");
   }
 
+  function showExtensionNoticeBanner() {
+    if (!isProtectedAdminPage()) {
+      return;
+    }
+
+    var host = window.location.hostname;
+    if (host !== "localhost" && host !== "127.0.0.1" && host !== "0.0.0.0") {
+      return;
+    }
+
+    var storageKey = "ct_admin_ext_notice_dismissed";
+    try {
+      if (window.localStorage.getItem(storageKey) === "1") {
+        return;
+      }
+    } catch (_error) {}
+
+    if (document.querySelector(".ct-extension-notice")) {
+      return;
+    }
+
+    var target =
+      document.querySelector(".content-wrapper") ||
+      document.querySelector("#content") ||
+      document.querySelector(".content") ||
+      document.body;
+    if (!target) {
+      return;
+    }
+
+    var banner = document.createElement("div");
+    banner.className = "ct-extension-notice";
+
+    var text = document.createElement("div");
+    text.className = "ct-extension-notice__text";
+    text.textContent =
+      "Seeing console errors like 'Cannot find menu item …' or 'addListener' undefined? Those usually come from browser extensions injected into localhost. Try disabling extensions for this site or using an incognito window.";
+
+    var actions = document.createElement("div");
+    actions.className = "ct-extension-notice__actions";
+
+    var dismiss = document.createElement("button");
+    dismiss.type = "button";
+    dismiss.className = "ct-extension-notice__dismiss";
+    dismiss.textContent = "Dismiss";
+    dismiss.addEventListener("click", function () {
+      try {
+        window.localStorage.setItem(storageKey, "1");
+      } catch (_error) {}
+      banner.remove();
+    });
+
+    actions.appendChild(dismiss);
+    banner.appendChild(text);
+    banner.appendChild(actions);
+
+    if (target.firstChild) {
+      target.insertBefore(banner, target.firstChild);
+    } else {
+      target.appendChild(banner);
+    }
+  }
+
   function boot() {
     initMonthlyChart();
     attachLiveClock();
@@ -343,6 +406,7 @@
     initJazzminTabFallback();
     activateTabFromQuery();
     attachInlineTabs();
+    showExtensionNoticeBanner();
     enableAutoRefresh();
   }
 

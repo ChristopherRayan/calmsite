@@ -35,7 +35,7 @@ const nextConfig = {
   async rewrites() {
     const apiTarget = process.env.NEXT_INTERNAL_API_BASE_URL || 'http://localhost:8000/api';
     const mediaTarget = process.env.NEXT_INTERNAL_MEDIA_BASE_URL || 'http://localhost:8000/media';
-    const adminTarget = process.env.NEXT_INTERNAL_ADMIN_BASE_URL || 'http://localhost:8000/admin';
+    const adminTarget = process.env.NEXT_INTERNAL_ADMIN_BASE_URL || 'http://127.0.0.1:8000/admin';
     const staticTarget = process.env.NEXT_INTERNAL_STATIC_BASE_URL || 'http://localhost:8000/static';
     return {
       beforeFiles: [

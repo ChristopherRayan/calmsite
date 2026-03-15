@@ -1386,9 +1386,20 @@ class AboutUsAdmin(BaseModelAdmin):
     ordering = ("-updated_at",)
     fieldsets = (
         ("Overview", {"fields": ("about_image", "title", "subtitle", "description", "quote"), "classes": ("tab-overview",)}),
-        ("Vision", {"fields": ("vision_title", "vision_body"), "classes": ("tab-vision",)}),
-        ("Cuisine", {"fields": ("cuisine_title", "cuisine_body"), "classes": ("tab-cuisine",)}),
-        ("Service", {"fields": ("service_title", "service_body"), "classes": ("tab-service",)}),
+        (
+            "Vision, Cuisine & Service",
+            {
+                "fields": (
+                    "vision_title",
+                    "vision_body",
+                    "cuisine_title",
+                    "cuisine_body",
+                    "service_title",
+                    "service_body",
+                ),
+                "classes": ("tab-pillars",),
+            },
+        ),
         ("Stats", {"fields": ("years_serving", "menu_items", "rating"), "classes": ("tab-stats",)}),
     )
 
