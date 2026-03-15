@@ -8,6 +8,7 @@ import {
   X,
 } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -68,11 +69,22 @@ export function Navigation() {
         <Link
           href="/"
           className={cn(
-            'font-heading text-xl font-bold uppercase tracking-[0.14em]',
+            'inline-flex items-center',
             isTransparentNav ? 'text-white' : 'text-woodAccent dark:text-woodAccent'
           )}
         >
-          <span className={cn(isTransparentNav ? 'text-white/90' : 'text-ink dark:text-ink/80')}>The</span> CalmTable
+          <span className="sr-only">The CalmTable</span>
+          <Image
+            src="/calmtable-logo.png"
+            alt="The CalmTable"
+            width={180}
+            height={48}
+            priority
+            className={cn(
+              'h-8 w-auto object-contain',
+              isTransparentNav ? 'brightness-110 drop-shadow-[0_2px_6px_rgba(0,0,0,0.35)]' : 'brightness-100'
+            )}
+          />
         </Link>
 
         <ul className="hidden items-center gap-8 lg:flex">

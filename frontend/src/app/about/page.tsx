@@ -111,8 +111,13 @@ export default function AboutPage() {
     useEffect(() => {
         fetchGalleryImages()
             .then((images) => {
-                setGalleryImages(images ?? []);
-                setGalleryLoaded(true);
+                if (images && images.length > 0) {
+                    setGalleryImages(images);
+                    setGalleryLoaded(true);
+                } else {
+                    setGalleryImages([]);
+                    setGalleryLoaded(false);
+                }
             })
             .catch(() => {
                 setGalleryImages([]);
