@@ -265,6 +265,12 @@ export async function fetchReservationByCode(code: string): Promise<Reservation>
   return response.data;
 }
 
+// Admin: Fetch all reservations
+export async function fetchAllReservations(): Promise<Reservation[]> {
+  const response = await api.get<Reservation[]>('/reservations/');
+  return response.data;
+}
+
 export async function registerUser(payload: RegisterPayload): Promise<AuthResponse> {
   const response = await api.post<AuthResponse>('/auth/register/', payload);
   return response.data;

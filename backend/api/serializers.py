@@ -381,6 +381,7 @@ class MenuItemSerializer(serializers.ModelSerializer):
             "name",
             "description",
             "price",
+            "region",
             "category",
             "image_url",
             "image_file",

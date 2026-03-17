@@ -1,83 +1,177 @@
-// About page with gallery section
 'use client';
 
-import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
-import { fetchFrontendSettings, fetchPublicMembers, fetchGalleryImages, fetchAboutUs } from '@/lib/services';
+import { useEffect, useMemo, useState } from 'react';
+
+import {
+    fetchAboutUs,
+    fetchFrontendSettings,
+    fetchGalleryImages,
+    fetchPublicMembers,
+} from '@/lib/services';
 import type { FrontendContentPayload, MembersResponseItem } from '@/lib/types';
 import { normalizeImageSource, shouldSkipImageOptimization } from '@/lib/image';
 
-const fallbackGalleryItems = [
-    { src: '/images/gallery-1.png', title: 'Warm Interiors', description: 'Restaurant interior ambiance.' },
-    { src: '/images/gallery-2.png', title: 'Signature Plates', description: 'Delicious plated dish.' },
-    { src: '/images/gallery-3.png', title: 'Fresh Prep', description: 'Fresh ingredients preparation.' },
-    { src: '/images/gallery-4.svg', title: 'Table Setting', description: 'Elegant table setting.' },
-    { src: '/images/gallery-5.svg', title: 'Chef Craft', description: 'Chef preparing food.' },
-    { src: '/images/reservation-bg.png', title: 'Cozy Dining', description: 'Cozy dining area.' },
-];
+import styles from './page.module.css';
 
-const fallbackTestimonials = [
-    {
-        quote: 'The CalmTable turns every meal into an occasion. The flavors are rich, the service is flawless.',
-        author: 'Zione Phiri',
+const fallbackAboutPage = {
+    hero: {
+        eyebrow: 'Our Story',
+        titleHtml: 'A calm place<br/>to <em>gather</em><br/>&amp; eat well.',
+        description:
+            'CalmTable was born from a simple conviction — that food tastes better when served without rush, noise, or pressure. We are a peace-first dining concept rooted in Pan-African cuisine, built for every kind of guest, in every kind of city.',
+        quote:
+            '"A calm, welcoming table where people gather to enjoy well-prepared food, meaningful conversation, and unhurried moments."',
+        visualText: 'Pan-African Dining',
+        stats: [
+            { value: '4+', label: 'African Regions' },
+            { value: '∞', label: 'Calm Moments' },
+            { value: '1', label: 'Shared Table' },
+        ],
     },
-    {
-        quote: 'We hosted our engagement dinner here and everything felt polished and intimate. Highly recommend.',
-        author: 'Natasha Mbewe',
+    visionMission: [
+        {
+            icon: '◎',
+            title: 'Our Vision',
+            body:
+                'To establish CalmTable as a recognised calm dining brand — known for African cuisine, warm hospitality, and consistently peaceful dining environments across multiple locations, cities, and countries.',
+        },
+        {
+            icon: '◈',
+            title: 'Our Mission',
+            body:
+                'To serve authentic African dishes from across the continent, complemented by selected international meals on request, in a calm, respectful, and professionally managed setting — wherever CalmTable operates.',
+        },
+    ],
+    values: [
+        {
+            title: 'Calm & Comfort',
+            body:
+                'Peaceful, unhurried dining — always. Guests are never rushed. Our spaces are designed for lingering, reflecting, and connecting.',
+        },
+        {
+            title: 'Hospitality',
+            body:
+                'Every guest is welcomed with respect and genuine warmth — from the first greeting to the final goodbye, no exceptions.',
+        },
+        {
+            title: 'Quality & Consistency',
+            body:
+                'Reliable food and service across every CalmTable location. The same standard, no matter where in Africa or beyond you find us.',
+        },
+        {
+            title: 'Inclusivity',
+            body:
+                'Culturally neutral and globally welcoming. Our table is open to families, professionals, travellers, and communities alike.',
+        },
+        {
+            title: 'Sustainability',
+            body:
+                'Responsible sourcing, local suppliers, and operations that respect the people and environments we are part of.',
+        },
+    ],
+    valuesQuote: '"Simple food.<br/>Clean ingredients.<br/>Honest cooking."',
+    serviceFlow: [
+        {
+            title: 'Calm welcome',
+            body: 'Every guest is greeted warmly before anything else. No queue pressure, no rush to be seated.',
+        },
+        {
+            title: 'Menu guidance',
+            body: 'Optional and personalised — especially helpful for first-time guests exploring Pan-African dishes for the first time.',
+        },
+        {
+            title: 'Flexible ordering',
+            body: 'Special requests, dietary needs, international options — always accommodated without fuss or judgement.',
+        },
+        {
+            title: 'Unhurried pacing',
+            body: 'Food served neatly and on time, with no pressure to leave. Guests are always welcome to stay.',
+        },
+    ],
+    formats: [
+        {
+            title: 'CalmTable — Flagship',
+            body: 'Full dining experience with Pan-African core menu and international specials on request.',
+        },
+        {
+            title: 'CalmTable Café',
+            body: 'Lighter fare and beverages — ideal for work meetings, quiet mornings, and short visits.',
+        },
+        {
+            title: 'CalmTable Garden',
+            body: 'Outdoor dining concept for locations with natural spaces and open-air ambience.',
+        },
+        {
+            title: 'CalmTable Catering',
+            body: 'Custom menus for events, NGOs, corporate groups, and special gatherings of any size.',
+        },
+        {
+            title: 'CalmTable Express',
+            body: 'Limited-menu format for transit hubs, university canteens, and travel corridors.',
+        },
+    ],
+    community: {
+        title: 'Community & Responsibility',
+        description:
+            'CalmTable integrates responsibly into every community it enters — not as a brand imposing itself, but as a neighbour contributing genuine value.',
+        cards: [
+            {
+                icon: '◉',
+                title: 'Local Sourcing',
+                body: 'We give preference to local suppliers and farmers — building supply chains that support the communities we serve in, with fair procurement practices throughout.',
+            },
+            {
+                icon: '◎',
+                title: 'Employment & Training',
+                body: 'We hire locally and invest in staff development. CalmTable is a training ground for cooks, servers, and future hospitality professionals.',
+            },
+            {
+                icon: '◈',
+                title: 'Waste Reduction',
+                body: 'Food-waste reduction and responsible operations are long-term commitments — from portion control to composting programmes in mature locations.',
+            },
+            {
+                icon: '○',
+                title: 'Cultural Respect',
+                body: 'We carry deep respect for regional food cultures. CalmTable is values-based and carries no ideological positioning — quality and responsibility only.',
+            },
+            {
+                icon: '◇',
+                title: 'Inclusive Access',
+                body: 'Discount days for students, quiet mornings for seniors, and family-friendly pricing — making calm dining accessible beyond a privileged few.',
+            },
+        ],
+        mottoHtml: 'No ideological positioning —<br/><span>quality and responsibility only.</span>',
+        pills: [
+            'Student discounts',
+            'Quiet mornings for seniors',
+            'Local farmer partnerships',
+            'Faith-neutral values',
+            'Composting (long-term)',
+            'Local employment first',
+            'Fair procurement',
+            'Food-waste reduction',
+        ],
     },
-    {
-        quote: 'Every plate arrives with care. It is the most consistent dining experience in Mzuzu.',
-        author: 'Brian Tembo',
+    team: {
+        title: 'Our Team',
+        description:
+            'A calm brand starts with calm people. Our team shares one philosophy — every guest deserves genuine care, not performative service.',
     },
-    {
-        quote: 'The ambiance, the plating, the hospitality — it is all premium without feeling stiff.',
-        author: 'Ethel Banda',
+    gallery: {
+        title: 'Gallery',
+        description: 'The spaces, the food, and the atmosphere that define every CalmTable experience.',
     },
-];
-
-const sectionShortcuts = [
-    { id: 'about-heritage', label: 'Heritage' },
-    { id: 'about-services', label: 'Services' },
-    { id: 'about-testimonials', label: 'Testimonials' },
-    { id: 'about-team', label: 'Our Team' },
-    { id: 'about-gallery', label: 'Gallery' },
-];
-
-const fallbackTeam: MembersResponseItem[] = [
-    {
-        id: 1,
-        name: 'Nala Banda',
-        role: 'Executive Chef',
-        bio: 'Leads our culinary direction with refined Malawian flavors and modern plating.',
-        photo: '/images/avatar-placeholder.svg',
+    cta: {
+        title: 'Come to the table.',
+        description: 'Find your nearest CalmTable location and reserve your seat.',
+        button: 'Make a Reservation',
     },
-    {
-        id: 2,
-        name: 'Peter Gondwe',
-        role: 'Restaurant Manager',
-        bio: 'Curates every guest experience from welcome to the final course.',
-        photo: '/images/avatar-placeholder.svg',
-    },
-    {
-        id: 3,
-        name: 'Thoko Tembo',
-        role: 'Pastry Specialist',
-        bio: 'Crafts indulgent desserts with seasonal ingredients and signature artistry.',
-        photo: '/images/avatar-placeholder.svg',
-    },
-    {
-        id: 4,
-        name: 'Lameck Mbewe',
-        role: 'Sommelier',
-        bio: 'Pairs each dish with wines and cocktails that elevate every bite.',
-        photo: '/images/avatar-placeholder.svg',
-    },
-];
+};
 
 export default function AboutPage() {
     const [settings, setSettings] = useState<FrontendContentPayload | null>(null);
-    const [activeTestimonial, setActiveTestimonial] = useState(0);
     const [teamMembers, setTeamMembers] = useState<MembersResponseItem[]>([]);
     const [galleryImages, setGalleryImages] = useState<{ src: string; title?: string; description: string }[]>([]);
     const [galleryLoaded, setGalleryLoaded] = useState(false);
@@ -107,7 +201,6 @@ export default function AboutPage() {
         fetchPublicMembers().then(setTeamMembers).catch(() => setTeamMembers([]));
     }, []);
 
-    // Fetch gallery images from new API, fallback to settings
     useEffect(() => {
         fetchGalleryImages()
             .then((images) => {
@@ -125,7 +218,6 @@ export default function AboutPage() {
             });
     }, []);
 
-    // Fetch About Us data from new API
     useEffect(() => {
         fetchAboutUs()
             .then((data) => {
@@ -136,456 +228,303 @@ export default function AboutPage() {
             .catch(console.error);
     }, []);
 
-    const aboutImage =
-        normalizeImageSource(aboutUsData?.about_image || '') ||
-        normalizeImageSource(settings?.home.hero_bg_image || '') ||
-        '/images/about-image.png';
-    const testimonials = settings?.home.testimonials?.length ? settings.home.testimonials : fallbackTestimonials;
-
-    // Use gallery from new API if available, otherwise fall back to settings
-    const galleryItemsRaw = galleryLoaded
-        ? galleryImages
-        : (settings?.home.gallery_images ?? fallbackGalleryItems) as Array<
-            { src: string; title?: string; description?: string } | string
-        >;
-    const normalizedGallery = galleryItemsRaw.map((item) =>
-        typeof item === 'string' ? { src: item, title: '', description: '' } : item
-    );
-    const resolvedGallery = normalizedGallery.length > 0 ? normalizedGallery : [];
-    const resolvedTeam = teamMembers.length > 0 ? teamMembers : fallbackTeam;
-
-    const serviceIcons = [
-        (
-            <svg key="service-icon-1" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-        ),
-        (
-            <svg key="service-icon-2" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-            </svg>
-        ),
-        (
-            <svg key="service-icon-3" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-            </svg>
-        ),
-    ];
-
-    const fallbackServices = [
-        {
-            title: 'Fine Dining',
-            description: 'Exquisite culinary experiences with seasonal menus crafted by our award-winning chefs.',
-        },
-        {
-            title: 'Private Events',
-            description: 'Elegant spaces for celebrations, corporate gatherings, and intimate occasions.',
-        },
-        {
-            title: 'Wine & Cocktails',
-            description: 'Curated selections of premium wines and handcrafted cocktails for discerning palates.',
-        },
-    ];
-
-    const normalizedServices = aboutUsData?.services?.filter(
-        (service) => service && service.title && service.description && service.is_active !== false
-    );
-    const resolvedServices = normalizedServices && normalizedServices.length > 0 ? normalizedServices : fallbackServices;
-
-    // Use About Us data from new API if available
-    const resolvedTitle = aboutUsData?.title || 'Where Every Meal Is A Celebration';
-    const resolvedSubtitle = aboutUsData?.subtitle || 'Our Heritage';
-    const resolvedDescription =
-        aboutUsData?.description ||
-        settings?.about?.description ||
-        'Near Simso Filling Station in Luwinga, we serve premium dishes in a warm family-restaurant setting.';
-    const resolvedQuote =
-        aboutUsData?.quote ||
-        settings?.home.story_quote ||
-        'A place where every moment becomes a memory, every dish tells a story.';
-    const resolvedYears = aboutUsData?.years_serving || settings?.home.stats?.years_serving || '12+';
-    const resolvedStats = {
-        years_serving: resolvedYears,
-        menu_items: aboutUsData?.menu_items || settings?.home.stats?.menu_items || '80+',
-        rating: aboutUsData?.rating || settings?.home.stats?.rating || '4.9★',
-    };
-    const titleEmphasis = 'A Celebration';
-    const hasTitleEmphasis = resolvedTitle.includes(titleEmphasis);
-    const titleParts = hasTitleEmphasis ? resolvedTitle.split(titleEmphasis) : [resolvedTitle, ''];
-
-    const aboutHighlights = aboutUsData
-        ? [
-            { title: aboutUsData.vision_title, description: aboutUsData.vision_body },
-            { title: aboutUsData.cuisine_title, description: aboutUsData.cuisine_body },
-            { title: aboutUsData.service_title, description: aboutUsData.service_body },
-        ]
-        : (settings?.home.about_features || [
-            { title: 'Farm to Table', description: 'We source our ingredients from local farms and suppliers.' },
-            { title: "Chef's Craft", description: 'Our experienced chefs bring passion to every dish.' },
-        ]);
-
     useEffect(() => {
-        if (activeTestimonial >= testimonials.length) {
-            setActiveTestimonial(0);
-        }
-    }, [activeTestimonial, testimonials.length]);
-
-    useEffect(() => {
-        if (testimonials.length <= 1) {
+        const elements = Array.from(document.querySelectorAll(`.${styles.reveal}`));
+        if (!('IntersectionObserver' in window)) {
+            elements.forEach((el) => el.classList.add(styles.revealIn));
             return;
         }
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add(styles.revealIn);
+                        observer.unobserve(entry.target);
+                    }
+                });
+            },
+            { threshold: 0.06 }
+        );
+        elements.forEach((el) => observer.observe(el));
+        return () => observer.disconnect();
+    }, []);
 
-        const interval = window.setInterval(() => {
-            setActiveTestimonial((current) => (current + 1) % testimonials.length);
-        }, 6500);
+    const aboutPage = (settings as any)?.about_page ?? fallbackAboutPage;
+    const hero = aboutPage.hero ?? fallbackAboutPage.hero;
+    const heroTitleHtml = hero.titleHtml || hero.title_html || fallbackAboutPage.hero.titleHtml;
+    const visionMission = aboutPage.visionMission || aboutPage.vision_mission || fallbackAboutPage.visionMission;
+    const values = aboutPage.values ?? fallbackAboutPage.values;
+    const serviceFlow = aboutPage.serviceFlow || aboutPage.service_flow || fallbackAboutPage.serviceFlow;
+    const formats = aboutPage.formats ?? fallbackAboutPage.formats;
+    const community = aboutPage.community ?? fallbackAboutPage.community;
+    const teamIntro = aboutPage.team ?? fallbackAboutPage.team;
+    const galleryIntro = aboutPage.gallery ?? fallbackAboutPage.gallery;
+    const cta = aboutPage.cta ?? fallbackAboutPage.cta;
 
-        return () => window.clearInterval(interval);
-    }, [testimonials.length]);
+    const resolvedTeam = teamMembers.length > 0 ? teamMembers : [];
+
+    const galleryItems = useMemo(() => {
+        if (galleryLoaded && galleryImages.length > 0) {
+            return galleryImages.map((item) => ({
+                ...item,
+                src: normalizeImageSource(item.src),
+            }));
+        }
+        return [] as { src: string; title?: string; description: string }[];
+    }, [galleryLoaded, galleryImages]);
+
+  const heroDescription = aboutUsData?.description || hero.description;
+  const heroQuote = aboutUsData?.quote || hero.quote;
+  const heroVisualText = hero.visualText || hero.visual_text || fallbackAboutPage.hero.visualText;
+  const valuesQuoteHtml = aboutPage.valuesQuote || aboutPage.values_quote_html || fallbackAboutPage.valuesQuote;
+  const communityMottoHtml = community.mottoHtml || community.motto_html || fallbackAboutPage.community.mottoHtml;
+  const heroImage = normalizeImageSource(
+    aboutUsData?.about_image || settings?.home?.about_image || ''
+  );
+
+    const visionCard = {
+        icon: visionMission[0]?.icon ?? '◎',
+        title: aboutUsData?.vision_title || visionMission[0]?.title,
+        body: aboutUsData?.vision_body || visionMission[0]?.body,
+    };
+    const missionCard = {
+        icon: visionMission[1]?.icon ?? '◈',
+        title: aboutUsData?.cuisine_title || visionMission[1]?.title,
+        body: aboutUsData?.cuisine_body || visionMission[1]?.body,
+    };
+
+    const servicesFlow = serviceFlow.length > 0 ? serviceFlow : fallbackAboutPage.serviceFlow;
+    const formatCards = formats.length > 0 ? formats : fallbackAboutPage.formats;
+
+    const teamCards = resolvedTeam.length > 0
+        ? resolvedTeam.map((member) => ({
+            name: member.name,
+            role: member.role,
+            photo: member.photo,
+        }))
+        : [
+            { name: 'Founder & Director', role: 'Leadership & Vision', photo: '' },
+            { name: 'Head Chef', role: 'Pan-African Cuisine', photo: '' },
+            { name: 'Operations Lead', role: 'Service & Standards', photo: '' },
+            { name: 'Guest Experience', role: 'Hospitality & Care', photo: '' },
+        ];
 
     return (
-        <div className="min-h-screen bg-cream dark:bg-cream pt-20">
-            {/* Floating Section Shortcuts */}
-            <nav className="about-shortcuts fixed left-1/2 top-14 z-50 hidden -translate-x-1/2 lg:flex" aria-label="About sections">
-                <div className="relative flex h-14 items-center gap-6 rounded-full border border-woodAccent/25 bg-transparent px-4 shadow-[0_20px_50px_-35px_rgba(18,10,5,0.6)] backdrop-blur-md dark:border-woodAccent/30">
-                    {sectionShortcuts.map((link) => (
-                        <a
-                            key={link.id}
-                            href={`#${link.id}`}
-                            className="group relative flex h-10 items-center gap-3 px-1 text-[10px] font-semibold uppercase tracking-[0.32em] text-ink/70 transition-all hover:text-woodAccent dark:text-woodAccent/70 dark:hover:text-woodAccent"
-                        >
-                            <span className="h-[6px] w-[6px] rounded-full bg-woodAccent/60 transition-all group-hover:scale-125 group-hover:bg-woodAccent" />
-                            <span className="whitespace-nowrap">{link.label}</span>
-                            <span className="absolute -bottom-1 left-0 h-[1px] w-0 bg-woodAccent/80 transition-all duration-300 group-hover:w-full" />
-                        </a>
-                    ))}
+        <div className={styles.page}>
+            <section className={styles.hero} id="story">
+                <div className={`${styles.heroTxt} ${styles.reveal}`}>
+                    <p className={styles.eyebrow}>{hero.eyebrow}</p>
+                    <h1
+                        className={styles.heroTitle}
+                        dangerouslySetInnerHTML={{ __html: heroTitleHtml }}
+                    />
+                    <p className={styles.heroDesc}>{heroDescription}</p>
+                    <blockquote className={styles.heroQuote}>{heroQuote}</blockquote>
                 </div>
-            </nav>
-
-            <nav className="about-shortcuts fixed left-1/2 top-[calc(env(safe-area-inset-top)+4.5rem)] z-40 flex h-12 max-w-[92vw] -translate-x-1/2 items-center gap-5 overflow-x-auto rounded-full border border-woodAccent/25 bg-cream/90 px-5 shadow-[0_18px_40px_-30px_rgba(18,10,5,0.6)] backdrop-blur-md dark:border-woodAccent/30 dark:bg-cream/85 lg:hidden" aria-label="About sections">
-                {sectionShortcuts.map((link) => (
-                    <a
-                        key={link.id}
-                        href={`#${link.id}`}
-                        className="group relative flex h-10 items-center whitespace-nowrap text-[9px] font-semibold uppercase tracking-[0.28em] text-ink/70 transition-all hover:text-woodAccent dark:text-woodAccent/70 dark:hover:text-woodAccent"
-                    >
-                        {link.label}
-                        <span className="absolute -bottom-1 left-0 h-[1px] w-0 bg-woodAccent/80 transition-all duration-300 group-hover:w-full" />
-                    </a>
-                ))}
-            </nav>
-            {/* About Section */}
-            <section id="about-heritage" className="py-16 sm:py-24 scroll-mt-28">
-                <div className="page-shell">
-                    <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-                        <div className="relative">
-                            <div className="relative aspect-[4/5] overflow-hidden rounded-2xl md:rounded-[3rem] border border-white/10 dark:border-white/10 ring-1 ring-white/5">
-                                <Image
-                                    src={aboutImage}
-                                    alt="Inside The CalmTable"
-                                    fill
-                                    className="object-cover"
-                                    unoptimized={shouldSkipImageOptimization(aboutImage)}
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-cream dark:from-cream/80 via-transparent to-transparent" />
-                            </div>
-                            {/* Floating Badge */}
-                            <div className="absolute -bottom-6 -right-4 sm:-right-8 rounded-2xl bg-gradient-to-br from-tableBrown/80 to-warmGray/90 p-5 sm:p-6 backdrop-blur-md border border-woodAccent/20 shadow-2xl">
-                                <div className="text-center">
-                                    <span className="block text-3xl sm:text-4xl font-bold text-amber-500 font-heading">
-                                        {resolvedStats.years_serving}
-                                    </span>
-                                    <span className="block text-[10px] font-bold uppercase tracking-[0.2em] text-ink dark:text-white/70 mt-1 sm:mt-2">
-                                        Years Serving
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div>
-                            <p className="text-xs font-bold uppercase tracking-[0.2em] text-amber-500 mb-4">
-                                {resolvedSubtitle}
-                            </p>
-                            <h1 className="font-heading text-4xl sm:text-5xl font-bold leading-tight mb-6">
-                                {hasTitleEmphasis ? (
-                                    <>
-                                        {titleParts[0]}
-                                        <em className="text-amber-400">{titleEmphasis}</em>
-                                        {titleParts[1]}
-                                    </>
-                                ) : (
-                                    resolvedTitle
-                                )}
-                            </h1>
-
-                            <div className="w-16 h-[1px] bg-gradient-to-r from-amber-500 to-transparent mb-6" />
-
-                            <blockquote className="text-lg sm:text-xl font-light italic text-ink dark:text-white/90 leading-relaxed mb-6 border-l-2 border-amber-500/40 pl-4 sm:pl-6">
-                                &ldquo;{resolvedQuote}&rdquo;
-                            </blockquote>
-
-                            <p className="text-ink dark:text-white/60 leading-relaxed mb-8 text-sm sm:text-base">
-                                {resolvedDescription}
-                            </p>
-
-                            <div className="grid sm:grid-cols-2 gap-6">
-                                {aboutHighlights.map((feature, i) => (
-                                    <div key={i}>
-                                        <p className="font-bold text-amber-100 dark:text-amber-400 mb-2 font-heading tracking-wide">{feature.title}</p>
-                                        <p className="text-sm text-ink dark:text-white/50 leading-relaxed">{feature.description}</p>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* Our Services Section - Premium */}
-            <section id="about-services" className="py-16 sm:py-24 scroll-mt-28 bg-gradient-to-b from-cream to-amber-50/50 dark:from-warmGray dark:to-cream">
-                <div className="page-shell">
-                    <header className="mb-16 text-center">
-                        <p className="text-xs font-bold uppercase tracking-[0.2em] text-amber-500 mb-4">
-                            What We Offer
-                        </p>
-                        <h2 className="font-heading text-4xl sm:text-5xl font-bold leading-tight mb-6">
-                            Our <em className="text-amber-500">Premium Services</em>
-                        </h2>
-                        <div className="w-24 h-[1px] bg-gradient-to-r from-transparent via-amber-500 to-transparent mx-auto mb-6" />
-                        <p className="text-ink/70 dark:text-white/50 max-w-2xl mx-auto text-base sm:text-lg">
-                            Experience exceptional dining and hospitality services tailored to create unforgettable moments.
-                        </p>
-                    </header>
-
-                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {resolvedServices.map((service, index) => (
-                            <div
-                                key={index}
-                                className="group relative p-8 rounded-2xl bg-white dark:bg-warmGray border border-amber-100/30 dark:border-woodAccent/20 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-1"
-                            >
-                                <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-amber-50/50 to-amber-100/20 dark:from-amber-900/5 dark:to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                                <div className="relative">
-                                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-400/90 to-amber-600/90 dark:from-amber-500/80 dark:to-amber-700/80 flex items-center justify-center text-white mb-6 shadow-lg group-hover:scale-110 transition-transform duration-300">
-                                        {serviceIcons[index % serviceIcons.length]}
-                                    </div>
-                                    <h3 className="font-heading text-xl font-semibold text-ink dark:text-white mb-3 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
-                                        {service.title}
-                                    </h3>
-                                    <p className="text-sm text-ink/60 dark:text-white/40 leading-relaxed">
-                                        {service.description}
-                                    </p>
-                                </div>
-                                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-px bg-gradient-to-r from-transparent via-amber-500/60 to-transparent group-hover:w-full transition-all duration-500" />
+        <div className={`${styles.heroVis} ${styles.reveal} ${styles.delay1}`}>
+          <div className={styles.visTop}>
+            {heroImage ? (
+              <Image
+                src={heroImage}
+                alt="Pan-African Dining"
+                fill
+                className={styles.visTopImage}
+                unoptimized={shouldSkipImageOptimization(heroImage)}
+                priority
+              />
+            ) : null}
+            <div className={styles.visTopOverlay} />
+            <div className={styles.visDots} />
+            <span className={styles.visTopText}>{heroVisualText}</span>
+          </div>
+                    <div className={styles.visBottom}>
+                        {hero.stats.map((stat: { value: string; label: string }) => (
+                            <div key={stat.label}>
+                                <div className={styles.statNum}>{stat.value}</div>
+                                <div className={styles.statLbl}>{stat.label}</div>
                             </div>
                         ))}
                     </div>
-
-                    <div className="mt-12 text-center">
-                        <a
-                            href="/menu"
-                            className="inline-flex items-center gap-3 px-8 py-4 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-white font-bold uppercase tracking-wider text-sm hover:from-amber-400 hover:to-amber-500 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
-                        >
-                            Explore Our Menu
-                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                            </svg>
-                        </a>
-                    </div>
                 </div>
             </section>
 
-            {/* Testimonials Section */}
-            <section id="about-testimonials" className="relative py-20 sm:py-28 scroll-mt-28 overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-b from-cream via-cream to-amber-50/40 dark:from-cream dark:via-warmGray dark:to-tableBrown/30" />
-                <div className="pointer-events-none absolute -left-24 top-8 h-72 w-72 rounded-full bg-tableBrown/15 blur-[120px]" />
-                <div className="pointer-events-none absolute -right-20 bottom-10 h-80 w-80 rounded-full bg-amber-500/10 blur-[140px]" />
-
-                <div className="page-shell relative">
-                    <header className="mb-12 text-center">
-                        <p className="text-xs font-bold uppercase tracking-[0.2em] text-amber-500 mb-4">
-                            Guest Stories
-                        </p>
-                        <h2 className="font-heading text-3xl sm:text-4xl font-bold leading-tight">
-                            Testimonials That <em className="text-amber-400">Glide</em>
-                        </h2>
-                        <div className="w-20 h-[1px] bg-gradient-to-r from-transparent via-amber-500 to-transparent mx-auto mt-6" />
-                    </header>
-
-                    <div className="relative mx-auto max-w-3xl">
-                        <AnimatePresence mode="wait">
-                            <motion.div
-                                key={activeTestimonial}
-                                initial={{ opacity: 0, x: 80 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                exit={{ opacity: 0, x: -80 }}
-                                transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-                                className="relative overflow-hidden rounded-3xl border border-woodAccent/25 bg-white/70 dark:bg-warmGray/70 p-8 sm:p-10 backdrop-blur-xl shadow-[0_30px_80px_-50px_rgba(18,10,5,0.9)]"
-                            >
-                                <div className="absolute left-6 top-6 h-12 w-12 rounded-full bg-amber-500/10" />
-                                <div className="absolute right-8 top-10 h-2 w-20 bg-gradient-to-r from-transparent via-amber-500/70 to-transparent" />
-                                <p className="relative text-lg sm:text-xl font-light italic text-ink dark:text-white/85 leading-relaxed">
-                                    “{testimonials[activeTestimonial].quote}”
-                                </p>
-                                <div className="mt-8 flex flex-wrap items-center justify-between gap-4">
-                                    <div>
-                                        <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-woodAccent/70">
-                                            Guest
-                                        </p>
-                                        <p className="font-heading text-xl text-ink dark:text-white">
-                                            {testimonials[activeTestimonial].author}
-                                        </p>
-                                    </div>
-                                    <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-woodAccent/60">
-                                        {String(activeTestimonial + 1).padStart(2, '0')} / {String(testimonials.length).padStart(2, '0')}
-                                    </span>
-                                </div>
-                                <div className="mt-8 h-px w-full bg-woodAccent/25">
-                                    <motion.span
-                                        key={`progress-${activeTestimonial}`}
-                                        className="block h-px bg-gradient-to-r from-amber-500 via-amber-400 to-amber-300"
-                                        style={{ transformOrigin: '0% 50%' }}
-                                        initial={{ scaleX: 0 }}
-                                        animate={{ scaleX: 1 }}
-                                        transition={{ duration: 6.5, ease: 'linear' }}
-                                    />
-                                </div>
-                            </motion.div>
-                        </AnimatePresence>
-
-                        <div className="mt-6 flex items-center justify-center gap-3">
-                            {testimonials.map((_, index) => (
-                                <button
-                                    key={index}
-                                    type="button"
-                                    onClick={() => setActiveTestimonial(index)}
-                                    className={
-                                        index === activeTestimonial
-                                            ? 'h-2.5 w-10 rounded-full bg-amber-500 shadow-[0_0_12px_rgba(245,158,11,0.6)] transition-all'
-                                            : 'h-2.5 w-4 rounded-full bg-woodAccent/40 hover:bg-woodAccent/70 transition-all'
-                                    }
-                                    aria-label={`View testimonial ${index + 1}`}
-                                />
-                            ))}
+            <section className={`${styles.sec} ${styles.vm}`}>
+                <div className={`${styles.secHd} ${styles.reveal}`}>
+                    <h2>Vision &amp; Mission</h2>
+                    <p>
+                        Everything we do traces back to two guiding commitments — a vision for what CalmTable will become,
+                        and a mission for how we serve every single day.
+                    </p>
+                </div>
+                <div className={`${styles.vmGrid} ${styles.reveal} ${styles.delay1}`}>
+                    {[visionCard, missionCard].map((card) => (
+                        <div key={card.title} className={styles.vmCard}>
+                            <div className={styles.vmIcon}>{card.icon}</div>
+                            <h3>{card.title}</h3>
+                            <p>{card.body}</p>
                         </div>
+                    ))}
+                </div>
+            </section>
+
+            <section className={`${styles.sec} ${styles.vals}`}>
+                <div className={`${styles.secHd} ${styles.reveal}`}>
+                    <h2>What We Stand For</h2>
+                    <p>
+                        Five principles shape every decision we make — from how we design our spaces to how we welcome every
+                        guest through the door.
+                    </p>
+                </div>
+                <div className={`${styles.valGrid} ${styles.reveal} ${styles.delay1}`}>
+                    {values.map((value, index) => (
+                        <div key={value.title} className={styles.valCard}>
+                            <div className={styles.valNum}>{String(index + 1).padStart(2, '0')}</div>
+                            <h4>{value.title}</h4>
+                            <p>{value.body}</p>
+                        </div>
+                    ))}
+                    <div className={`${styles.valCard} ${styles.valQuote}`}>
+                        <blockquote dangerouslySetInnerHTML={{ __html: valuesQuoteHtml }} />
                     </div>
                 </div>
             </section>
 
-            {/* Our Team Section */}
-            <section id="about-team" className="py-20 sm:py-28 scroll-mt-28 bg-cream dark:bg-warmGray">
-                <div className="page-shell">
-                    <header className="mb-12 text-center">
-                        <p className="text-xs font-bold uppercase tracking-[0.2em] text-amber-500 mb-4">
-                            Our Team
-                        </p>
-                        <h2 className="font-heading text-3xl sm:text-4xl font-bold leading-tight">
-                            The People Behind <em className="text-amber-400">Every Plate</em>
-                        </h2>
-                        <div className="w-20 h-[1px] bg-gradient-to-r from-transparent via-amber-500 to-transparent mx-auto mt-6" />
-                    </header>
-
-                    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                        {resolvedTeam.map((member) => {
-                            const photo =
-                                normalizeImageSource(member.photo || '') || '/images/avatar-placeholder.svg';
-                            return (
-                                <div
-                                    key={member.id}
-                                    className="group relative overflow-hidden rounded-3xl border border-woodAccent/20 bg-white/80 dark:bg-warmGray/70 p-6 shadow-[0_18px_50px_-35px_rgba(18,10,5,0.45)] transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_30px_70px_-35px_rgba(18,10,5,0.55)]"
-                                >
-                                    <div className="absolute inset-0 bg-gradient-to-br from-amber-50/40 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100 dark:from-amber-900/10" />
-                                    <div className="relative flex flex-col items-center text-center">
-                                        <div className="relative h-24 w-24 overflow-hidden rounded-full border border-woodAccent/30 bg-woodAccent/10">
-                                            <Image
-                                                src={photo}
-                                                alt={member.name}
-                                                fill
-                                                className="object-cover"
-                                                unoptimized={shouldSkipImageOptimization(photo)}
-                                            />
-                                        </div>
-                                        <p className="mt-5 font-heading text-xl text-ink dark:text-white">
-                                            {member.name}
-                                        </p>
-                                        <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-woodAccent/70 mt-2">
-                                            {member.role}
-                                        </p>
-                                        <p className="mt-4 text-sm text-ink/60 dark:text-white/50 leading-relaxed">
-                                            {member.bio}
-                                        </p>
-                                    </div>
+            <section className={`${styles.sec} ${styles.svc}`}>
+                <div className={`${styles.secHd} ${styles.reveal}`}>
+                    <h2>How We Serve</h2>
+                    <p>
+                        Our service model is standardised but deeply human — enabling consistency at scale while ensuring every
+                        guest feels personally cared for.
+                    </p>
+                </div>
+                <div className={styles.svcInner}>
+                    <div className={`${styles.reveal}`}>
+                        {servicesFlow.map((step: { title: string; body: string }, index: number) => (
+                            <div key={step.title} className={styles.flowStep}>
+                                <div className={styles.stepDot}>{index + 1}</div>
+                                <div className={styles.stepTxt}>
+                                    <h5>{step.title}</h5>
+                                    <p>{step.body}</p>
                                 </div>
-                            );
-                        })}
+                            </div>
+                        ))}
+                    </div>
+                    <div className={`${styles.reveal} ${styles.delay1}`}>
+                        <p className={styles.fmtLbl}>Our Formats</p>
+                        {formatCards.map((format: { title: string; body: string }) => (
+                            <div key={format.title} className={styles.fmtCard}>
+                                <h5>{format.title}</h5>
+                                <p>{format.body}</p>
+                            </div>
+                        ))}
                     </div>
                 </div>
             </section>
 
-            {/* Gallery Section */}
-            {resolvedGallery.length > 0 && (
-                <section id="about-gallery" className="py-16 sm:py-24 scroll-mt-28 bg-woodAccent/5 dark:bg-warmGray/60">
-                    <div className="page-shell">
-                        <header className="mb-12 text-center">
-                            <h2 className="font-heading text-3xl sm:text-4xl font-bold uppercase tracking-[0.1em] text-woodAccent dark:text-woodAccent mb-4">
-                                Our Gallery
-                            </h2>
-                            <p className="text-ink dark:text-woodAccent/70 max-w-2xl mx-auto">
-                                Experience the ambiance of The CalmTable through our curated collection of photos
-                                showcasing our restaurant, dishes, and memorable moments.
-                            </p>
-                        </header>
+            <section className={styles.comm}>
+                <div className={`${styles.secHd} ${styles.reveal}`}>
+                    <h2>
+                        Community &amp;<br />Responsibility
+                    </h2>
+                    <p>{community.description}</p>
+                </div>
+                <div className={`${styles.commGrid} ${styles.reveal} ${styles.delay1}`}>
+                    {community.cards.map((card: { icon: string; title: string; body: string }) => (
+                        <div key={card.title} className={styles.commCard}>
+                            <div className={styles.commIc}>{card.icon}</div>
+                            <h4>{card.title}</h4>
+                            <p>{card.body}</p>
+                        </div>
+                    ))}
+                    <div className={`${styles.commCard} ${styles.commMotto}`}>
+                        <blockquote dangerouslySetInnerHTML={{ __html: communityMottoHtml }} />
+                    </div>
+                </div>
+                <div className={`${styles.pills} ${styles.reveal} ${styles.delay2}`}>
+                    {community.pills.map((pill: string) => (
+                        <span key={pill} className={styles.pill}>
+                            {pill}
+                        </span>
+                    ))}
+                </div>
+            </section>
 
-                        <div className="grid auto-rows-[180px] grid-cols-1 gap-5 sm:auto-rows-[200px] sm:grid-cols-3 lg:auto-rows-[220px] lg:grid-cols-4">
-                            {resolvedGallery.slice(0, 6).map((image, index) => {
-                                const span = [
-                                    'sm:col-span-2 sm:row-span-2',
-                                    'sm:col-span-1 sm:row-span-1',
-                                    'sm:col-span-1 sm:row-span-2',
-                                    'sm:col-span-2 sm:row-span-1',
-                                    'sm:col-span-1 sm:row-span-1',
-                                    'sm:col-span-1 sm:row-span-1',
-                                ][index % 6];
-
-                                const title = image.title?.trim() || 'Gallery highlight';
-                                const description = image.description?.trim() || 'Gallery moment';
-
-                                return (
-                                    <div
-                                        key={`${image.src}-${index}`}
-                                        className={`group relative overflow-hidden rounded-2xl bg-woodAccent/10 dark:bg-tableBrown ${span}`}
-                                    >
+            <section className={`${styles.sec} ${styles.team}`}>
+                <div className={`${styles.secHd} ${styles.reveal}`}>
+                    <h2>{teamIntro.title}</h2>
+                    <p>{teamIntro.description}</p>
+                </div>
+                <div className={`${styles.teamGrid} ${styles.reveal} ${styles.delay1}`}>
+                    {teamCards.map((member) => {
+                        const photo = member.photo ? normalizeImageSource(member.photo) : '';
+                        return (
+                            <div key={member.name} className={styles.tmCard}>
+                                <div className={styles.tmAv}>
+                                    {photo ? (
                                         <Image
-                                            src={image.src}
-                                            alt={title}
-                                            fill
-                                            className="object-cover transition-transform duration-700 group-hover:scale-110"
-                                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                                            src={photo}
+                                            alt={member.name}
+                                            width={320}
+                                            height={320}
+                                            className="h-full w-full object-cover"
+                                            unoptimized={shouldSkipImageOptimization(photo)}
                                         />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-warmGray/70 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-                                        <div className="absolute inset-x-0 bottom-0 p-4 text-amber-100/90 opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
-                                            <p className="text-[11px] font-semibold uppercase tracking-[0.2em]">{title}</p>
-                                            <p className="mt-1 text-[11px] text-amber-100/70">{description}</p>
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    </div>
-                </section>
-            )}
+                                    ) : (
+                                        <span>{member.name.charAt(0)}</span>
+                                    )}
+                                </div>
+                                <h4>{member.name}</h4>
+                                <p>{member.role}</p>
+                            </div>
+                        );
+                    })}
+                </div>
+            </section>
 
-            {/* Footer */}
-            <footer className="border-t border-woodAccent/20 py-8 bg-cream dark:bg-cream">
-                <div className="page-shell">
-                    <div className="flex flex-col gap-3 text-[11px] uppercase tracking-[0.1em] text-muted md:flex-row md:items-center md:justify-between">
-                        <p>© 2026 The CalmTable. Dine with Dignity.</p>
-                        <div className="flex gap-5 text-woodAccent/60">
-                            <span>Instagram</span>
-                            <span>Facebook</span>
-                            <span>TikTok</span>
-                        </div>
+            <section className={styles.gal}>
+                <div className={`${styles.galHd} ${styles.reveal}`}>
+                    <div className={styles.secHd}>
+                        <h2>{galleryIntro.title}</h2>
+                        <p>{galleryIntro.description}</p>
                     </div>
                 </div>
-            </footer>
+                <div className={`${styles.galScroll} ${styles.reveal} ${styles.delay1}`}>
+                    {galleryItems.length > 0 ? (
+                        galleryItems.map((item) => (
+                            <div key={item.src} className={styles.galItem}>
+                                <div
+                                    className={styles.galBg}
+                                    style={{
+                                        backgroundImage: `linear-gradient(to top,rgba(0,0,0,.5) 0%,transparent 55%), url(${item.src})`,
+                                    }}
+                                >
+                                    <span className={styles.galLbl}>{item.title || 'CalmTable'}</span>
+                                </div>
+                            </div>
+                        ))
+                    ) : (
+                        <div className={styles.galItem}>
+                            <div
+                                className={styles.galBg}
+                                style={{
+                                    backgroundImage:
+                                        'linear-gradient(to top,rgba(0,0,0,.5) 0%,transparent 55%),linear-gradient(135deg,#7A5038,#C8845A)',
+                                }}
+                            >
+                                <span className={styles.galLbl}>The Dining Room</span>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </section>
+
+            <div className={`${styles.ctaBand} ${styles.reveal}`}>
+                <h2>{cta.title}</h2>
+                <p>{cta.description}</p>
+                <button className={styles.ctaBtn} type="button">
+                    {cta.button}
+                </button>
+            </div>
         </div>
     );
 }

@@ -4,8 +4,8 @@
 @tailwind utilities;
 
 :root {
-  --font-inter: 'Montserrat', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  --font-playfair: 'Times New Roman', Georgia, serif;
+  --font-inter: var(--font-sans, 'Outfit', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif);
+  --font-playfair: var(--font-serif, 'Playfair Display', 'Times New Roman', Georgia, serif);
   --table-brown-rgb: 158 96 48;
   --table-brown-light-rgb: 214 150 92;
   --wood-accent-rgb: 220 144 74;

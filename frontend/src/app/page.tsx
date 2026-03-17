@@ -1,57 +1,366 @@
-// Premium homepage for The CalmTable - Restaurant Information Website
 'use client';
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useMemo, useState } from 'react';
-import toast from 'react-hot-toast';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 
+import styles from './page.module.css';
+
 import { defaultFrontendSettings } from '@/lib/frontend-settings';
-import { fetchAboutUs, fetchBestOrderedMenuItems, fetchFrontendSettings } from '@/lib/services';
-import { formatKwacha } from '@/lib/currency';
+import { fetchFeaturedMenuItems, fetchFrontendSettings } from '@/lib/services';
 import { normalizeImageSource, shouldSkipImageOptimization } from '@/lib/image';
-import type { FrontendContentPayload, MenuItem } from '@/lib/types';
+import type { FrontendContentPayload, HomePageContent, MenuItem } from '@/lib/types';
 
-interface SignatureDish {
-  id: number;
-  name: string;
-  category: string;
-  price: string;
-  image_url: string;
-}
+const fallbackHomePage: HomePageContent = {
+  hero: {
+    kicker: 'Pan-African & Global Dining',
+    title_html: '<span>A calm place to</span>gather<br/>&amp; <em>eat well.</em>',
+    side_label: 'Est. CalmTable',
+    stats: [
+      { value: '4+', label: 'African Regions' },
+      { value: '80+', label: 'Menu Items' },
+      { value: '4.9', label: 'Guest Rating' },
+    ],
+    cta: {
+      label: 'Reserve →',
+      sublabel: 'Book your calm table',
+    },
+    images: {
+      primary: '/images/hero_bg.jpg',
+      secondary: '/images/hero2_bg.jpg',
+    },
+  },
+  reservation: {
+    tag: 'Reservations',
+    title_html: 'Book your<br/>calm table',
+    note: 'Guests are never rushed. We keep a seat ready for you — warm, unhurried, and always welcoming.',
+    hours: [
+      { day: 'Monday – Friday', hours: '07:00 – 21:00' },
+      { day: 'Saturday', hours: '08:00 – 22:00' },
+      { day: 'Sunday', hours: '09:00 – 20:00' },
+      { day: 'Private Events', hours: 'By arrangement' },
+    ],
+    form: {
+      title: 'Complete your booking',
+      times: [
+        '07:00',
+        '07:30',
+        '08:00',
+        '08:30',
+        '12:00',
+        '12:30',
+        '13:00',
+        '13:30',
+        '18:00',
+        '18:30',
+        '19:00',
+        '19:30',
+        '20:00',
+        '20:30',
+      ],
+      guests: ['1 guest', '2 guests', '3 guests', '4 guests', '5 guests', '6 guests', '7 – 10 guests', '11+ (private event)'],
+      occasions: [
+        'Regular dining',
+        'Business lunch',
+        'Birthday',
+        'Anniversary',
+        'Private event',
+        'Other',
+      ],
+      request_placeholder: 'Dietary needs, seating preferences…',
+      submit_label: 'Confirm Reservation',
+      success_label: '✓ Reservation Requested',
+    },
+  },
+  marquee: {
+    items: [
+      'A calm place to dine',
+      'African flavours. Calm moments.',
+      'Gather calmly. Eat well.',
+      'Where food meets peace.',
+      'Gather. Eat. Rest.',
+      'Simple food. Clean ingredients. Honest cooking.',
+    ],
+  },
+  brand: {
+    eyebrow: 'Our Story',
+    quote_html: 'A peace-first dining<br/>concept rooted in<br/><em>African flavour</em><br/>&amp; calm hospitality.',
+    body:
+      'CalmTable was designed to be location-agnostic — operating successfully in cities, university towns, border regions, and travel corridors across Africa and beyond. Every element, from the menu to the atmosphere, is calibrated for one purpose: a genuinely calm, welcoming experience.',
+    pills: [
+      'Pan-African Identity',
+      'Internationally Adaptable',
+      'Family-Friendly',
+      'Meeting-Ready',
+      'No rush, ever',
+      'Operationally Scalable',
+    ],
+    cta_label: 'Read our full story →',
+    cta_href: '/about',
+    stats: [
+      { value: '12+', label: 'Years of calm service' },
+      { value: '4+', label: 'African culinary regions' },
+      { value: '80+', label: 'Dishes on the menu' },
+      { value: '4.9', label: 'Average guest rating' },
+    ],
+  },
+  pillars: {
+    eyebrow: 'What We Stand For',
+    title_html: 'Five principles that<br/>define <em>every detail</em>',
+    items: [
+      {
+        number: '01',
+        title: 'Calm & Comfort',
+        description:
+          'Peaceful, unhurried dining — always. Guests are never rushed. Our spaces are designed for lingering, reflecting, and connecting.',
+      },
+      {
+        number: '02',
+        title: 'Hospitality',
+        description:
+          'Every guest is welcomed with respect and genuine warmth — from the first greeting to the final goodbye, no exceptions.',
+      },
+      {
+        number: '03',
+        title: 'Quality & Consistency',
+        description:
+          'Reliable food and service across every CalmTable location. The same standard, wherever you find us — city, town, or transit hub.',
+      },
+      {
+        number: '04',
+        title: 'Inclusivity',
+        description:
+          'Culturally neutral and globally welcoming. Families, professionals, travellers, students, and NGO workers are all equal at our table.',
+      },
+      {
+        number: '05',
+        title: 'Sustainability',
+        description:
+          'Responsible sourcing, local supplier preference, fair procurement, and operations that actively respect the communities we serve.',
+      },
+    ],
+  },
+  cuisine: {
+    eyebrow: 'Our Menu',
+    title_html: 'Dishes from across<br/>the <em>African continent</em>',
+    description:
+      'CalmTable celebrates African culinary diversity — freshly prepared, community-oriented, balanced. International dishes are available on request and as rotating specials for global guests.',
+    regions: [
+      {
+        region: 'Southern Africa',
+        name: 'Grains & Greens',
+        dishes: ['Nsima / Pap / Sadza', 'Beans & lentils', 'Leafy greens', 'Chicken, goat, fish'],
+      },
+      {
+        region: 'East Africa',
+        name: 'Swahili Coast',
+        dishes: ['Pilau-style rice', 'Coconut stews', 'Chapati', 'Swahili dishes'],
+      },
+      {
+        region: 'West Africa',
+        name: 'Bold & Hearty',
+        dishes: ['Jollof-style rice', 'Peanut stews', 'Plantain', 'Seasonal specials'],
+      },
+      {
+        region: 'Central Africa',
+        name: 'Root & Stew',
+        dishes: ['Cassava meals', 'Vegetable stews', 'Slow proteins', 'Rotating specials'],
+      },
+    ],
+    intl_note:
+      'International & Global Dishes — available on request, as rotating specials, and for long-stay guests, tourists & corporate groups.',
+    link_label: 'View Full Menu',
+    link_href: '/menu',
+  },
+  service: {
+    eyebrow: 'How We Serve',
+    title_html: 'Service that is<br/>calm, attentive,<br/><em>&amp; deeply human</em>',
+    body:
+      'Our service model is standardised but never robotic — enabling consistency at scale while ensuring every guest feels personally cared for. No performance. No pressure. Just presence.',
+    quote: '"Guests should feel welcome to stay — not rushed."',
+    steps: [
+      {
+        number: '01',
+        title: 'Calm welcome',
+        description: 'Every guest is greeted warmly before anything else. No queue pressure, no rush to be seated.',
+      },
+      {
+        number: '02',
+        title: 'Optional menu guidance',
+        description: 'Personalised help — especially for first-time guests discovering Pan-African cuisine.',
+      },
+      {
+        number: '03',
+        title: 'Flexible ordering',
+        description: 'Special requests, dietary needs, international options — always accommodated without fuss.',
+      },
+      {
+        number: '04',
+        title: 'Comfortable, unhurried pacing',
+        description: 'Food served neatly and on time. No pressure to leave. Guests are always welcome to linger.',
+      },
+      {
+        number: '05',
+        title: 'Menu explained with care',
+        description: 'Especially for first-time visitors — every dish has a story, and our team is proud to tell it.',
+      },
+    ],
+  },
+  testimonials: {
+    eyebrow: 'Guest Voices',
+    title_html: 'What our guests <em>say</em>',
+    items: [
+      {
+        quote:
+          'The CalmTable turns every meal into an occasion. The flavors are rich, the service is warm — nothing feels rushed.',
+        author: 'Zione Phiri',
+      },
+      {
+        quote: 'We hosted our engagement dinner here and everything felt polished and intimate. Highly recommend.',
+        author: 'Natasha Mbewe',
+      },
+      {
+        quote: 'Every plate arrives with genuine care. The most consistent dining experience I have found.',
+        author: 'Brian Tembo',
+      },
+      {
+        quote: 'The ambiance, the plating, the hospitality — all premium without feeling stiff or hurried.',
+        author: 'Ethel Banda',
+      },
+    ],
+  },
+  community: {
+    eyebrow: 'Community & Responsibility',
+    title_html: 'Responsible in every<br/>community we <em>enter</em>',
+    body:
+      'CalmTable integrates responsibly into every location — not imposing, but contributing genuine value. No ideological positioning — quality and responsibility only.',
+    pills: [
+      'Student discounts',
+      'Quiet mornings for seniors',
+      'Local farmer partnerships',
+      'Local employment first',
+      'Food-waste reduction',
+      'Fair procurement',
+      'Faith-neutral values',
+    ],
+    items: [
+      {
+        icon: '◉',
+        title: 'Local Sourcing',
+        description:
+          'Preference for local suppliers and farmers — building supply chains that genuinely support the communities we operate in.',
+      },
+      {
+        icon: '◎',
+        title: 'Employment & Training',
+        description:
+          'We hire locally and invest in staff development — CalmTable is a training ground for future hospitality professionals.',
+      },
+      {
+        icon: '◈',
+        title: 'Cultural Respect',
+        description: 'Deep respect for regional food cultures. Values-based, not ideologically positioned.',
+      },
+      {
+        icon: '◇',
+        title: 'Inclusive Access',
+        description:
+          'Discount days for students, quiet mornings for seniors — calm dining for everyone, not just a privileged few.',
+      },
+    ],
+  },
+  formats: {
+    eyebrow: 'Growth & Scalability',
+    title_html: 'CalmTable<br/><em>in every format</em>',
+    note:
+      'CalmTable is designed as a multi-location brand — each format shares the same core DNA, with local menu adaptations.',
+    items: [
+      {
+        number: '01',
+        title: 'Flagship',
+        description: 'Full dining experience with the complete Pan-African core menu and international specials on request.',
+      },
+      {
+        number: '02',
+        title: 'CalmTable Café',
+        description: 'Lighter fare and beverages — ideal for work meetings, quiet mornings, and short visits.',
+      },
+      {
+        number: '03',
+        title: 'Garden',
+        description: 'Outdoor dining for locations with natural spaces — the calm of nature brought to the table.',
+      },
+      {
+        number: '04',
+        title: 'Catering',
+        description: 'Custom menus for events, NGOs, corporate groups, and special gatherings of any size.',
+      },
+      {
+        number: '05',
+        title: 'Express',
+        description: 'Limited-menu format for transit hubs, university canteens, and travel corridors.',
+      },
+    ],
+  },
+  gallery: {
+    eyebrow: 'Gallery',
+    title_html: 'Spaces &amp; <em>moments</em>',
+    items: [
+      { label: 'The Dining Room', image: '/images/gallery-1.png' },
+      { label: 'Garden Setting', image: '/images/gallery-2.png' },
+      { label: 'Pan-African Menu', image: '/images/gallery-3.png' },
+      { label: 'The Atmosphere', image: '/images/gallery-4.svg' },
+      { label: 'Calm Evenings', image: '/images/gallery-5.svg' },
+      { label: 'Community Table', image: '/images/reservation-bg.png' },
+    ],
+  },
+  final_cta: {
+    title_html: 'Come to<br/>the <em>table.</em>',
+    subtitle: 'Find your nearest CalmTable location. Reserve your seat. Stay as long as you like.',
+    button_label: 'Reserve a Table',
+    button_href: '#reservations',
+  },
+  footer: {
+    tagline:
+      '"A peaceful dining space where wholesome food, warm hospitality, and calm moments come together."',
+    columns: [
+      {
+        title: 'Navigate',
+        links: [
+          { label: 'Home', href: '/' },
+          { label: 'Menu', href: '/menu' },
+          { label: 'About Us', href: '/about' },
+          { label: 'Contact', href: '/contact' },
+          { label: 'Reservations', href: '#reservations' },
+        ],
+      },
+      {
+        title: 'Formats',
+        links: [
+          { label: 'Flagship', href: '/menu' },
+          { label: 'CalmTable Café', href: '/menu' },
+          { label: 'Garden', href: '/menu' },
+          { label: 'Catering', href: '/contact' },
+          { label: 'Express', href: '/menu' },
+        ],
+      },
+      {
+        title: 'Follow',
+        links: [
+          { label: 'Instagram', href: '#' },
+          { label: 'Facebook', href: '#' },
+          { label: 'TikTok', href: '#' },
+          { label: 'WhatsApp', href: '#' },
+        ],
+      },
+    ],
+    bottom_left: '© 2026 CalmTable. Dine with Dignity.',
+    bottom_right: 'Pan-African & Global Dining',
+  },
+};
 
-const fallbackSignatureDishes: SignatureDish[] = [
-  {
-    id: 1,
-    name: 'Fried Open Chambo',
-    category: "Chef's Special",
-    price: '25000',
-    image_url: '/images/dish-fish.png',
-  },
-  {
-    id: 2,
-    name: 'Goat Stew',
-    category: 'Starch Meal',
-    price: '8000',
-    image_url: '/images/dish-meat.png',
-  },
-  {
-    id: 3,
-    name: 'Hybrid Braii Chicken',
-    category: 'Grilled',
-    price: '13000',
-    image_url: '/images/dish-meat.png',
-  },
-  {
-    id: 4,
-    name: 'Chapati with Beef Stirfry',
-    category: 'Snacks',
-    price: '8000',
-    image_url: '/images/dish-snack.png',
-  },
-];
-
+const TESTIMONIAL_INTERVAL = 6500;
 const fadeInUp = {
   hidden: { opacity: 0, y: 30 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.25, 1, 0.5, 1] } },
@@ -63,50 +372,21 @@ const staggerContainer = {
 };
 
 export default function HomePage() {
-  const [bestOrderedItems, setBestOrderedItems] = useState<MenuItem[]>([]);
-  const [aboutUsImage, setAboutUsImage] = useState<string>('');
   const [settings, setSettings] = useState<FrontendContentPayload>(defaultFrontendSettings);
-
-  // Parallax effect for hero background
+  const [activeTestimonial, setActiveTestimonial] = useState(0);
+  const [reservationTime, setReservationTime] = useState('');
+  const [reservationDate, setReservationDate] = useState('');
+  const [reservationGuests, setReservationGuests] = useState('2 guests');
+  const [reservationOccasion, setReservationOccasion] = useState('Regular dining');
+  const [reservationNote, setReservationNote] = useState('');
+  const [guestName, setGuestName] = useState('');
+  const [guestEmail, setGuestEmail] = useState('');
+  const [guestPhone, setGuestPhone] = useState('');
+  const [reservationStatus, setReservationStatus] = useState<'idle' | 'submitting' | 'done' | 'error'>('idle');
+  const [featuredDish, setFeaturedDish] = useState<MenuItem | null>(null);
+  const intervalRef = useRef<number | null>(null);
   const { scrollY } = useScroll();
   const heroY = useTransform(scrollY, [0, 1000], ['0%', '20%']);
-
-  const signatureDishes = useMemo<SignatureDish[]>(() => {
-    if (bestOrderedItems.length === 0) {
-      return fallbackSignatureDishes;
-    }
-
-    return bestOrderedItems.slice(0, 4).map((item, index) => ({
-      id: item.id,
-      name: item.name,
-      category: index === 0 ? "Chef's Special" : 'Best Ordered',
-      price: item.price,
-      image_url:
-        item.image_url || fallbackSignatureDishes[index]?.image_url || fallbackSignatureDishes[0].image_url,
-    }));
-  }, [bestOrderedItems]);
-
-  useEffect(() => {
-    let active = true;
-    async function loadBestOrderedItems() {
-      try {
-        const data = await fetchBestOrderedMenuItems();
-        if (active) {
-          setBestOrderedItems(data);
-        }
-      } catch (error) {
-        if (active) {
-          toast.error(error instanceof Error ? error.message : 'Unable to load signature dishes.');
-        }
-      }
-    }
-
-    void loadBestOrderedItems();
-
-    return () => {
-      active = false;
-    };
-  }, []);
 
   useEffect(() => {
     let active = true;
@@ -122,48 +402,163 @@ export default function HomePage() {
     }
 
     void loadSettings();
-    return () => {
-      active = false;
-    };
-  }, []);
-
-  useEffect(() => {
-    let active = true;
-    async function loadAboutUs() {
+    async function loadFeaturedDish() {
       try {
-        const data = await fetchAboutUs();
-        if (active && data?.about_image) {
-          setAboutUsImage(data.about_image);
+        const dishes = await fetchFeaturedMenuItems();
+        if (active && dishes.length > 0) {
+          setFeaturedDish(dishes[0]);
         }
       } catch (_error) {
-        // Keep fallback image.
+        // Keep no featured dish.
       }
     }
 
-    void loadAboutUs();
+    void loadFeaturedDish();
     return () => {
       active = false;
     };
   }, []);
 
-  const heroBg = normalizeImageSource(settings.home.hero_bg_image) || '/images/hero-placeholder.png';
-  const aboutImage =
-    normalizeImageSource(aboutUsImage) ||
-    normalizeImageSource(settings.home.about_image) ||
-    '/images/hero-placeholder.png';
-  const resBg = normalizeImageSource(settings.home.reservation_bg_image) || '/images/hero-placeholder.png';
-  const openingHours = settings.contact.opening_hours?.length
-    ? settings.contact.opening_hours
-    : [
-        { day: 'Monday - Thursday', hours: '8:00 AM - 10:00 PM' },
-        { day: 'Friday - Saturday', hours: '8:00 AM - 11:00 PM' },
-        { day: 'Sunday', hours: '9:00 AM - 9:00 PM' },
-      ];
+  const today = useMemo(() => {
+    const t = new Date();
+    return t.toISOString().split('T')[0];
+  }, []);
+
+  useEffect(() => {
+    setReservationDate(today);
+  }, [today]);
+
+  const homePage = settings.home_page || fallbackHomePage;
+  const reservation = homePage.reservation || fallbackHomePage.reservation;
+  const marquee = homePage.marquee || fallbackHomePage.marquee;
+  const brand = homePage.brand || fallbackHomePage.brand;
+  const pillars = homePage.pillars || fallbackHomePage.pillars;
+  const cuisine = homePage.cuisine || fallbackHomePage.cuisine;
+  const service = homePage.service || fallbackHomePage.service;
+  const testimonials = homePage.testimonials || fallbackHomePage.testimonials;
+  const community = homePage.community || fallbackHomePage.community;
+  const formats = homePage.formats || fallbackHomePage.formats;
+  const gallery = homePage.gallery || fallbackHomePage.gallery;
+  const finalCta = homePage.final_cta || fallbackHomePage.final_cta;
+  const footer = homePage.footer || fallbackHomePage.footer;
+
+  const legacyHome = settings.home ?? defaultFrontendSettings.home;
+  const heroBg = normalizeImageSource(legacyHome.hero_bg_image) || '/images/hero-placeholder.png';
+
+  const testimonialsList = testimonials.items?.length ? testimonials.items : fallbackHomePage.testimonials.items;
+
+  useEffect(() => {
+    const nodes = Array.from(document.querySelectorAll('[data-reveal]'));
+    if (!nodes.length) {
+      return undefined;
+    }
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add(styles.revealIn);
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.07 }
+    );
+
+    nodes.forEach((node) => observer.observe(node));
+    return () => observer.disconnect();
+  }, [settings]);
+
+  useEffect(() => {
+    if (intervalRef.current) {
+      window.clearInterval(intervalRef.current);
+    }
+    if (testimonialsList.length > 1) {
+      intervalRef.current = window.setInterval(() => {
+        setActiveTestimonial((prev) => (prev + 1) % testimonialsList.length);
+      }, TESTIMONIAL_INTERVAL);
+    }
+    return () => {
+      if (intervalRef.current) {
+        window.clearInterval(intervalRef.current);
+      }
+    };
+  }, [testimonialsList.length]);
+
+  useEffect(() => {
+    if (activeTestimonial >= testimonialsList.length) {
+      setActiveTestimonial(0);
+    }
+  }, [activeTestimonial, testimonialsList.length]);
+
+  function handleDotClick(index: number) {
+    setActiveTestimonial(index);
+    if (intervalRef.current) {
+      window.clearInterval(intervalRef.current);
+    }
+    if (testimonialsList.length > 1) {
+      intervalRef.current = window.setInterval(() => {
+        setActiveTestimonial((prev) => (prev + 1) % testimonialsList.length);
+      }, TESTIMONIAL_INTERVAL);
+    }
+  }
+
+  async function handleReserveSubmit() {
+    if (!reservationTime || !guestName || !guestEmail) {
+      window.alert('Please fill in your name, email, and select a time.');
+      return;
+    }
+
+    setReservationStatus('submitting');
+    try {
+      const partySizeStr = reservationGuests.split(' ')[0];
+      const partySize = parseInt(partySizeStr, 10) || 2;
+
+      await createReservation({
+        name: guestName,
+        email: guestEmail,
+        phone: guestPhone,
+        date: reservationDate,
+        time_slot: reservationTime,
+        party_size: partySize,
+        special_requests: `${reservationOccasion}. ${reservationNote}`.trim(),
+      });
+
+      setReservationStatus('done');
+      // Reset form or keep success state
+      window.setTimeout(() => {
+        setReservationStatus('idle');
+        setGuestName('');
+        setGuestEmail('');
+        setGuestPhone('');
+        setReservationNote('');
+      }, 5000);
+    } catch (error) {
+      console.error('Reservation failed:', error);
+      setReservationStatus('error');
+      window.alert('Sorry, something went wrong with your reservation. Please try again.');
+      setReservationStatus('idle');
+    }
+  }
+
+  const marqueeItems = [...marquee.items, ...marquee.items];
+  const galleryItems = (gallery.items?.length ? gallery.items : fallbackHomePage.gallery.items).slice(0, 6);
+  const activeTestimonialItem = testimonialsList[activeTestimonial] || testimonialsList[0];
 
   return (
-    <div className="bg-cream dark:bg-cream min-h-screen text-ink dark:text-white overflow-hidden selection:bg-amber-600/30 -mt-14">
+    <div className={styles.home}>
+      {/* ─── FLOATING RESERVATION BUTTON ─────────────────────────────── */}
+      <a
+        href="#reservations"
+        className="fixed bottom-6 right-6 z-50 inline-flex items-center gap-2 rounded-full bg-amber-500 px-6 py-3 font-bold text-white shadow-lg transition-all hover:bg-amber-600 hover:scale-105 active:scale-95"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z" />
+          <circle cx="12" cy="10" r="3" />
+        </svg>
+        Book a Table
+      </a>
 
-      {/* ─── Hero Section ────────────────────────────────────────────── */}
+      {/* ─── HERO (previous style) ─────────────────────────────── */}
       <section className="relative h-[100dvh] flex items-center justify-center overflow-hidden">
         <motion.div style={{ y: heroY }} className="absolute inset-0 w-full h-full transform-gpu">
           <Image
@@ -176,7 +571,6 @@ export default function HomePage() {
           />
         </motion.div>
 
-        {/* Gradients to blend into dark background */}
         <div className="absolute inset-0 bg-cream/35 dark:bg-cream/55 backdrop-blur-[2px]" />
         <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-cream/70 dark:from-cream/70 to-transparent" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgb(var(--cream-rgb))_100%)] opacity-45" />
@@ -189,19 +583,25 @@ export default function HomePage() {
             className="max-w-4xl"
           >
             <motion.p variants={fadeInUp} className="text-[10px] font-bold uppercase tracking-[0.3em] text-amber-500 mb-6">
-              {settings.home.hero_eyebrow}
+              {legacyHome.hero_eyebrow}
             </motion.p>
-            <motion.h1 variants={fadeInUp} className="font-heading text-4xl font-bold leading-tight sm:text-5xl md:text-6xl lg:text-7xl drop-shadow-2xl">
-              {settings.home.hero_title_prefix}{' '}
+            <motion.h1
+              variants={fadeInUp}
+              className="font-heading text-4xl font-bold leading-tight sm:text-5xl md:text-6xl lg:text-7xl drop-shadow-2xl"
+            >
+              {legacyHome.hero_title_prefix}{' '}
               <em className="text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-amber-400 to-orange-400">
-                {settings.home.hero_title_emphasis}
+                {legacyHome.hero_title_emphasis}
               </em>{' '}
               <br className="max-sm:hidden" />
-              {settings.home.hero_title_suffix}
+              {legacyHome.hero_title_suffix}
             </motion.h1>
 
-            <motion.p variants={fadeInUp} className="mt-8 mx-auto max-w-2xl text-sm text-ink dark:text-white/70 sm:text-base leading-relaxed font-light">
-              {settings.home.hero_description}
+            <motion.p
+              variants={fadeInUp}
+              className="mt-8 mx-auto max-w-2xl text-sm text-ink dark:text-white/70 sm:text-base leading-relaxed font-light"
+            >
+              {legacyHome.hero_description}
             </motion.p>
 
             <motion.div variants={fadeInUp} className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-5">
@@ -212,296 +612,460 @@ export default function HomePage() {
                 Explore Menu
               </Link>
             </motion.div>
-          </motion.div>
-        </div>
-      </section>
 
-      {/* ─── Story Section ────────────────────────────────────────────── */}
-      <section className="py-24 sm:py-32 relative">
-        <div className="pointer-events-none absolute -left-40 top-40 h-96 w-96 rounded-full bg-amber-600/10 blur-[100px]" />
-
-        <div className="page-shell">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-
-            <motion.div
-              initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={staggerContainer}
-              className="relative"
-            >
-              <div className="relative aspect-[4/5] overflow-hidden rounded-2xl md:rounded-[3rem] border border-white/10 dark:border-white/10 ring-1 ring-white/5">
-                <Image
-                  src={aboutImage}
-                  alt="Inside The CalmTable"
-                  fill
-                  className="object-cover transition-transform duration-1000 hover:scale-105"
-                  unoptimized={shouldSkipImageOptimization(aboutImage)}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-cream dark:from-cream/80 via-transparent to-transparent" />
-              </div>
-              {/* Floating Badge */}
+            {/* ─── SIGNATURE DISH ─────────────────────────────── */}
+            {featuredDish && (
               <motion.div
                 variants={fadeInUp}
-                className="absolute -bottom-8 -right-8 sm:-right-12 rounded-2xl bg-gradient-to-br from-tableBrown/80 to-warmGray/90 p-6 backdrop-blur-md border border-woodAccent/20 shadow-2xl"
+                className="mt-10 inline-flex items-center gap-3 rounded-full bg-amber-500/90 backdrop-blur-sm px-5 py-2 text-white shadow-lg"
               >
-                <div className="text-center">
-                  <span className="block text-4xl font-bold text-amber-500 font-heading">
-                    {settings.home.stats.years_serving}
-                  </span>
-                  <span className="block text-[10px] font-bold uppercase tracking-[0.2em] text-ink dark:text-white/70 mt-2">
-                    Years Serving
-                  </span>
-                </div>
+                <span className="text-xs font-bold uppercase tracking-wider">Chef's Signature</span>
+                <span className="w-px h-4 bg-white/40" />
+                <span className="text-sm font-medium">{featuredDish.name}</span>
+                <span className="text-xs opacity-80">—</span>
+                <span className="text-sm font-bold">K{featuredDish.price}</span>
               </motion.div>
-            </motion.div>
-
-            <motion.div
-              initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={staggerContainer}
-            >
-              <motion.p variants={fadeInUp} className="text-xs font-bold uppercase tracking-[0.2em] text-amber-500 mb-4">
-                Our Heritage
-              </motion.p>
-              <motion.h2 variants={fadeInUp} className="font-heading text-4xl sm:text-5xl font-bold leading-tight mb-8">
-                Where Every Meal Is <em className="text-amber-400">A Celebration</em>
-              </motion.h2>
-
-              <motion.div variants={fadeInUp} className="w-16 h-[1px] bg-gradient-to-r from-amber-500 to-transparent mb-8" />
-
-              <motion.blockquote variants={fadeInUp} className="text-xl sm:text-2xl font-light italic text-ink dark:text-white/90 leading-relaxed mb-8 border-l-2 border-amber-500/40 pl-6">
-                &ldquo;{settings.home.story_quote}&rdquo;
-              </motion.blockquote>
-
-              <motion.p variants={fadeInUp} className="text-ink dark:text-white/60 leading-relaxed mb-10 text-sm sm:text-base">
-                {settings.home.story_description}
-              </motion.p>
-
-              <div className="grid sm:grid-cols-2 gap-8">
-                {settings.home.about_features.map((feature, i) => (
-                  <motion.div variants={fadeInUp} key={i}>
-                    <p className="font-bold text-amber-100 mb-2 font-heading tracking-wide">{feature.title}</p>
-                    <p className="text-sm text-ink dark:text-white/50 leading-relaxed">{feature.description}</p>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
-          </div>
+            )}
+          </motion.div>
         </div>
       </section>
 
-      {/* ─── Signature Dishes ────────────────────────────────────────────── */}
-      <section className="py-24 sm:py-32 relative bg-cream dark:bg-[#0e0805]">
-        <div className="pointer-events-none absolute right-0 top-1/2 h-96 w-96 -translate-y-1/2 rounded-full bg-orange-600/5 blur-[120px]" />
-
-        <div className="page-shell">
-          <motion.div
-            initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={staggerContainer}
-            className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16"
-          >
-            <div>
-              <p className="text-xs font-bold uppercase tracking-[0.2em] text-amber-500 mb-3">
-                From Our Kitchen
-              </p>
-              <h2 className="font-heading text-4xl sm:text-5xl font-bold">
-                Signature <em className="text-amber-400">Selections</em>
-              </h2>
-            </div>
-            <Link
-              href="/menu"
-              className="group inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.1em] text-ink dark:text-white hover:text-amber-400 transition-colors"
-            >
-              View Full Menu
-              <span className="transition-transform group-hover:translate-x-1">→</span>
-            </Link>
-          </motion.div>
-
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
-            {signatureDishes.map((dish, i) => (
-              <motion.article
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-50px" }}
-                transition={{ duration: 0.7, delay: i * 0.1, ease: [0.25, 1, 0.5, 1] }}
-                key={dish.id}
-                className="group relative rounded-3xl bg-white dark:bg-warmGray p-4 ring-1 ring-stone-200 dark:ring-white/5 hover:ring-amber-300 dark:hover:ring-white/20 hover:bg-stone-50 dark:hover:bg-tableBrown/70 transition-all duration-500"
-              >
-                <div className="relative aspect-square overflow-hidden rounded-2xl mb-6 bg-cream dark:bg-cream">
-                  <Image
-                    src={dish.image_url}
-                    alt={dish.name}
-                    fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-110"
-                    unoptimized={shouldSkipImageOptimization(dish.image_url)}
-                  />
-                  {/* Subtle vignette over image */}
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_30%,#000000_120%)] dark:opacity-60 opacity-0" />
-                </div>
-
-                <div className="px-2 pb-4">
-                  <p className="text-[11px] sm:text-xs font-semibold uppercase tracking-[0.22em] text-amber-700 dark:text-amber-400/90 mb-2">
-                    {dish.category}
-                  </p>
-                  <h3 className="font-heading font-semibold text-[1.12rem] sm:text-[1.25rem] text-ink dark:text-white mb-2 leading-snug tracking-tight">
-                    {dish.name}
-                  </h3>
-                  <div className="flex items-center justify-between mt-4">
-                    <p className="font-heading font-semibold text-lg sm:text-xl text-amber-600 dark:text-amber-400 tracking-tight">
-                      {formatKwacha(dish.price)}
-                    </p>
-                  </div>
-                </div>
-              </motion.article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ─── Gallery Preview ────────────────────────────────────────────── */}
-      <section className="py-24 sm:py-32 relative">
-        <div className="page-shell">
-          <motion.div
-            initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={staggerContainer}
-            className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16"
-          >
-            <div>
-              <p className="text-xs font-bold uppercase tracking-[0.2em] text-amber-500 mb-3">
-                Our Space
-              </p>
-              <h2 className="font-heading text-4xl sm:text-5xl font-bold">
-                Experience <em className="text-amber-400">CalmTable</em>
-              </h2>
-            </div>
-            <Link
-              href="/gallery"
-              className="group inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.1em] text-ink dark:text-white hover:text-amber-400 transition-colors"
-            >
-              View Full Gallery
-              <span className="transition-transform group-hover:translate-x-1">→</span>
-            </Link>
-          </motion.div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 auto-rows-[170px] sm:auto-rows-[190px] lg:auto-rows-[210px] gap-4">
-            {[
-              { src: '/images/gallery-1.png', span: 'lg:col-span-3 lg:row-span-2' },
-              { src: '/images/gallery-2.png', span: 'lg:col-span-2 lg:row-span-1' },
-              { src: '/images/gallery-3.png', span: 'lg:col-span-1 lg:row-span-1' },
-              { src: '/images/dish-meat.png', span: 'lg:col-span-2 lg:row-span-1' },
-              { src: '/images/dish-snack.png', span: 'lg:col-span-1 lg:row-span-1' },
-            ].map((tile, i) => (
-              <motion.div
-                key={tile.src}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: i * 0.08 }}
-                className={`group relative overflow-hidden rounded-3xl border border-stone-200/70 dark:border-white/10 bg-stone-100/40 dark:bg-warmGray shadow-[0_18px_40px_-24px_rgba(38,24,12,0.6)] ${tile.span}`}
-              >
-                <Image
-                  src={tile.src}
-                  alt={`Gallery image ${i + 1}`}
-                  fill
-                  className="object-cover transition-transform duration-700 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-gradient-to-tr from-black/35 via-black/10 to-transparent opacity-60 dark:opacity-70" />
-                <div className="absolute inset-0 ring-1 ring-white/30 dark:ring-white/10" />
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ─── Contact & Hours Section ────────────────────────────────────────────── */}
-      <section className="relative py-24 my-24 page-shell rounded-3xl overflow-hidden shadow-xl shadow-amber-900/10 dark:shadow-[#000000]">
-        <div className="absolute inset-0">
-          <Image
-            src={resBg}
-            alt="Visit us"
-            fill
-            className="object-cover"
-            unoptimized={shouldSkipImageOptimization(resBg)}
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-white/80 via-white/60 to-transparent dark:from-cream dark:via-cream/90 dark:to-cream/60 backdrop-blur-sm" />
-        </div>
-
-        <div className="relative z-10 grid lg:grid-cols-2 gap-16 lg:gap-8 items-center p-8 sm:p-16">
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer} className="max-w-xl">
-            <motion.p variants={fadeInUp} className="text-xs font-bold uppercase tracking-[0.2em] text-amber-500 mb-4">
-              Visit Us
-            </motion.p>
-            <motion.h2 variants={fadeInUp} className="font-heading text-4xl sm:text-5xl font-bold leading-tight mb-6">
-              We Look Forward to <em className="text-amber-400">Serving You</em>
-            </motion.h2>
-              <motion.p variants={fadeInUp} className="text-ink dark:text-white/70 leading-relaxed mb-10">
-                Come experience our warm ambiance and delicious cuisine.{" "}
-                {"Whether it's a casual lunch or a special celebration, we're here to make your visit memorable."}
-              </motion.p>
-
-            <motion.div variants={fadeInUp} className="flex flex-wrap gap-10">
-              <div>
-                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-ink dark:text-white/40 mb-2">Call Us</p>
-                <p className="text-lg font-bold">{settings.contact.phone}</p>
-              </div>
-              <div>
-                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-ink dark:text-white/40 mb-2">WhatsApp</p>
-                <p className="text-lg font-bold">{settings.contact.whatsapp}</p>
-              </div>
-              <div>
-                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-ink dark:text-white/40 mb-2">Email</p>
-                <p className="text-lg font-bold">{settings.contact.email}</p>
-              </div>
-            </motion.div>
-          </motion.div>
-
-          {/* Hours & Location Info */}
-          <motion.div
-            initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} transition={{ duration: 0.8 }} viewport={{ once: true }}
-            className="relative rounded-3xl border border-stone-200 dark:border-white/10 bg-white/80 dark:bg-tableBrown/25 p-8 sm:p-10 backdrop-blur-xl shadow-xl"
-          >
-            <h3 className="font-heading text-2xl font-bold mb-8 text-ink dark:text-white">Opening Hours</h3>
-
-            <div className="space-y-4">
-              {openingHours.map((slot, index) => (
-                <div key={`${slot.day}-${index}`} className="flex justify-between items-center py-2 border-b border-stone-200 dark:border-white/10">
-                  <span className="text-ink dark:text-white/70">{slot.day}</span>
-                  <span className="font-bold text-amber-600 dark:text-amber-400">{slot.hours}</span>
+      {/* ─── RESERVATION WIDGET ─────────────────────────────── */}
+      <section className={styles.resSection} id="reservations">
+        <div className={`${styles.resWidget} ${styles.reveal}`} data-reveal>
+          <div className={styles.resLeft}>
+            <p className={styles.resTag}>{reservation.tag}</p>
+            <h2 className={styles.resHeading} dangerouslySetInnerHTML={{ __html: reservation.title_html }} />
+            <p className={styles.resNote}>{reservation.note}</p>
+            <div className={styles.resHours}>
+              {reservation.hours.map((row) => (
+                <div key={row.day} className={styles.resHoursRow}>
+                  <span className={styles.resHoursDay}>{row.day}</span>
+                  <span className={styles.resHoursTime}>{row.hours}</span>
                 </div>
               ))}
             </div>
+          </div>
+          <div className={styles.resRight}>
+            <p className={styles.resFormTitle}>{reservation.form.title}</p>
+            <div className={styles.resGrid}>
+              <div className={`${styles.resField} ${styles.resFull}`}>
+                <label htmlFor="rname">Full Name</label>
+                <input
+                  type="text"
+                  id="rname"
+                  placeholder="Your Name"
+                  value={guestName}
+                  onChange={(e) => setGuestName(e.target.value)}
+                  required
+                />
+              </div>
+              <div className={styles.resField}>
+                <label htmlFor="remail">Email Address</label>
+                <input
+                  type="email"
+                  id="remail"
+                  placeholder="your@email.com"
+                  value={guestEmail}
+                  onChange={(e) => setGuestEmail(e.target.value)}
+                  required
+                />
+              </div>
+              <div className={styles.resField}>
+                <label htmlFor="rphone">Phone Number</label>
+                <input
+                  type="tel"
+                  id="rphone"
+                  placeholder="+265..."
+                  value={guestPhone}
+                  onChange={(e) => setGuestPhone(e.target.value)}
+                />
+              </div>
 
-            <div className="mt-8 pt-6 border-t border-stone-200 dark:border-white/10">
-              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-amber-500 mb-4">Location</p>
-              <p className="text-ink dark:text-white/70">{settings.contact.address_line_1}</p>
-              <p className="text-ink dark:text-white/70">{settings.contact.address_line_2}</p>
+              <div className={styles.resField}>
+                <label htmlFor="rd">Date</label>
+                <input
+                  type="date"
+                  id="rd"
+                  min={today}
+                  value={reservationDate}
+                  onChange={(e) => setReservationDate(e.target.value)}
+                />
+              </div>
+              <div className={styles.resField}>
+                <label htmlFor="rt">Time</label>
+                <select id="rt" value={reservationTime} onChange={(event) => setReservationTime(event.target.value)}>
+                  <option value="">— Select —</option>
+                  {reservation.form.times.map((time) => (
+                    <option key={time} value={time}>
+                      {time}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className={styles.resField}>
+                <label htmlFor="rg">Guests</label>
+                <select id="rg" value={reservationGuests} onChange={(e) => setReservationGuests(e.target.value)}>
+                  {reservation.form.guests.map((guest) => (
+                    <option key={guest} value={guest}>
+                      {guest}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className={styles.resField}>
+                <label htmlFor="ro">Occasion</label>
+                <select id="ro" value={reservationOccasion} onChange={(e) => setReservationOccasion(e.target.value)}>
+                  {reservation.form.occasions.map((occasion) => (
+                    <option key={occasion} value={occasion}>
+                      {occasion}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className={`${styles.resField} ${styles.resFull}`}>
+                <label htmlFor="rn">Special requests (optional)</label>
+                <input
+                  type="text"
+                  id="rn"
+                  placeholder={reservation.form.request_placeholder}
+                  value={reservationNote}
+                  onChange={(e) => setReservationNote(e.target.value)}
+                />
+              </div>
             </div>
-          </motion.div>
+            <button
+              className={styles.resSubmit}
+              type="button"
+              onClick={handleReserveSubmit}
+              disabled={reservationStatus === 'submitting'}
+            >
+              {reservationStatus === 'submitting'
+                ? 'Requesting...'
+                : reservationStatus === 'done'
+                ? reservation.form.success_label
+                : reservation.form.submit_label}
+            </button>
+          </div>
         </div>
       </section>
 
-      {/* ─── Footer ────────────────────────────────────────────── */}
-      <footer className="border-t border-white/10 dark:border-white/10 bg-cream dark:bg-cream py-16">
-        <div className="page-shell">
-          <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-4">
-            <div className="lg:col-span-2">
-              <p className="font-heading text-2xl font-bold text-amber-500 mb-4">{settings.brand_name}</p>
-              <p className="text-sm text-ink dark:text-white/50 max-w-sm leading-relaxed">{settings.brand_tagline}</p>
+      {/* ─── MARQUEE ───────────────────────────────────────── */}
+      <div className={styles.marqueeStrip}>
+        <div className={styles.marqueeTrack}>
+          {marqueeItems.map((item, index) => (
+            <span key={`${item}-${index}`}>
+              {item}
+              <span className={styles.marqueeDot}> ✦ </span>
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* ─── BRAND STATEMENT ───────────────────────────────── */}
+      <section className={styles.brand}>
+        <div className={styles.brandBgNum}>CT</div>
+        <div className={styles.brandInner}>
+          <div className={styles.brandMain}>
+            <p className={`${styles.ey} ${styles.reveal}`} data-reveal>
+              {brand.eyebrow}
+            </p>
+            <h2
+              className={`${styles.brandQuote} ${styles.reveal} ${styles.d1}`}
+              data-reveal
+              dangerouslySetInnerHTML={{ __html: brand.quote_html }}
+            />
+            <p className={`${styles.brandBody} ${styles.reveal} ${styles.d2}`} data-reveal>
+              {brand.body}
+            </p>
+            <div className={`${styles.brandPills} ${styles.reveal} ${styles.d3}`} data-reveal>
+              {brand.pills.map((pill) => (
+                <span key={pill} className={styles.brandPill}>
+                  {pill}
+                </span>
+              ))}
             </div>
-            <div>
-              <p className="text-xs font-bold uppercase tracking-[0.15em] text-ink dark:text-white mb-6">Navigation</p>
-              <div className="flex flex-col gap-4 text-sm text-ink dark:text-white/60">
-                <Link href="/" className="hover:text-amber-400 transition-colors w-fit">Home</Link>
-                <Link href="/menu" className="hover:text-amber-400 transition-colors w-fit">Menu</Link>
-                <Link href="/about" className="hover:text-amber-400 transition-colors w-fit">About</Link>
-                <Link href="/contact" className="hover:text-amber-400 transition-colors w-fit">Contact</Link>
+            <Link href={brand.cta_href} className={`${styles.brandCta} ${styles.reveal} ${styles.d4}`} data-reveal>
+              {brand.cta_label}
+            </Link>
+          </div>
+          <div className={`${styles.brandAside} ${styles.reveal} ${styles.d2}`} data-reveal>
+            {brand.stats.map((stat) => (
+              <div key={stat.label} className={styles.brandStat}>
+                <div className={styles.brandStatN}>{stat.value}</div>
+                <div className={styles.brandStatL}>{stat.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── CONCEPT PILLARS ───────────────────────────────── */}
+      <section className={styles.pillars}>
+        <div className={`${styles.pillarsTop} ${styles.reveal}`} data-reveal>
+          <p className={styles.ey} style={{ marginBottom: '1rem' }}>
+            {pillars.eyebrow}
+          </p>
+          <h2
+            className={styles.serif}
+            style={{ fontSize: 'clamp(2rem,4vw,3.5rem)', fontWeight: 300, lineHeight: 1.1 }}
+            dangerouslySetInnerHTML={{ __html: pillars.title_html }}
+          />
+        </div>
+        <div className={styles.pillarsScroll}>
+          {pillars.items.map((item, index) => (
+            <div key={item.title} className={`${styles.pc} ${styles.reveal} ${styles[`d${index + 1}`] || ''}`} data-reveal>
+              <div className={styles.pcNum}>{item.number}</div>
+              <div className={styles.pcBody}>
+                <p className={styles.pcTitle}>{item.title}</p>
+                <p className={styles.pcDesc}>{item.description}</p>
               </div>
             </div>
-            <div>
-              <p className="text-xs font-bold uppercase tracking-[0.15em] text-ink dark:text-white mb-6">Contact</p>
-              <div className="flex flex-col gap-4 text-sm text-ink dark:text-white/60">
-                <p>{settings.contact.address_line_1}</p>
-                <p>{settings.contact.address_line_2}</p>
-                <p>{settings.contact.email}</p>
-              </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ─── CUISINE ───────────────────────────────────────── */}
+      <section className={styles.cuisine}>
+        <div className={`${styles.cuisineGlow} ${styles.g1}`} />
+        <div className={`${styles.cuisineGlow} ${styles.g2}`} />
+        <div className={styles.cuisineInner}>
+          <div className={styles.cuisineHeader}>
+            <div className={styles.reveal} data-reveal>
+              <p className={styles.ey} style={{ color: 'var(--acc)', marginBottom: '1.25rem' }}>
+                {cuisine.eyebrow}
+              </p>
+              <h2 className={styles.cuisineH2} dangerouslySetInnerHTML={{ __html: cuisine.title_html }} />
+            </div>
+            <div className={`${styles.reveal} ${styles.d1}`} data-reveal>
+              <p className={styles.cuisineDesc}>{cuisine.description}</p>
             </div>
           </div>
-          <div className="mt-16 border-t border-white/10 dark:border-white/10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p className="text-xs text-ink dark:text-white/40">© 2026 {settings.brand_name}. All rights reserved.</p>
+          <div className={`${styles.cuisineRegions} ${styles.reveal} ${styles.d2}`} data-reveal>
+            {cuisine.regions.map((region) => {
+              const sectionMap: Record<string, string> = {
+                'Southern Africa': 'starch',
+                'East Africa': 'nsima',
+                'West Africa': 'snacks',
+                'Central Africa': 'beverages',
+              };
+              const sectionId = sectionMap[region.region] || 'starch';
+              return (
+                <Link key={region.region} href={`/menu#${sectionId}`} className={styles.cr}>
+                  <div>
+                    <p className={styles.crRegion}>{region.region}</p>
+                    <p className={styles.crName}>{region.name}</p>
+                  </div>
+                  <div className={styles.crDishes}>
+                    {region.dishes.map((dish) => (
+                      <span key={dish} className={styles.crDish}>
+                        {dish}
+                      </span>
+                    ))}
+                  </div>
+                  <span className={styles.crArrow}>→</span>
+                </Link>
+              );
+            })}
+          </div>
+          <div className={`${styles.cuisineIntl} ${styles.reveal} ${styles.d3}`} data-reveal>
+            <p>
+              <strong>International & Global Dishes</strong> — {cuisine.intl_note}
+            </p>
+            <Link href={cuisine.link_href} className={styles.cuisineLink}>
+              {cuisine.link_label}
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── SERVICE ─────────────────────────────────────── */}
+      <section className={styles.service}>
+        <div className={styles.serviceInner}>
+          <div>
+            <p className={`${styles.ey} ${styles.reveal}`} data-reveal style={{ marginBottom: '1.25rem' }}>
+              {service.eyebrow}
+            </p>
+            <h2
+              className={`${styles.serviceH2} ${styles.reveal} ${styles.d1}`}
+              data-reveal
+              dangerouslySetInnerHTML={{ __html: service.title_html }}
+            />
+            <p className={`${styles.serviceBody} ${styles.reveal} ${styles.d2}`} data-reveal>
+              {service.body}
+            </p>
+            <blockquote className={`${styles.serviceRule} ${styles.reveal} ${styles.d3}`} data-reveal>
+              {service.quote}
+            </blockquote>
+          </div>
+          <div className={styles.serviceRight}>
+            {service.steps.map((step, index) => (
+              <div key={step.title} className={`${styles.sflow} ${styles.reveal} ${styles[`d${index}`] || ''}`} data-reveal>
+                <span className={styles.sflowN}>{step.number}</span>
+                <div>
+                  <p className={styles.sflowTitle}>{step.title}</p>
+                  <p className={styles.sflowDesc}>{step.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── TESTIMONIALS ───────────────────────────────── */}
+      <section className={styles.social}>
+        <div className={styles.socialInner}>
+          <div className={`${styles.socialHd} ${styles.reveal}`} data-reveal>
+            <p className={styles.ey} style={{ marginBottom: '1rem' }}>
+              {testimonials.eyebrow}
+            </p>
+            <h2 dangerouslySetInnerHTML={{ __html: testimonials.title_html }} />
+          </div>
+          <div className={styles.tfProg}>
+            <div key={activeTestimonial} className={styles.tfBar} />
+          </div>
+          <div className={`${styles.testFeatured} ${styles.reveal} ${styles.d1}`} data-reveal>
+            <p className={styles.tfQuote}>“{activeTestimonialItem.quote}”</p>
+            <p className={styles.tfAuthor}>— {activeTestimonialItem.author}</p>
+          </div>
+          <div className={styles.tfDots}>
+            {testimonialsList.map((item, index) => (
+              <button
+                key={item.author}
+                type="button"
+                className={`${styles.tfd} ${index === activeTestimonial ? styles.tfdActive : ''}`}
+                aria-label={`Testimonial ${index + 1}`}
+                onClick={() => handleDotClick(index)}
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── COMMUNITY ─────────────────────────────────── */}
+      <section className={styles.community}>
+        <div className={styles.communityInner}>
+          <div className={styles.communityLeft}>
+            <p className={`${styles.ey} ${styles.reveal}`} data-reveal style={{ marginBottom: '1.25rem' }}>
+              {community.eyebrow}
+            </p>
+            <h2
+              className={`${styles.communityH2} ${styles.reveal} ${styles.d1}`}
+              data-reveal
+              dangerouslySetInnerHTML={{ __html: community.title_html }}
+            />
+            <p className={`${styles.communityBody} ${styles.reveal} ${styles.d2}`} data-reveal>
+              {community.body}
+            </p>
+            <div className={`${styles.commPills} ${styles.reveal} ${styles.d3}`} data-reveal>
+              {community.pills.map((pill) => (
+                <span key={pill} className={styles.commPill}>
+                  {pill}
+                </span>
+              ))}
+            </div>
+          </div>
+          <div className={`${styles.communityRight} ${styles.reveal} ${styles.d2}`} data-reveal>
+            {community.items.map((item) => (
+              <div key={item.title} className={styles.commItem}>
+                <span className={styles.commIc}>{item.icon}</span>
+                <div>
+                  <p className={styles.commTitle}>{item.title}</p>
+                  <p className={styles.commDesc}>{item.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── FORMATS ───────────────────────────────────── */}
+      <section className={styles.formats}>
+        <div className={styles.formatsInner}>
+          <div className={`${styles.formatsTop} ${styles.reveal}`} data-reveal>
+            <div>
+              <p className={styles.ey} style={{ color: 'var(--acc)', marginBottom: '1rem' }}>
+                {formats.eyebrow}
+              </p>
+              <h2 className={styles.formatsH2} dangerouslySetInnerHTML={{ __html: formats.title_html }} />
+            </div>
+            <p className={styles.formatsNote}>{formats.note}</p>
+          </div>
+          <div className={`${styles.formatsList} ${styles.reveal} ${styles.d1}`} data-reveal>
+            {formats.items.map((item) => (
+              <div key={item.title} className={styles.fmt}>
+                <div className={styles.fmtNum}>{item.number}</div>
+                <p className={styles.fmtTitle}>{item.title}</p>
+                <p className={styles.fmtDesc}>{item.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── GALLERY ───────────────────────────────────── */}
+      <section className={styles.gallery}>
+        <div className={`${styles.galleryHead} ${styles.reveal}`} data-reveal>
+          <p className={styles.ey} style={{ marginBottom: '1rem' }}>
+            {gallery.eyebrow}
+          </p>
+          <h2
+            className={styles.serif}
+            style={{ fontSize: 'clamp(2rem,4vw,3.5rem)', fontWeight: 300, lineHeight: 1.1 }}
+            dangerouslySetInnerHTML={{ __html: gallery.title_html }}
+          />
+        </div>
+        <div className={`${styles.galleryGrid} ${styles.reveal} ${styles.d1}`} data-reveal>
+          {galleryItems.map((item) => (
+            <div key={item.label} className={styles.gi}>
+              <div
+                className={styles.giFill}
+                style={{
+                  backgroundImage: `linear-gradient(to top, rgba(0,0,0,.4), transparent 60%), url(${normalizeImageSource(item.image)})`,
+                }}
+              >
+                <span className={styles.giLbl}>{item.label}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ─── FINAL CTA ─────────────────────────────────── */}
+      <section className={styles.finalCta}>
+        <div className={`${styles.finalCtaInner} ${styles.reveal}`} data-reveal>
+          <h2 className={styles.fcH} dangerouslySetInnerHTML={{ __html: finalCta.title_html }} />
+          <p className={styles.fcSub}>{finalCta.subtitle}</p>
+          <Link href={finalCta.button_href} className={styles.fcBtn}>
+            {finalCta.button_label}
+          </Link>
+        </div>
+      </section>
+
+      {/* ─── FOOTER ───────────────────────────────────── */}
+      <footer className={styles.footer}>
+        <div className={styles.footerInner}>
+          <div className={styles.footerTop}>
+            <div>
+              <span className={styles.fBrandName}>{settings.brand_name || 'CalmTable'}</span>
+              <p className={styles.fBrandTagline}>{footer.tagline}</p>
+            </div>
+            {footer.columns.map((column) => (
+              <div key={column.title} className={styles.fCol}>
+                <h5>{column.title}</h5>
+                <ul>
+                  {column.links.map((link) => (
+                    <li key={link.label}>
+                      <Link href={link.href}>{link.label}</Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+          <div className={styles.footerBottom}>
+            <span>{footer.bottom_left}</span>
+            <span>{footer.bottom_right}</span>
           </div>
         </div>
       </footer>

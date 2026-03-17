@@ -1,11 +1,13 @@
 // Shared TypeScript interfaces for Calm Table API contracts.
 export type MenuCategory = 'starters' | 'mains' | 'desserts' | 'drinks';
+export type MenuRegion = 'southern' | 'east' | 'west' | 'central' | 'international';
 
 export interface MenuItem {
   id: number;
   name: string;
   description: string;
   price: string;
+  region: MenuRegion;
   category: MenuCategory;
   image_url: string;
   image_file?: string;
@@ -288,11 +290,167 @@ export interface FrontendMembersContent {
   benefits: FrontendFeatureItem[];
 }
 
+export interface HomePageStat {
+  value: string;
+  label: string;
+}
+
+export interface HomePageHero {
+  kicker: string;
+  title_html: string;
+  side_label: string;
+  stats: HomePageStat[];
+  cta: {
+    label: string;
+    sublabel: string;
+  };
+  images: {
+    primary: string;
+    secondary: string;
+  };
+}
+
+export interface HomePageReservation {
+  tag: string;
+  title_html: string;
+  note: string;
+  hours: { day: string; hours: string }[];
+  form: {
+    title: string;
+    times: string[];
+    guests: string[];
+    occasions: string[];
+    request_placeholder: string;
+    submit_label: string;
+    success_label: string;
+  };
+}
+
+export interface HomePageBrand {
+  eyebrow: string;
+  quote_html: string;
+  body: string;
+  pills: string[];
+  cta_label: string;
+  cta_href: string;
+  stats: HomePageStat[];
+}
+
+export interface HomePagePillarItem {
+  number: string;
+  title: string;
+  description: string;
+}
+
+export interface HomePageCuisineRegion {
+  region: string;
+  name: string;
+  dishes: string[];
+}
+
+export interface HomePageServiceStep {
+  number: string;
+  title: string;
+  description: string;
+}
+
+export interface HomePageTestimonial {
+  quote: string;
+  author: string;
+}
+
+export interface HomePageCommunityItem {
+  icon: string;
+  title: string;
+  description: string;
+}
+
+export interface HomePageFormatItem {
+  number: string;
+  title: string;
+  description: string;
+}
+
+export interface HomePageGalleryItem {
+  label: string;
+  image: string;
+}
+
+export interface HomePageFooterColumnLink {
+  label: string;
+  href: string;
+}
+
+export interface HomePageFooterColumn {
+  title: string;
+  links: HomePageFooterColumnLink[];
+}
+
+export interface HomePageContent {
+  hero: HomePageHero;
+  reservation: HomePageReservation;
+  marquee: { items: string[] };
+  brand: HomePageBrand;
+  pillars: { eyebrow: string; title_html: string; items: HomePagePillarItem[] };
+  cuisine: {
+    eyebrow: string;
+    title_html: string;
+    description: string;
+    regions: HomePageCuisineRegion[];
+    intl_note: string;
+    link_label: string;
+    link_href: string;
+  };
+  service: {
+    eyebrow: string;
+    title_html: string;
+    body: string;
+    quote: string;
+    steps: HomePageServiceStep[];
+  };
+  testimonials: {
+    eyebrow: string;
+    title_html: string;
+    items: HomePageTestimonial[];
+  };
+  community: {
+    eyebrow: string;
+    title_html: string;
+    body: string;
+    pills: string[];
+    items: HomePageCommunityItem[];
+  };
+  formats: {
+    eyebrow: string;
+    title_html: string;
+    note: string;
+    items: HomePageFormatItem[];
+  };
+  gallery: {
+    eyebrow: string;
+    title_html: string;
+    items: HomePageGalleryItem[];
+  };
+  final_cta: {
+    title_html: string;
+    subtitle: string;
+    button_label: string;
+    button_href: string;
+  };
+  footer: {
+    tagline: string;
+    columns: HomePageFooterColumn[];
+    bottom_left: string;
+    bottom_right: string;
+  };
+}
+
 export interface FrontendContentPayload {
   brand_name: string;
   brand_tagline: string;
   contact: FrontendContactContent;
   home: FrontendHomeContent;
+  home_page?: HomePageContent;
   about: FrontendAboutContent;
   members: FrontendMembersContent;
 }

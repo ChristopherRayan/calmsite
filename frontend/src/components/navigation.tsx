@@ -65,11 +65,14 @@ export function Navigation() {
           : 'border-b border-woodAccent/20 dark:border-woodAccent/20 bg-gradient-to-b from-cream/95 to-cream/85 dark:from-cream dark:to-cream backdrop-blur-md'
       )}
     >
-      <nav className="page-shell flex h-14 items-center justify-between" aria-label="Main">
+      <nav
+        className="flex h-14 w-full items-center justify-between pl-0 pr-4 sm:pr-6 lg:pr-10"
+        aria-label="Main"
+      >
         <Link
           href="/"
           className={cn(
-            'inline-flex items-center -ml-10 sm:-ml-12 lg:-ml-16 translate-y-3',
+            'inline-flex items-center -translate-x-[20%] translate-y-3',
             isTransparentNav ? 'text-white' : 'text-woodAccent dark:text-woodAccent'
           )}
         >
@@ -93,8 +96,8 @@ export function Navigation() {
               <Link
                 href={link.href}
                 className={cn(
-                  'relative text-[11px] font-medium uppercase tracking-[0.18em] hover:text-woodAccent dark:hover:text-woodAccent/80',
-                  isTransparentNav ? 'text-white/80' : 'text-ink dark:text-ink/80',
+                  'relative text-[11px] font-semibold uppercase tracking-[0.18em] hover:text-woodAccent dark:hover:text-woodAccent',
+                  isTransparentNav ? 'text-white/90' : 'text-ink/90 dark:text-ink',
                   isActive(link.href) && 'text-woodAccent'
                 )}
               >
@@ -112,7 +115,7 @@ export function Navigation() {
             type="button"
             className={cn(
               'inline-flex h-10 w-10 items-center justify-center rounded-full border border-woodAccent/35 dark:border-woodAccent/35 hover:bg-woodAccent/10 dark:hover:bg-tableBrown/60',
-              isTransparentNav ? 'text-white' : 'text-woodAccent dark:text-woodAccent'
+              isTransparentNav ? 'text-white' : 'text-ink dark:text-woodAccent'
             )}
             onClick={toggleTheme}
             aria-label="Toggle theme"
@@ -125,7 +128,7 @@ export function Navigation() {
           type="button"
           className={cn(
             'inline-flex h-10 w-10 items-center justify-center rounded-full border border-woodAccent/35 dark:border-woodAccent/35 md:hidden',
-            isTransparentNav ? 'text-white' : 'text-woodAccent dark:text-woodAccent'
+            isTransparentNav ? 'text-white' : 'text-ink dark:text-woodAccent'
           )}
           aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
           onClick={() => setMobileOpen((current) => !current)}
@@ -152,7 +155,7 @@ export function Navigation() {
                       'block rounded-lg px-4 py-3 text-xs font-semibold uppercase tracking-[0.14em]',
                       isActive(link.href)
                         ? 'bg-woodAccent/18 dark:bg-tableBrown/70 text-woodAccent dark:text-woodAccent'
-                        : 'text-ink/80 dark:text-ink/70 hover:bg-woodAccent/10 dark:hover:bg-tableBrown/60'
+                        : 'text-ink dark:text-ink/70 hover:bg-woodAccent/10 dark:hover:bg-tableBrown/60'
                     )}
                   >
                     {link.label}
@@ -162,7 +165,7 @@ export function Navigation() {
               <li className="grid grid-cols-2 gap-2 pt-2">
                 <button
                   type="button"
-                  className="inline-flex items-center justify-center rounded-lg border border-woodAccent/25 dark:border-woodAccent/35 px-3 py-2 text-woodAccent dark:text-woodAccent"
+                  className="inline-flex items-center justify-center rounded-lg border border-woodAccent/25 dark:border-woodAccent/35 px-3 py-2 text-ink dark:text-woodAccent"
                   onClick={() => {
                     toggleTheme();
                     setMobileOpen(false);

@@ -399,7 +399,10 @@ class MenuItemAdminForm(forms.ModelForm):
 
     dietary_tags_text = forms.CharField(
         required=False,
-        help_text="Comma-separated values, e.g. vegan,gluten-free",
+        help_text=(
+            "Comma-separated values, e.g. vegetarian,vegan,gluten-free,spicy,signature. "
+            "These tags drive Menu filters and badges."
+        ),
         label="Dietary tags",
     )
 
@@ -429,19 +432,20 @@ class MenuItemAdmin(BaseModelAdmin):
     form = MenuItemAdminForm
     list_display = (
         "name",
+        "region",
         "category",
         "price",
         "availability_badge",
         "is_featured",
         "created_at",
     )
-    list_filter = ("category", "is_available", "is_featured", "created_at")
-    search_fields = ("name", "description", "category")
+    list_filter = ("region", "category", "is_available", "is_featured", "created_at")
+    search_fields = ("name", "description", "category", "region")
     ordering = ("-created_at", "-id")
     date_hierarchy = "created_at"
     readonly_fields = ("created_at", "updated_at")
     fieldsets = (
-        ("Core", {"fields": ("name", "description", "category", "price")}),
+        ("Core", {"fields": ("name", "description", "region", "category", "price")}),
         ("Media", {"fields": ("image_file", "image_url"), "classes": ("collapse",)}),
         ("Availability", {"fields": ("is_available", "is_featured", "dietary_tags_text")}),
         ("Audit", {"fields": ("created_at", "updated_at"), "classes": ("collapse",)}),
@@ -976,6 +980,22 @@ class FrontendSettingsForm(forms.Form):
     members_benefit_4_title = forms.CharField(max_length=100, required=False, label="Benefit 4 Title")
     members_benefit_4_desc = forms.CharField(max_length=300, required=False, label="Benefit 4 Description")
 
+    # ── About Page Advanced (JSON) ──
+    about_page_json = forms.CharField(
+        widget=forms.Textarea(attrs={"rows": 18}),
+        required=False,
+        label="About Page JSON (Advanced)",
+        help_text="Optional: override full About page layout content as JSON.",
+    )
+
+    # ── Home Page Advanced (JSON) ──
+    home_page_json = forms.CharField(
+        widget=forms.Textarea(attrs={"rows": 18}),
+        required=False,
+        label="Home Page JSON (Advanced)",
+        help_text="Optional: override full Home page layout content as JSON.",
+    )
+
 
 def _safe_list_item(lst, index, key, default=""):
     """Safely extract a value from a list of dicts."""
@@ -1020,6 +1040,7 @@ class FrontendSettingsAdmin(BaseModelAdmin):
             "testimonial_2_quote", "testimonial_2_author",
             "testimonial_3_quote", "testimonial_3_author",
         ), "classes": ("tab-testimonials",)}),
+        ("Home Page Layout (Advanced)", {"fields": ("home_page_json",)}),
     )
 
     contact_fieldsets = (
@@ -1042,6 +1063,7 @@ class FrontendSettingsAdmin(BaseModelAdmin):
             "about_card_2_title", "about_card_2_body",
             "about_card_3_title", "about_card_3_body",
         )}),
+        ("About Page Layout (Advanced)", {"fields": ("about_page_json",)}),
         ("Gallery Images", {
             "fields": (
                 "gallery_image_1", "gallery_desc_1", "gallery_clear_1",
@@ -1080,6 +1102,8 @@ class FrontendSettingsAdmin(BaseModelAdmin):
         contact = content.get("contact", {})
         about = content.get("about", {})
         members = content.get("members", {})
+        about_page = content.get("about_page", {})
+        home_page = content.get("home_page", {})
         stats = home.get("stats", {})
         features = home.get("about_features", [])
         why_items = home.get("why_items", [])
@@ -1181,6 +1205,8 @@ class FrontendSettingsAdmin(BaseModelAdmin):
             "members_benefit_3_desc": _safe_list_item(benefits, 2, "description"),
             "members_benefit_4_title": _safe_list_item(benefits, 3, "title"),
             "members_benefit_4_desc": _safe_list_item(benefits, 3, "description"),
+            "about_page_json": json.dumps(about_page, indent=2) if about_page else "",
+            "home_page_json": json.dumps(home_page, indent=2) if home_page else "",
         }
 
     def changeform_view(self, request, object_id=None, form_url="", extra_context=None):
@@ -1324,6 +1350,15 @@ class FrontendSettingsAdmin(BaseModelAdmin):
             )
             content["home"] = home
 
+            raw_home_page = data.get("home_page_json", "") or ""
+            if raw_home_page.strip():
+                try:
+                    parsed = json.loads(raw_home_page)
+                    if isinstance(parsed, dict):
+                        content["home_page"] = parsed
+                except json.JSONDecodeError:
+                    pass
+
         if section == "contact":
             contact = content.get("contact", {})
             contact.update(
@@ -1338,6 +1373,31 @@ class FrontendSettingsAdmin(BaseModelAdmin):
                 }
             )
             content["contact"] = contact
+
+        if section == "about":
+            home = content.get("home", {})
+            home["about_image"] = handle_image("about_image")
+            home["gallery_images"] = _build_gallery_items()
+            content["home"] = home
+
+            about = content.get("about", {})
+            about.update(
+                {
+                    "description": data.get("about_description", ""),
+                    "cards": _build_list("about_card", 3, ["title", "body"]),
+                }
+            )
+            content["about"] = about
+
+            raw_about_page = data.get("about_page_json", "") or ""
+            if raw_about_page.strip():
+                try:
+                    parsed = json.loads(raw_about_page)
+                    if isinstance(parsed, dict):
+                        content["about_page"] = parsed
+                except json.JSONDecodeError:
+                    # Ignore invalid JSON and keep existing content.
+                    pass
 
         # Remap 'desc' keys back to 'description' for content sections that use it
         if "home" in content:

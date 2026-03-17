@@ -455,8 +455,8 @@ class MenuItemViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(serializer.data)
 
 
-class ReservationViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
-    """Create reservation and retrieve it by confirmation code."""
+class ReservationViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    """Create, list, and retrieve reservations."""
 
     serializer_class = ReservationSerializer
     queryset = Reservation.objects.all()
@@ -464,8 +464,8 @@ class ReservationViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, vie
 
     def get_permissions(self):
         if self.action == "create":
-            return [permissions.IsAuthenticated(), IsCustomer()]
-        return [permissions.AllowAny()]
+            return [permissions.AllowAny()]  # Allow guest reservations
+        return [permissions.IsAdminUser()]
 
     def get_object(self):
         queryset = self.filter_queryset(self.get_queryset())

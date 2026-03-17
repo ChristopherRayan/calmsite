@@ -5,10 +5,11 @@ const UNSPLASH_FALLBACK = '/images/food-placeholder.svg';
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? '/api';
 
 function getMediaOrigin() {
-  if (typeof window !== 'undefined') {
-    if (!API_BASE_URL || API_BASE_URL.startsWith('/') || API_BASE_URL.startsWith('.')) {
-      return window.location.origin;
-    }
+  // When the API base URL is relative (e.g. `/api`), media paths should stay
+  // relative so that both SSR and client hydration produce identical src values
+  // and the browser / reverse-proxy can route `/media/` to the correct backend.
+  if (!API_BASE_URL || API_BASE_URL.startsWith('/') || API_BASE_URL.startsWith('.')) {
+    return '';
   }
 
   try {

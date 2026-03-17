@@ -11,7 +11,7 @@ class MenuItemFilter(django_filters.FilterSet):
 
     class Meta:
         model = MenuItem
-        fields = ("category", "dietary_tags")
+        fields = ("region", "category", "dietary_tags")
 
     def filter_dietary_tags(self, queryset, _name, value):
         request = getattr(self, "request", None)
