@@ -35,7 +35,7 @@ function applyTheme(theme: ThemeMode) {
 }
 
 export function ThemeProvider({ children }: ThemeProviderProps) {
-  const [theme, setThemeState] = useState<ThemeMode>('dark');
+  const [theme, setThemeState] = useState<ThemeMode>('light');
 
   useEffect(() => {
     if (typeof window === 'undefined') {
@@ -43,7 +43,7 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     }
 
     const storedTheme = window.localStorage.getItem(STORAGE_KEY);
-    const nextTheme: ThemeMode = storedTheme === 'light' ? 'light' : 'dark';
+    const nextTheme: ThemeMode = storedTheme === 'dark' ? 'dark' : 'light';
     setThemeState(nextTheme);
     applyTheme(nextTheme);
   }, []);
