@@ -181,7 +181,7 @@ export default function MenuPage() {
   const [activeFilter, setActiveFilter] = useState<FilterCategory>('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [activeRegionFilter, setActiveRegionFilter] = useState<FilterRegion>('all');
-  const [activeRegion, setActiveRegion] = useState<DisplayRegion>('southern');
+  const [activeRegion, setActiveRegion] = useState<DisplayRegion | null>(null);
   const signatureDish = useMemo(() => {
     if (!items.length) {
       return null;
@@ -232,7 +232,7 @@ export default function MenuPage() {
       if (activeRegionFilter !== 'all') {
         return;
       }
-      setActiveRegion(getCurrentRegionFromScroll());
+      setActiveRegion(null);
     }
 
     handleScroll();
@@ -298,10 +298,21 @@ export default function MenuPage() {
     return filteredSections;
   }, [filteredSections, searchLower, activeFilter, activeRegionFilter]);
 
+  useEffect(() => {
+    if (activeRegionFilter === 'all') {
+      return;
+    }
+
+    const selectedSection = filteredSections.find((section) => section.id === activeRegionFilter);
+    if (selectedSection && selectedSection.items.length === 0 && activeFilter !== 'all') {
+      setActiveFilter('all');
+    }
+  }, [activeRegionFilter, activeFilter, filteredSections]);
+
   function handleRegionFilter(region: FilterRegion) {
     if (region === 'all') {
       setActiveRegionFilter('all');
-      setActiveRegion(getCurrentRegionFromScroll());
+      setActiveRegion(null);
       return;
     }
 
@@ -439,7 +450,7 @@ export default function MenuPage() {
             key={section.id}
             type="button"
             className={`${styles.mhr} ${
-              (activeRegionFilter === section.id || (activeRegionFilter === 'all' && activeRegion === section.id))
+              (activeRegionFilter !== 'all' && activeRegion === section.id)
                 ? styles.mhrOn
                 : ''
             }`}

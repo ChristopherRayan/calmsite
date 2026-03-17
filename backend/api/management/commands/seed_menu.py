@@ -1,236 +1,208 @@
-"""Management command to seed the database with Malawian menu items."""
+"""Management command to seed the database with region-complete menu items."""
+
 from django.core.management.base import BaseCommand
+
 from api.models import MenuItem
 
 
 MENU_ITEMS = [
-    # ─── STARTERS ─────────────────────────────────────────────────────────
     {
-        "name": "Grilled Chambo Starter",
-        "description": "Small fillet of freshly grilled Lake Malawi chambo, served with lemon wedge and tomato relish.",
+        "name": "Chambo Bites",
+        "description": "Charcoal-kissed Lake Malawi chambo bites with lemon salt and tomato relish.",
         "price": "3500.00",
+        "region": MenuItem.Region.SOUTHERN,
         "category": MenuItem.Category.STARTERS,
         "is_featured": True,
-        "dietary_tags": ["gluten-free"],
+        "dietary_tags": ["gluten-free", "signature"],
     },
     {
-        "name": "Pumpkin Soup",
-        "description": "Creamy blended Malawian pumpkin soup with a hint of ginger and coconut milk.",
-        "price": "2500.00",
-        "category": MenuItem.Category.STARTERS,
-        "is_featured": False,
-        "dietary_tags": ["vegan", "gluten-free"],
-    },
-    {
-        "name": "Mandazi Basket",
-        "description": "Freshly fried East African doughnuts, lightly sweetened with cardamom. Served warm with dipping sauce.",
-        "price": "2000.00",
-        "category": MenuItem.Category.STARTERS,
-        "is_featured": False,
-        "dietary_tags": ["vegetarian"],
-    },
-    {
-        "name": "Fried Matemba",
-        "description": "Crispy small dried fish (matemba) lightly seasoned and pan-fried. A classic Malawian appetizer.",
-        "price": "2800.00",
-        "category": MenuItem.Category.STARTERS,
-        "is_featured": True,
-        "dietary_tags": ["gluten-free"],
-    },
-    {
-        "name": "Avocado & Tomato Salad",
-        "description": "Fresh garden salad with ripe Malawian avocado, tomatoes, red onion, and a citrus vinaigrette.",
-        "price": "2200.00",
-        "category": MenuItem.Category.STARTERS,
-        "is_featured": False,
-        "dietary_tags": ["vegan", "gluten-free"],
-    },
-    # ─── MAINS ────────────────────────────────────────────────────────────
-    {
-        "name": "Whole Grilled Chambo",
-        "description": "The pride of Malawi. Whole Lake Malawi chambo grilled over charcoal, served with nsima, masamba, and tomato sauce.",
-        "price": "8500.00",
+        "name": "Nsima & Goat Stew",
+        "description": "Slow-braised goat stew served with soft nsima and seasonal greens.",
+        "price": "8900.00",
+        "region": MenuItem.Region.SOUTHERN,
         "category": MenuItem.Category.MAINS,
         "is_featured": True,
         "dietary_tags": ["gluten-free"],
-    },
-    {
-        "name": "Beef Stew with Nsima",
-        "description": "Slow-cooked tender Malawian beef in a rich tomato and onion gravy. Served with thick nsima and seasonal greens.",
-        "price": "7500.00",
-        "category": MenuItem.Category.MAINS,
-        "is_featured": True,
-        "dietary_tags": ["gluten-free"],
-    },
-    {
-        "name": "Goat Meat Curry",
-        "description": "Slow-simmered Malawian goat meat in aromatic spices and tomatoes. Served with nsima or rice.",
-        "price": "9000.00",
-        "category": MenuItem.Category.MAINS,
-        "is_featured": True,
-        "dietary_tags": ["gluten-free"],
-    },
-    {
-        "name": "Masamba Otendera",
-        "description": "Traditional Malawian pounded leafy greens cooked in groundnut flour. Served with nsima. A family favourite.",
-        "price": "5500.00",
-        "category": MenuItem.Category.MAINS,
-        "is_featured": False,
-        "dietary_tags": ["vegan", "gluten-free"],
-    },
-    {
-        "name": "Chicken Stew & Rice",
-        "description": "Tender farm chicken braised in a tomato-based sauce with onions and Malawian spices. Served with steamed rice.",
-        "price": "7000.00",
-        "category": MenuItem.Category.MAINS,
-        "is_featured": True,
-        "dietary_tags": ["gluten-free"],
-    },
-    {
-        "name": "Tilapia Fillet in Peanut Sauce",
-        "description": "Pan-fried tilapia fillet topped with creamy groundnut sauce, served with steamed rice and vegetables.",
-        "price": "8000.00",
-        "category": MenuItem.Category.MAINS,
-        "is_featured": False,
-        "dietary_tags": ["gluten-free"],
-    },
-    {
-        "name": "Mixed Grill Platter",
-        "description": "A generous platter of grilled beef, chicken, and chambo fillet with chips, salad, and two dipping sauces.",
-        "price": "14000.00",
-        "category": MenuItem.Category.MAINS,
-        "is_featured": True,
-        "dietary_tags": [],
-    },
-    {
-        "name": "Beans & Nsima",
-        "description": "Hearty Malawian kidney beans in tomato and onion sauce. Served with thick nsima. Simple, filling, and delicious.",
-        "price": "4500.00",
-        "category": MenuItem.Category.MAINS,
-        "is_featured": False,
-        "dietary_tags": ["vegan", "gluten-free"],
-    },
-    {
-        "name": "Nkhuku wa Chigayo",
-        "description": "Traditional Malawian free-range chicken cooked in a tomato and groundnut sauce with seasonal vegetables.",
-        "price": "8500.00",
-        "category": MenuItem.Category.MAINS,
-        "is_featured": False,
-        "dietary_tags": ["gluten-free"],
-    },
-    # ─── DESSERTS ─────────────────────────────────────────────────────────
-    {
-        "name": "Papaya & Honey",
-        "description": "Fresh sliced Malawian papaya drizzled with wild honey and a sprinkle of lime zest.",
-        "price": "2000.00",
-        "category": MenuItem.Category.DESSERTS,
-        "is_featured": False,
-        "dietary_tags": ["vegan", "gluten-free"],
     },
     {
         "name": "Banana Fritters",
-        "description": "Golden-fried ripe banana fritters dusted with cinnamon sugar, served with vanilla cream.",
+        "description": "Golden banana fritters with cinnamon sugar and vanilla cream.",
         "price": "2500.00",
-        "category": MenuItem.Category.DESSERTS,
-        "is_featured": True,
-        "dietary_tags": ["vegetarian"],
-    },
-    {
-        "name": "Malawian Cheesecake",
-        "description": "Creamy baked cheesecake with a biscuit base, topped with passion fruit compote.",
-        "price": "3500.00",
+        "region": MenuItem.Region.SOUTHERN,
         "category": MenuItem.Category.DESSERTS,
         "is_featured": False,
         "dietary_tags": ["vegetarian"],
     },
     {
-        "name": "Mango Sorbet",
-        "description": "Homemade chilled mango sorbet using fresh Malawian mangoes. A perfect refreshing finish.",
+        "name": "Baobab Cooler",
+        "description": "Chilled baobab fruit cooler with citrus and a gentle honey finish.",
+        "price": "1700.00",
+        "region": MenuItem.Region.SOUTHERN,
+        "category": MenuItem.Category.DRINKS,
+        "is_featured": False,
+        "dietary_tags": ["gluten-free", "vegan"],
+    },
+    {
+        "name": "Mandazi Basket",
+        "description": "Fresh East African mandazi served warm with spiced coconut dip.",
         "price": "2200.00",
+        "region": MenuItem.Region.EASTERN,
+        "category": MenuItem.Category.STARTERS,
+        "is_featured": False,
+        "dietary_tags": ["vegetarian"],
+    },
+    {
+        "name": "Pilau Chicken",
+        "description": "Fragrant pilau rice layered with tender chicken, cardamom, and caramelised onion.",
+        "price": "7600.00",
+        "region": MenuItem.Region.EASTERN,
+        "category": MenuItem.Category.MAINS,
+        "is_featured": True,
+        "dietary_tags": ["gluten-free", "signature"],
+    },
+    {
+        "name": "Coconut Cassava Pudding",
+        "description": "Silky cassava pudding with coconut cream and nutmeg.",
+        "price": "2400.00",
+        "region": MenuItem.Region.EASTERN,
         "category": MenuItem.Category.DESSERTS,
         "is_featured": False,
-        "dietary_tags": ["vegan", "gluten-free"],
+        "dietary_tags": ["vegetarian", "gluten-free"],
     },
-    # ─── DRINKS ───────────────────────────────────────────────────────────
     {
-        "name": "Maheu",
-        "description": "Traditional Malawian fermented maize drink. Thick, mildly sour, nutritious and refreshing.",
-        "price": "1200.00",
+        "name": "Tamarind Ginger Juice",
+        "description": "Bright tamarind juice balanced with fresh ginger and mint.",
+        "price": "1600.00",
+        "region": MenuItem.Region.EASTERN,
         "category": MenuItem.Category.DRINKS,
         "is_featured": False,
         "dietary_tags": ["vegan", "gluten-free"],
     },
     {
-        "name": "Hibiscus Juice (Zobo)",
-        "description": "Chilled freshly brewed hibiscus flower drink with ginger and mint. Served over ice.",
-        "price": "1500.00",
-        "category": MenuItem.Category.DRINKS,
+        "name": "Plantain Starter Plate",
+        "description": "Sweet fried plantain with pepper sauce and black-eyed pea crumble.",
+        "price": "2600.00",
+        "region": MenuItem.Region.WESTERN,
+        "category": MenuItem.Category.STARTERS,
+        "is_featured": False,
+        "dietary_tags": ["vegan", "gluten-free"],
+    },
+    {
+        "name": "Jollof Rice & Chicken",
+        "description": "Smoky jollof rice with grilled chicken and caramelised plantain.",
+        "price": "7800.00",
+        "region": MenuItem.Region.WESTERN,
+        "category": MenuItem.Category.MAINS,
         "is_featured": True,
+        "dietary_tags": ["gluten-free", "signature"],
+    },
+    {
+        "name": "Groundnut Caramel Tart",
+        "description": "Rich tart with roasted peanut caramel and a light cream finish.",
+        "price": "2800.00",
+        "region": MenuItem.Region.WESTERN,
+        "category": MenuItem.Category.DESSERTS,
+        "is_featured": False,
+        "dietary_tags": ["vegetarian"],
+    },
+    {
+        "name": "Hibiscus Zobo",
+        "description": "Iced hibiscus drink with clove, ginger, and citrus zest.",
+        "price": "1500.00",
+        "region": MenuItem.Region.WESTERN,
+        "category": MenuItem.Category.DRINKS,
+        "is_featured": False,
         "dietary_tags": ["vegan", "gluten-free"],
     },
     {
-        "name": "Fresh Mango Juice",
-        "description": "Pure blended fresh Malawian mangoes. No added sugar. Served chilled.",
+        "name": "Cassava Leaf Croquettes",
+        "description": "Crisp cassava croquettes with herb dip and smoked spice dust.",
+        "price": "2400.00",
+        "region": MenuItem.Region.CENTRAL,
+        "category": MenuItem.Category.STARTERS,
+        "is_featured": False,
+        "dietary_tags": ["vegetarian"],
+    },
+    {
+        "name": "Saka Saka & Beef",
+        "description": "Slow-cooked cassava leaves with braised beef and cassava mash.",
+        "price": "7400.00",
+        "region": MenuItem.Region.CENTRAL,
+        "category": MenuItem.Category.MAINS,
+        "is_featured": True,
+        "dietary_tags": ["gluten-free"],
+    },
+    {
+        "name": "Forest Honey Custard",
+        "description": "Smooth custard infused with local honey and toasted spice.",
+        "price": "2300.00",
+        "region": MenuItem.Region.CENTRAL,
+        "category": MenuItem.Category.DESSERTS,
+        "is_featured": False,
+        "dietary_tags": ["vegetarian", "gluten-free"],
+    },
+    {
+        "name": "Pineapple Mint Spritz",
+        "description": "Fresh pineapple cooler with mint and a crisp sparkling finish.",
+        "price": "1600.00",
+        "region": MenuItem.Region.CENTRAL,
+        "category": MenuItem.Category.DRINKS,
+        "is_featured": False,
+        "dietary_tags": ["vegan", "gluten-free"],
+    },
+    {
+        "name": "Bruschetta Trio",
+        "description": "Toasted bread with tomato, herb, and olive toppings for lighter international service.",
+        "price": "3100.00",
+        "region": MenuItem.Region.INTERNATIONAL,
+        "category": MenuItem.Category.STARTERS,
+        "is_featured": False,
+        "dietary_tags": ["vegetarian"],
+    },
+    {
+        "name": "Herb Butter Pasta",
+        "description": "Fresh pasta tossed in herb butter with roasted vegetables and parmesan.",
+        "price": "6900.00",
+        "region": MenuItem.Region.INTERNATIONAL,
+        "category": MenuItem.Category.MAINS,
+        "is_featured": True,
+        "dietary_tags": ["vegetarian"],
+    },
+    {
+        "name": "Chocolate Mousse",
+        "description": "Dark chocolate mousse with whipped cream and cocoa dust.",
+        "price": "3200.00",
+        "region": MenuItem.Region.INTERNATIONAL,
+        "category": MenuItem.Category.DESSERTS,
+        "is_featured": False,
+        "dietary_tags": ["vegetarian", "gluten-free"],
+    },
+    {
+        "name": "Citrus Sparkler",
+        "description": "Sparkling citrus cooler with lemon, orange, and basil.",
         "price": "1800.00",
+        "region": MenuItem.Region.INTERNATIONAL,
         "category": MenuItem.Category.DRINKS,
         "is_featured": False,
         "dietary_tags": ["vegan", "gluten-free"],
-    },
-    {
-        "name": "Granadilla Lemonade",
-        "description": "Fresh-squeezed lemonade mixed with passion fruit pulp. Sweet, tangy, and refreshing.",
-        "price": "2000.00",
-        "category": MenuItem.Category.DRINKS,
-        "is_featured": False,
-        "dietary_tags": ["vegan", "gluten-free"],
-    },
-    {
-        "name": "Malawi Chibuku",
-        "description": "Traditional Malawian opaque sorghum beer. Earthy, authentic, and full of character.",
-        "price": "1500.00",
-        "category": MenuItem.Category.DRINKS,
-        "is_featured": False,
-        "dietary_tags": ["vegan", "gluten-free"],
-    },
-    {
-        "name": "Iced Rooibos Tea",
-        "description": "Chilled African rooibos tea served over ice with honey and a squeeze of orange.",
-        "price": "1500.00",
-        "category": MenuItem.Category.DRINKS,
-        "is_featured": False,
-        "dietary_tags": ["vegan", "gluten-free"],
-    },
-    {
-        "name": "Bottled Water",
-        "description": "Chilled still or sparkling mineral water.",
-        "price": "500.00",
-        "category": MenuItem.Category.DRINKS,
-        "is_featured": False,
-        "dietary_tags": ["vegan", "gluten-free"],
-    },
-    {
-        "name": "Soft Drink",
-        "description": "Choice of Coca-Cola, Fanta Orange, Fanta Grape, or Sprite. Served chilled.",
-        "price": "800.00",
-        "category": MenuItem.Category.DRINKS,
-        "is_featured": False,
-        "dietary_tags": ["vegan"],
     },
 ]
 
 
 class Command(BaseCommand):
-    help = "Seed the database with authentic Malawian menu items."
+    help = "Seed the database with region-complete menu items for testing."
 
     def handle(self, *args, **kwargs):
         created = 0
-        skipped = 0
+        updated = 0
+
         for item in MENU_ITEMS:
-            obj, was_created = MenuItem.objects.get_or_create(
+            _, was_created = MenuItem.objects.update_or_create(
                 name=item["name"],
                 defaults={
                     "description": item["description"],
                     "price": item["price"],
+                    "region": item["region"],
                     "category": item["category"],
                     "is_available": True,
                     "is_featured": item["is_featured"],
@@ -240,10 +212,10 @@ class Command(BaseCommand):
             if was_created:
                 created += 1
             else:
-                skipped += 1
+                updated += 1
 
         self.stdout.write(
             self.style.SUCCESS(
-                f"Menu seed complete: {created} created, {skipped} already existed."
+                f"Menu seed complete: {created} created, {updated} updated."
             )
         )
