@@ -374,7 +374,7 @@ export default function MenuPage() {
                         <span className={`${styles.mcTag} ${styles.mcTagHi}`}>Signature</span>
                         <span className={styles.mcTag}>{resolveRegion(signatureDish)}</span>
                         <span className={styles.mcTag}>{signatureDish.category}</span>
-                        {signatureDish.is_gluten_free && <span className={styles.mcTag}>Gluten-Free</span>}
+                        {getTags(signatureDish).isGlutenFree && <span className={styles.mcTag}>Gluten-Free</span>}
                       </div>
                     </div>
                     </div>
