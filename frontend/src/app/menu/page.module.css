@@ -1885,8 +1885,13 @@
     padding-right: 0.75rem;
   }
 
+  .mheroLeft {
+    padding-right: 0;
+  }
+
   .mheroRight {
     width: 100%;
+    transform: translateX(-0.3rem);
   }
 
   .mheroMeta {
@@ -1904,6 +1909,17 @@
   .mheroCard {
     width: min(calc(100vw - 1.5rem), 24rem);
     max-width: min(calc(100vw - 1.5rem), 24rem);
+  }
+
+  .menuPhilHero {
+    width: min(calc(100vw - 1.5rem), 24rem);
+    margin-bottom: 1.4rem;
+    transform: translateX(-0.2rem);
+  }
+
+  .menuPhilHero blockquote {
+    white-space: normal;
+    line-height: 1.35;
   }
 
   .mcHeader,

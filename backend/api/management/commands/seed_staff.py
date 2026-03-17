@@ -1,6 +1,9 @@
 """Management command to seed Malawian restaurant staff team members."""
+from pathlib import Path
+
+from django.core.files import File
 from django.core.management.base import BaseCommand
-from api.models import StaffMember
+from api.models import AboutUs, StaffMember
 
 
 STAFF = [
@@ -61,17 +64,29 @@ STAFF = [
     },
 ]
 
+STAFF_PHOTOS = {
+    "Grace Chisomo Phiri": "gallery-05-family-smiles.jpg",
+    "Emmanuel Kondwani Mwale": "gallery-04-man-dining.jpg",
+    "Alinafe Temwa Banda": "gallery-03-girl-dining.jpg",
+    "Takondwa Simeon Nkhata": "gallery-02-family-table.jpg",
+    "Madalitso Liya Kumwenda": "gallery-01-family-dinner.jpg",
+    "Yankho Precious Mvula": "gallery-06-holiday-table.jpg",
+}
+
 
 class Command(BaseCommand):
     help = "Seed the database with CalmTable staff team members."
 
     def handle(self, *args, **kwargs):
+        about = AboutUs.get_solo()
+        seed_dir = Path(__file__).resolve().parents[3] / "seed_gallery"
         created = 0
         skipped = 0
         for member_data in STAFF:
             obj, was_created = StaffMember.objects.get_or_create(
                 full_name=member_data["full_name"],
                 defaults={
+                    "about_us": about,
                     "role": member_data["role"],
                     "bio": member_data["bio"],
                     "is_active": True,
@@ -82,6 +97,24 @@ class Command(BaseCommand):
                 created += 1
             else:
                 skipped += 1
+                update_fields = []
+                if not obj.about_us_id:
+                    obj.about_us = about
+                    update_fields.append("about_us")
+                if not obj.display_on_website:
+                    obj.display_on_website = True
+                    update_fields.append("display_on_website")
+                if not obj.is_active:
+                    obj.is_active = True
+                    update_fields.append("is_active")
+                if update_fields:
+                    obj.save(update_fields=update_fields)
+
+            photo_name = STAFF_PHOTOS.get(obj.full_name)
+            photo_path = seed_dir / photo_name if photo_name else None
+            if photo_path and photo_path.exists() and not obj.photo:
+                with photo_path.open("rb") as fh:
+                    obj.photo.save(photo_name, File(fh), save=True)
 
         self.stdout.write(
             self.style.SUCCESS(

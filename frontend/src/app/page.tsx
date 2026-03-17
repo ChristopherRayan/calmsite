@@ -383,6 +383,8 @@ export default function HomePage() {
   const [guestEmail, setGuestEmail] = useState('');
   const [guestPhone, setGuestPhone] = useState('');
   const [reservationStatus, setReservationStatus] = useState<'idle' | 'submitting' | 'done' | 'error'>('idle');
+  const [reservationExpanded, setReservationExpanded] = useState(false);
+  const [isReservationMobile, setIsReservationMobile] = useState(false);
   const [featuredDish, setFeaturedDish] = useState<MenuItem | null>(null);
   const intervalRef = useRef<number | null>(null);
   const { scrollY } = useScroll();
@@ -490,6 +492,23 @@ export default function HomePage() {
     }
   }, [activeTestimonial, testimonialsList.length]);
 
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return undefined;
+    }
+
+    const media = window.matchMedia('(max-width: 540px)');
+    const apply = () => {
+      const mobile = media.matches;
+      setIsReservationMobile(mobile);
+      setReservationExpanded(!mobile);
+    };
+
+    apply();
+    media.addEventListener('change', apply);
+    return () => media.removeEventListener('change', apply);
+  }, []);
+
   function handleDotClick(index: number) {
     setActiveTestimonial(index);
     if (intervalRef.current) {
@@ -503,8 +522,9 @@ export default function HomePage() {
   }
 
   async function handleReserveSubmit() {
-    if (!reservationTime || !guestName || !guestEmail) {
-      window.alert('Please fill in your name, email, and select a time.');
+    if (!reservationDate || !reservationTime || !guestName || !guestEmail) {
+      setReservationExpanded(true);
+      window.alert('Please fill in your name, email, date, and select a time.');
       return;
     }
 
@@ -524,17 +544,24 @@ export default function HomePage() {
       });
 
       setReservationStatus('done');
+      setReservationExpanded(true);
       // Reset form or keep success state
       window.setTimeout(() => {
         setReservationStatus('idle');
         setGuestName('');
         setGuestEmail('');
         setGuestPhone('');
+        setReservationDate('');
+        setReservationTime('');
+        setReservationGuests('2 guests');
+        setReservationOccasion('Regular dining');
         setReservationNote('');
+        setReservationExpanded(!isReservationMobile);
       }, 5000);
     } catch (error) {
       console.error('Reservation failed:', error);
       setReservationStatus('error');
+      setReservationExpanded(true);
       window.alert('Sorry, something went wrong with your reservation. Please try again.');
       setReservationStatus('idle');
     }
@@ -647,105 +674,122 @@ export default function HomePage() {
             </div>
           </div>
           <div className={styles.resRight}>
-            <p className={styles.resFormTitle}>{reservation.form.title}</p>
-            <div className={styles.resGrid}>
-              <div className={`${styles.resField} ${styles.resFull}`}>
-                <label htmlFor="rname">Full Name</label>
-                <input
-                  type="text"
-                  id="rname"
-                  placeholder="Your Name"
-                  value={guestName}
-                  onChange={(e) => setGuestName(e.target.value)}
-                  required
-                />
-              </div>
-              <div className={styles.resField}>
-                <label htmlFor="remail">Email Address</label>
-                <input
-                  type="email"
-                  id="remail"
-                  placeholder="your@email.com"
-                  value={guestEmail}
-                  onChange={(e) => setGuestEmail(e.target.value)}
-                  required
-                />
-              </div>
-              <div className={styles.resField}>
-                <label htmlFor="rphone">Phone Number</label>
-                <input
-                  type="tel"
-                  id="rphone"
-                  placeholder="+265..."
-                  value={guestPhone}
-                  onChange={(e) => setGuestPhone(e.target.value)}
-                />
-              </div>
-
-              <div className={styles.resField}>
-                <label htmlFor="rd">Date</label>
-                <input
-                  type="date"
-                  id="rd"
-                  min={today}
-                  value={reservationDate}
-                  onChange={(e) => setReservationDate(e.target.value)}
-                />
-              </div>
-              <div className={styles.resField}>
-                <label htmlFor="rt">Time</label>
-                <select id="rt" value={reservationTime} onChange={(event) => setReservationTime(event.target.value)}>
-                  <option value="">— Select —</option>
-                  {reservation.form.times.map((time) => (
-                    <option key={time} value={time}>
-                      {time}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className={styles.resField}>
-                <label htmlFor="rg">Guests</label>
-                <select id="rg" value={reservationGuests} onChange={(e) => setReservationGuests(e.target.value)}>
-                  {reservation.form.guests.map((guest) => (
-                    <option key={guest} value={guest}>
-                      {guest}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className={styles.resField}>
-                <label htmlFor="ro">Occasion</label>
-                <select id="ro" value={reservationOccasion} onChange={(e) => setReservationOccasion(e.target.value)}>
-                  {reservation.form.occasions.map((occasion) => (
-                    <option key={occasion} value={occasion}>
-                      {occasion}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className={`${styles.resField} ${styles.resFull}`}>
-                <label htmlFor="rn">Special requests (optional)</label>
-                <input
-                  type="text"
-                  id="rn"
-                  placeholder={reservation.form.request_placeholder}
-                  value={reservationNote}
-                  onChange={(e) => setReservationNote(e.target.value)}
-                />
-              </div>
+            <div className={styles.resFormHeader}>
+              <p className={styles.resFormTitle}>{reservation.form.title}</p>
+              <button
+                type="button"
+                className={styles.resToggle}
+                aria-expanded={reservationExpanded}
+                onClick={() => setReservationExpanded((current) => !current)}
+              >
+                <span>{reservationExpanded ? 'Hide booking form' : 'Expand booking form'}</span>
+                <span className={styles.resToggleIcon}>{reservationExpanded ? '−' : '+'}</span>
+              </button>
             </div>
-            <button
-              className={styles.resSubmit}
-              type="button"
-              onClick={handleReserveSubmit}
-              disabled={reservationStatus === 'submitting'}
+            <div
+              className={`${styles.resFormBody} ${
+                reservationExpanded || !isReservationMobile ? styles.resFormBodyOpen : ''
+              }`}
             >
-              {reservationStatus === 'submitting'
-                ? 'Requesting...'
-                : reservationStatus === 'done'
-                ? reservation.form.success_label
-                : reservation.form.submit_label}
-            </button>
+              <div className={styles.resGrid}>
+                <div className={`${styles.resField} ${styles.resFull}`}>
+                  <label htmlFor="rname">Full Name</label>
+                  <input
+                    type="text"
+                    id="rname"
+                    placeholder="Your Name"
+                    value={guestName}
+                    onChange={(e) => setGuestName(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className={styles.resField}>
+                  <label htmlFor="remail">Email Address</label>
+                  <input
+                    type="email"
+                    id="remail"
+                    placeholder="your@email.com"
+                    value={guestEmail}
+                    onChange={(e) => setGuestEmail(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className={styles.resField}>
+                  <label htmlFor="rphone">Phone Number</label>
+                  <input
+                    type="tel"
+                    id="rphone"
+                    placeholder="+265..."
+                    value={guestPhone}
+                    onChange={(e) => setGuestPhone(e.target.value)}
+                  />
+                </div>
+
+                <div className={styles.resField}>
+                  <label htmlFor="rd">Date</label>
+                  <input
+                    type="date"
+                    id="rd"
+                    min={today}
+                    value={reservationDate}
+                    onChange={(e) => setReservationDate(e.target.value)}
+                  />
+                </div>
+                <div className={styles.resField}>
+                  <label htmlFor="rt">Time</label>
+                  <select id="rt" value={reservationTime} onChange={(event) => setReservationTime(event.target.value)}>
+                    <option value="">— Select —</option>
+                    {reservation.form.times.map((time) => (
+                      <option key={time} value={time}>
+                        {time}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className={styles.resField}>
+                  <label htmlFor="rg">Guests</label>
+                  <select id="rg" value={reservationGuests} onChange={(e) => setReservationGuests(e.target.value)}>
+                    {reservation.form.guests.map((guest) => (
+                      <option key={guest} value={guest}>
+                        {guest}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className={styles.resField}>
+                  <label htmlFor="ro">Occasion</label>
+                  <select id="ro" value={reservationOccasion} onChange={(e) => setReservationOccasion(e.target.value)}>
+                    {reservation.form.occasions.map((occasion) => (
+                      <option key={occasion} value={occasion}>
+                        {occasion}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className={`${styles.resField} ${styles.resFull}`}>
+                  <label htmlFor="rn">Special requests (optional)</label>
+                  <input
+                    type="text"
+                    id="rn"
+                    placeholder={reservation.form.request_placeholder}
+                    value={reservationNote}
+                    onChange={(e) => setReservationNote(e.target.value)}
+                  />
+                </div>
+              </div>
+              <button
+                className={styles.resSubmit}
+                type="button"
+                onClick={handleReserveSubmit}
+                disabled={reservationStatus === 'submitting'}
+              >
+                {reservationStatus === 'submitting'
+                  ? 'Requesting...'
+                  : reservationStatus === 'done'
+                  ? reservation.form.success_label
+                  : reservation.form.submit_label}
+              </button>
+            </div>
           </div>
         </div>
       </section>

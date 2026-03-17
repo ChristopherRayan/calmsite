@@ -410,7 +410,7 @@ class ReservationSerializer(serializers.ModelSerializer):
 
     table = TableSerializer(read_only=True)
     table_id = serializers.PrimaryKeyRelatedField(
-        queryset=Table.objects.all(), source="table", write_only=True
+        queryset=Table.objects.all(), source="table", write_only=True, required=False, allow_null=True
     )
 
     class Meta:
@@ -433,16 +433,47 @@ class ReservationSerializer(serializers.ModelSerializer):
         )
         read_only_fields = ("id", "status", "confirmation_code", "created_at", "table")
 
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
+        table = attrs.get("table")
+        date = attrs.get("date")
+        time_slot = attrs.get("time_slot")
+        party_size = attrs.get("party_size")
+        duration_hours = attrs.get("party_duration_hours", 2)
+
+        if table or not all([date, time_slot, party_size]):
+            return attrs
+
+        available_table = (
+            Table.objects.filter(is_active=True, capacity__gte=party_size)
+            .order_by("capacity", "table_number")
+            .filter()
+            .first()
+        )
+
+        if available_table:
+            candidates = Table.objects.filter(is_active=True, capacity__gte=party_size).order_by("capacity", "table_number")
+            for candidate in candidates:
+                if candidate.is_available_for_slot(date, time_slot, duration_hours):
+                    attrs["table"] = candidate
+                    return attrs
+
+        raise serializers.ValidationError(
+            {"time_slot": "No table is currently available for that date, time, and party size."}
+        )
+
     def create(self, validated_data):
         request = self.context.get("request")
         user = request.user if request and request.user.is_authenticated else None
-        if not user:
-            raise serializers.ValidationError("Authentication is required to create a reservation.")
-        if user.is_staff:
+        if user and user.is_staff:
             raise serializers.ValidationError("Only customer accounts can create reservations.")
 
-        validated_data["email"] = user.email
-        reservation = Reservation(user=user, **validated_data)
+        if user:
+            if not validated_data.get("email"):
+                validated_data["email"] = user.email
+            reservation = Reservation(user=user, **validated_data)
+        else:
+            reservation = Reservation(**validated_data)
 
         reservation.save()
         return reservation

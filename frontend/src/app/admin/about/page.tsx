@@ -386,18 +386,18 @@ export default function AdminAboutPage() {
                                     />
                                 </div>
                                 <div>
-                                    <h3 className="font-medium text-gray-900 mb-2">Cuisine Card</h3>
+                                    <h3 className="font-medium text-gray-900 mb-2">Mission Card</h3>
                                     <input
                                         type="text"
                                         value={aboutForm.cuisine_title}
                                         onChange={(e) => setAboutForm({ ...aboutForm, cuisine_title: e.target.value })}
-                                        placeholder="Title"
+                                        placeholder="Mission title"
                                         className="w-full px-4 py-2 border border-gray-300 rounded-lg mb-2"
                                     />
                                     <textarea
                                         value={aboutForm.cuisine_body}
                                         onChange={(e) => setAboutForm({ ...aboutForm, cuisine_body: e.target.value })}
-                                        placeholder="Body"
+                                        placeholder="Mission body"
                                         rows={3}
                                         className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                                     />

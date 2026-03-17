@@ -767,8 +767,8 @@ class AboutUs(models.Model):
     quote = models.TextField(help_text="Featured quote")
     vision_title = models.CharField(max_length=100, default="Vision")
     vision_body = models.TextField(help_text="Vision card content")
-    cuisine_title = models.CharField(max_length=100, default="Cuisine")
-    cuisine_body = models.TextField(help_text="Cuisine card content")
+    cuisine_title = models.CharField(max_length=100, default="Mission")
+    cuisine_body = models.TextField(help_text="Mission card content")
     service_title = models.CharField(max_length=100, default="Service")
     service_body = models.TextField(help_text="Service card content")
     years_serving = models.CharField(max_length=20, default="12+", help_text="Years serving stat")
@@ -795,8 +795,8 @@ class AboutUs(models.Model):
                 "quote": "Good food is the foundation of genuine happiness - we serve both.",
                 "vision_title": "Vision",
                 "vision_body": "Build a modern Malawian dining brand where consistency, comfort, and quality define every table.",
-                "cuisine_title": "Cuisine",
-                "cuisine_body": "Local favorites and signature mains from chambo to goat dishes, with curated snacks and beverages.",
+                "cuisine_title": "Mission",
+                "cuisine_body": "Serve calm, honest Pan-African dining with warm hospitality, consistent standards, and an experience guests can trust every day.",
                 "service_title": "Service",
                 "service_body": "Fast reservations, smooth checkout, and attentive hosting for both casual and formal dining moments.",
                 "years_serving": "12+",
