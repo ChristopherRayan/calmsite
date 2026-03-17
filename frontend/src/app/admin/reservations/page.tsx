@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { fetchAllReservations, type Reservation } from '@/lib/services';
+import { fetchAllReservations } from '@/lib/services';
+import type { Reservation } from '@/lib/types';
 import { getAccessToken } from '@/lib/auth';
 
 export default function AdminReservationsPage() {
