@@ -215,20 +215,24 @@ export default function MenuPage() {
     return () => observer.disconnect();
   }, [items.length]);
 
+  function getCurrentRegionFromScroll(): DisplayRegion {
+    const offset = 3.5 * 16 + 52 + 40;
+    let current: DisplayRegion = 'southern';
+    sectionMeta.forEach((section) => {
+      const el = document.getElementById(section.id);
+      if (el && el.getBoundingClientRect().top <= offset) {
+        current = section.id;
+      }
+    });
+    return current;
+  }
+
   useEffect(() => {
     function handleScroll() {
       if (activeRegionFilter !== 'all') {
         return;
       }
-      const offset = 3.5 * 16 + 52 + 40;
-      let current: DisplayRegion = 'southern';
-      sectionMeta.forEach((section) => {
-        const el = document.getElementById(section.id);
-        if (el && el.getBoundingClientRect().top <= offset) {
-          current = section.id;
-        }
-      });
-      setActiveRegion(current);
+      setActiveRegion(getCurrentRegionFromScroll());
     }
 
     handleScroll();
@@ -283,19 +287,26 @@ export default function MenuPage() {
   }, [items, activeFilter, searchLower, activeRegionFilter]);
 
   const visibleSections = useMemo(() => {
-    return filteredSections.filter((section) => {
-      if (searchLower || activeFilter !== 'all' || activeRegionFilter !== 'all') {
-        return section.items.length > 0;
-      }
-      return true;
-    });
+    if (activeRegionFilter !== 'all') {
+      return filteredSections;
+    }
+
+    if (searchLower || activeFilter !== 'all') {
+      return filteredSections.filter((section) => section.items.length > 0);
+    }
+
+    return filteredSections;
   }, [filteredSections, searchLower, activeFilter, activeRegionFilter]);
 
   function handleRegionFilter(region: FilterRegion) {
-    setActiveRegionFilter(region);
-    if (region !== 'all') {
-      setActiveRegion(region);
+    if (region === 'all') {
+      setActiveRegionFilter('all');
+      setActiveRegion(getCurrentRegionFromScroll());
+      return;
     }
+
+    setActiveRegionFilter(region);
+    setActiveRegion(region);
   }
 
   function jumpTo(sectionId: DisplayRegion) {

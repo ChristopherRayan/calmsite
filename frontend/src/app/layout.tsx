@@ -132,8 +132,12 @@ export default function RootLayout({
                   var stored = localStorage.getItem('calmtable-theme');
                   var theme = stored === 'dark' ? 'dark' : 'light';
                   document.documentElement.setAttribute('data-theme', theme);
+                  document.documentElement.classList.toggle('dark', theme === 'dark');
+                  document.documentElement.style.colorScheme = theme;
                 } catch (e) {
                   document.documentElement.setAttribute('data-theme', 'light');
+                  document.documentElement.classList.remove('dark');
+                  document.documentElement.style.colorScheme = 'light';
                 }
               })();
             `,
