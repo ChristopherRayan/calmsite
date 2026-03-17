@@ -354,6 +354,7 @@ export default function MenuPage() {
                         src={signatureImage}
                         alt={signatureDish.name}
                         fill
+                        sizes="(max-width: 540px) calc(100vw - 1.5rem), (max-width: 900px) min(100vw - 2rem, 420px), 410px"
                         className={styles.mcImage}
                         unoptimized={shouldSkipImageOptimization(signatureImage)}
                         priority
@@ -722,7 +723,7 @@ function renderDishMedia(item: MenuItem) {
           src={resolvedImage}
           alt={item.name}
           fill
-          sizes="96px"
+          sizes="(max-width: 900px) 100vw, 96px"
           unoptimized={shouldSkipImageOptimization(resolvedImage)}
         />
       ) : (
