@@ -376,7 +376,7 @@ export default function AboutPage() {
                     </p>
                 </div>
                 <div className={`${styles.valGrid} ${styles.reveal} ${styles.delay1}`}>
-                    {values.map((value, index) => (
+                    {values.map((value: { title: string; body: string }, index: number) => (
                         <div key={value.title} className={styles.valCard}>
                             <div className={styles.valNum}>{String(index + 1).padStart(2, '0')}</div>
                             <h4>{value.title}</h4>
