@@ -8,7 +8,7 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import styles from './page.module.css';
 
 import { defaultFrontendSettings } from '@/lib/frontend-settings';
-import { fetchFeaturedMenuItems, fetchFrontendSettings } from '@/lib/services';
+import { createReservation, fetchFeaturedMenuItems, fetchFrontendSettings } from '@/lib/services';
 import { normalizeImageSource, shouldSkipImageOptimization } from '@/lib/image';
 import type { FrontendContentPayload, HomePageContent, MenuItem } from '@/lib/types';
 
