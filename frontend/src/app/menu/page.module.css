@@ -398,6 +398,9 @@
 .mheroDishMedia {
   position: absolute;
   inset: 0;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 .mheroDishImage {
@@ -498,11 +501,11 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 0.6rem 1rem;
+  padding: 1.08rem 1.8rem;
   background: rgba(8, 4, 2, 0.7);
   border: 1px solid rgba(184, 105, 58, 0.22);
   backdrop-filter: blur(20px);
-  min-width: 88px;
+  min-width: 158px;
   position: relative;
   overflow: hidden;
 }
@@ -526,11 +529,11 @@
 
 .hspVal {
   font-family: var(--font-playfair), serif;
-  font-size: 1.1rem;
+  font-size: 1.98rem;
   font-weight: 700;
   color: #fff;
   line-height: 1;
-  margin-bottom: 0.2rem;
+  margin-bottom: 0.34rem;
   white-space: nowrap;
 }
 
@@ -539,7 +542,7 @@
 }
 
 .hspLbl {
-  font-size: 0.46rem;
+  font-size: 0.82rem;
   font-weight: 400;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -1590,7 +1593,8 @@
   }
 
   .heroStatPill {
-    min-width: 70px;
+    min-width: 118px;
+    padding: 0.85rem 1.15rem;
   }
 
   .mheroRegions {
@@ -1642,8 +1646,8 @@
   }
 
   .heroStatPill {
-    min-width: 84px;
-    padding: 0.45rem 0.65rem;
+    min-width: 104px;
+    padding: 0.65rem 0.85rem;
   }
 
   .fbRow,

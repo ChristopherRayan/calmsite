@@ -264,7 +264,7 @@ export default function MenuPage() {
 
   const signatureImage = signatureDish ? resolveImageUrl(signatureDish) : '';
   const heroSignatureImage = signatureImage || '/images/food-placeholder.svg';
-  const [heroImageSrc, setHeroImageSrc] = useState(heroSignatureImage);
+  const [heroImageSrc, setHeroImageSrc] = useState('/images/food-placeholder.svg');
 
   const sections = useMemo(() => {
     return sectionMeta.map((section) => {
@@ -292,7 +292,23 @@ export default function MenuPage() {
   }, [activeRegion, sections]);
 
   useEffect(() => {
-    setHeroImageSrc(heroSignatureImage);
+    let cancelled = false;
+    const probe = new window.Image();
+    probe.onload = () => {
+      if (!cancelled) {
+        setHeroImageSrc(heroSignatureImage);
+      }
+    };
+    probe.onerror = () => {
+      if (!cancelled) {
+        setHeroImageSrc('/images/food-placeholder.svg');
+      }
+    };
+    probe.src = heroSignatureImage;
+
+    return () => {
+      cancelled = true;
+    };
   }, [heroSignatureImage]);
 
   useEffect(() => {
@@ -427,14 +443,12 @@ export default function MenuPage() {
             <div className={styles.mheroDishShell} aria-hidden="true">
               <div className={styles.mheroDishGhost} />
               <div className={styles.mheroDish}>
-                <div className={styles.mheroDishMedia}>
-                  <img
-                    src={heroImageSrc}
-                    alt={signatureDish?.name ?? 'Signature dish'}
-                    className={styles.mheroDishImage}
-                    onError={() => setHeroImageSrc('/images/food-placeholder.svg')}
-                  />
-                </div>
+                <div
+                  className={styles.mheroDishMedia}
+                  role="img"
+                  aria-label={signatureDish?.name ?? 'Signature dish'}
+                  style={{ backgroundImage: `url("${heroImageSrc}")` }}
+                />
                 <div className={styles.mheroDishGloss} />
               </div>
             </div>
