@@ -443,12 +443,14 @@ export default function MenuPage() {
             <div className={styles.mheroDishShell} aria-hidden="true">
               <div className={styles.mheroDishGhost} />
               <div className={styles.mheroDish}>
-                <div
-                  className={styles.mheroDishMedia}
-                  role="img"
-                  aria-label={signatureDish?.name ?? 'Signature dish'}
-                  style={{ backgroundImage: `url("${heroImageSrc}")` }}
-                />
+                <div className={styles.mheroDishMedia}>
+                  <img
+                    src={heroImageSrc}
+                    alt={signatureDish?.name ?? 'Signature dish'}
+                    className={styles.mheroDishImage}
+                    onError={() => setHeroImageSrc('/images/food-placeholder.svg')}
+                  />
+                </div>
                 <div className={styles.mheroDishGloss} />
               </div>
             </div>
