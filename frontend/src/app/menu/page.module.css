@@ -1016,7 +1016,8 @@
 
 .dishImg {
   width: 100%;
-  height: 180px;
+  aspect-ratio: 1 / 1;
+  height: auto;
   overflow: hidden;
   position: relative;
   background: var(--cream2);
@@ -1155,6 +1156,7 @@
 
   .dishFeatured .dishImg {
     width: 240px;
+    aspect-ratio: 1 / 1;
     height: auto;
     flex-shrink: 0;
     border-top-right-radius: 0;
