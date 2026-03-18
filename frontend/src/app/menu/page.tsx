@@ -422,20 +422,18 @@ export default function MenuPage() {
             <div className={styles.mheroDishShell} aria-hidden="true">
               <div className={styles.mheroDishGhost} />
               <div className={styles.mheroDish}>
-                <div className={styles.mheroDishMedia}>
-                  {heroSignatureImage && (
-                    <Image
-                      key={heroSignatureImage}
-                      src={heroSignatureImage}
-                      alt={signatureDish?.name ?? 'Signature dish'}
-                      fill
-                      priority
-                      sizes="(max-width: 768px) min(100vw - 2rem, 360px), 460px"
-                      unoptimized={shouldSkipImageOptimization(heroSignatureImage)}
-                      className={styles.mheroDishImage}
-                    />
-                  )}
-                </div>
+                {heroSignatureImage && (
+                  <Image
+                    key={heroSignatureImage}
+                    src={heroSignatureImage}
+                    alt={signatureDish?.name ?? 'Signature dish'}
+                    fill
+                    priority
+                    sizes="(max-width: 768px) min(100vw - 2rem, 360px), 460px"
+                    unoptimized={shouldSkipImageOptimization(heroSignatureImage)}
+                    className={styles.mheroDishImage}
+                  />
+                )}
                 <div className={styles.mheroDishGloss} />
               </div>
             </div>
