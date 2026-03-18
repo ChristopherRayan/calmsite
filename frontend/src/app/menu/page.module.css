@@ -399,11 +399,14 @@
   position: absolute;
   inset: 0;
   overflow: hidden;
+  z-index: 1;
 }
 
 .mheroDishImage {
-  object-fit: cover;
-  object-position: center center;
+  object-fit: cover !important;
+  object-position: center center !important;
+  width: 100% !important;
+  height: 100% !important;
 }
 
 .mheroDishGloss {
@@ -413,7 +416,7 @@
   background:
     linear-gradient(140deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0.02) 32%, transparent 52%),
     linear-gradient(to top, rgba(10, 4, 1, 0.28), transparent 44%);
-  z-index: 1;
+  z-index: 2;
 }
 
 :global([data-theme='light']) .mheroDish {

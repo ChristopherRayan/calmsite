@@ -264,11 +264,6 @@ export default function MenuPage() {
 
   const signatureImage = signatureDish ? resolveImageUrl(signatureDish) : '';
   const heroSignatureImage = signatureImage || '/images/food-placeholder.svg';
-  const [heroSignatureSrc, setHeroSignatureSrc] = useState(heroSignatureImage);
-
-  useEffect(() => {
-    setHeroSignatureSrc(heroSignatureImage);
-  }, [heroSignatureImage]);
 
   const sections = useMemo(() => {
     return sectionMeta.map((section) => {
@@ -428,16 +423,18 @@ export default function MenuPage() {
               <div className={styles.mheroDishGhost} />
               <div className={styles.mheroDish}>
                 <div className={styles.mheroDishMedia}>
-                  <Image
-                    src={heroSignatureSrc}
-                    alt={signatureDish?.name ?? 'Signature dish'}
-                    fill
-                    priority
-                    sizes="(max-width: 768px) min(100vw - 2rem, 360px), 460px"
-                    unoptimized={shouldSkipImageOptimization(heroSignatureSrc)}
-                    className={styles.mheroDishImage}
-                    onError={() => setHeroSignatureSrc('/images/food-placeholder.svg')}
-                  />
+                  {heroSignatureImage && (
+                    <Image
+                      key={heroSignatureImage}
+                      src={heroSignatureImage}
+                      alt={signatureDish?.name ?? 'Signature dish'}
+                      fill
+                      priority
+                      sizes="(max-width: 768px) min(100vw - 2rem, 360px), 460px"
+                      unoptimized={shouldSkipImageOptimization(heroSignatureImage)}
+                      className={styles.mheroDishImage}
+                    />
+                  )}
                 </div>
                 <div className={styles.mheroDishGloss} />
               </div>
