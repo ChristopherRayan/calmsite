@@ -369,6 +369,7 @@
   position: absolute;
   inset: 0;
   border-radius: 38% 62% 58% 42% / 38% 34% 66% 62%;
+  clip-path: path("M 263 16 C 348 11 424 54 451 124 C 478 194 466 270 449 336 C 429 416 385 490 313 507 C 235 526 155 490 103 430 C 52 371 32 291 24 216 C 15 135 35 45 112 24 C 164 10 212 20 263 16 Z");
 }
 
 .mheroDishGhost {
@@ -399,7 +400,7 @@
   position: absolute;
   inset: 0;
   overflow: hidden;
-  border-radius: inherit;
+  clip-path: inherit;
 }
 
 .mheroDishImage {
