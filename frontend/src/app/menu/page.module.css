@@ -890,7 +890,7 @@
 }
 
 .menuBody {
-  max-width: 1100px;
+  max-width: none;
   margin: 0 auto;
   padding: 0 clamp(1.5rem, 6vw, 5rem);
 }
@@ -955,8 +955,8 @@
 .dishGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 1px;
-  background: var(--bdr);
+  gap: clamp(1rem, 1.8vw, 1.4rem);
+  background: transparent;
 }
 
 .dish {
@@ -964,26 +964,50 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  transition: background 0.22s, box-shadow 0.22s;
+  border: 1px solid rgba(184, 105, 58, 0.22);
+  border-radius: 14px;
+  box-shadow:
+    0 0 0 1px rgba(184, 105, 58, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.55),
+    0 14px 34px rgba(44, 24, 16, 0.06);
+  transition:
+    background 0.22s,
+    box-shadow 0.22s,
+    border-color 0.22s,
+    transform 0.22s;
 }
 
 :global([data-theme='dark']) .dish {
   background: var(--dark2);
+  box-shadow:
+    0 0 0 1px rgba(212, 152, 110, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 16px 36px rgba(0, 0, 0, 0.28);
 }
 
 .dish:hover {
   background: var(--cream2);
-  box-shadow: 0 4px 24px rgba(44, 24, 16, 0.08);
+  border-color: rgba(184, 105, 58, 0.42);
+  box-shadow:
+    0 0 0 1px rgba(184, 105, 58, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.72),
+    0 22px 44px rgba(44, 24, 16, 0.11);
+  transform: translateY(-3px);
 }
 
 :global([data-theme='dark']) .dish:hover {
   background: var(--dark3);
+  border-color: rgba(212, 152, 110, 0.42);
+  box-shadow:
+    0 0 0 1px rgba(212, 152, 110, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 22px 44px rgba(0, 0, 0, 0.36);
 }
 
 .dishFeatured {
   grid-column: 1 / -1;
   background: var(--cream2);
-  border-left: 3px solid var(--acc);
+  border-color: rgba(184, 105, 58, 0.34);
 }
 
 :global([data-theme='dark']) .dishFeatured {
@@ -996,6 +1020,8 @@
   overflow: hidden;
   position: relative;
   background: var(--cream2);
+  border-top-left-radius: 14px;
+  border-top-right-radius: 14px;
 }
 
 :global([data-theme='dark']) .dishImg {
@@ -1094,6 +1120,8 @@
   padding: 0.7rem 1.25rem 1rem;
   border-top: 1px solid var(--bdr);
   background: rgba(184, 105, 58, 0.03);
+  border-bottom-left-radius: 14px;
+  border-bottom-right-radius: 14px;
 }
 
 .dishPrice span {
@@ -1129,6 +1157,8 @@
     width: 240px;
     height: auto;
     flex-shrink: 0;
+    border-top-right-radius: 0;
+    border-bottom-left-radius: 14px;
   }
 
   .dishFeatured .dishInfo {
@@ -1147,6 +1177,8 @@
     align-items: center;
     justify-content: center;
     font-size: 1.6rem;
+    border-bottom-left-radius: 0;
+    border-top-right-radius: 14px;
   }
 }
 
