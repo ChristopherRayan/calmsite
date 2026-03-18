@@ -71,7 +71,7 @@ export function shouldSkipImageOptimization(src: string): boolean {
     return false;
   }
 
-  if (normalized.startsWith('blob:') || normalized.startsWith('data:') || normalized.startsWith('/media/')) {
+  if (normalized.startsWith('blob:') || normalized.startsWith('data:') || normalized.startsWith('/media/') || normalized.toLowerCase().endsWith('.svg')) {
     return true;
   }
 
