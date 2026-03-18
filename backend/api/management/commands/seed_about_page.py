@@ -96,9 +96,8 @@ class Command(BaseCommand):
                     fields_to_update.append("is_active")
                 if fields_to_update:
                     gallery_image.save(update_fields=fields_to_update)
-                if not gallery_image.image:
-                    with image_path.open("rb") as fh:
-                        gallery_image.image.save(filename, File(fh), save=True)
+                with image_path.open("rb") as fh:
+                    gallery_image.image.save(filename, File(fh), save=True)
 
             service_payload = [
                 ("Fine Dining", "Seasonal menus with signature Malawian dishes and elevated plating.", 0),
@@ -156,7 +155,7 @@ class Command(BaseCommand):
 
                 photo_name = TEAM_PHOTOS.get(name)
                 photo_path = seed_dir / photo_name if photo_name else None
-                if photo_path and photo_path.exists() and not member.photo:
+                if photo_path and photo_path.exists():
                     with photo_path.open("rb") as fh:
                         member.photo.save(photo_name, File(fh), save=True)
 

@@ -289,7 +289,10 @@ export default function AboutPage() {
     };
     const missionCard = {
         icon: visionMission[1]?.icon ?? '◈',
-        title: aboutUsData?.cuisine_title || 'Mission',
+        title:
+            aboutUsData?.cuisine_title && aboutUsData.cuisine_title.trim().toLowerCase() !== 'cuisine'
+                ? aboutUsData.cuisine_title
+                : 'Mission',
         body: aboutUsData?.cuisine_body || visionMission[1]?.body,
     };
 

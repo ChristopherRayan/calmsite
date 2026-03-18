@@ -870,12 +870,20 @@ class PublicMembersAPIView(APIView):
 
     def get(self, request):
         members = StaffMember.objects.filter(is_active=True, display_on_website=True)
+
+        def _absolute(url: str | None) -> str | None:
+            if not url:
+                return None
+            if url.startswith("http://") or url.startswith("https://"):
+                return url
+            return request.build_absolute_uri(url)
+
         payload = [
             {
                 "id": member.id,
                 "name": member.full_name,
                 "role": member.get_role_display(),
-                "photo": member.photo.url if member.photo else None,
+                "photo": _absolute(member.photo.url) if member.photo else None,
                 "bio": member.bio,
             }
             for member in members

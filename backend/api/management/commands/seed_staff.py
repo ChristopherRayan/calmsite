@@ -112,7 +112,7 @@ class Command(BaseCommand):
 
             photo_name = STAFF_PHOTOS.get(obj.full_name)
             photo_path = seed_dir / photo_name if photo_name else None
-            if photo_path and photo_path.exists() and not obj.photo:
+            if photo_path and photo_path.exists():
                 with photo_path.open("rb") as fh:
                     obj.photo.save(photo_name, File(fh), save=True)
 

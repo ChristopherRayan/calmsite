@@ -66,7 +66,7 @@ export default function AdminAboutPage() {
                 quote: aboutData.quote,
                 vision_title: aboutData.vision_title,
                 vision_body: aboutData.vision_body,
-                cuisine_title: aboutData.cuisine_title,
+                cuisine_title: aboutData.cuisine_title?.trim().toLowerCase() === 'cuisine' ? 'Mission' : aboutData.cuisine_title,
                 cuisine_body: aboutData.cuisine_body,
                 service_title: aboutData.service_title,
                 service_body: aboutData.service_body,
