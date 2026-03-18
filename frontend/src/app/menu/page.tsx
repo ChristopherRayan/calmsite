@@ -138,54 +138,6 @@ const fallbackImages: Array<{ keywords: string[]; url: string }> = [
   { keywords: ['chapati', 'samoosa', 'dessert', 'cake', 'plantain', 'bread'], url: '/images/dish-snack.svg' },
 ];
 
-const heroDishSvg = String.raw`<svg viewBox="0 0 600 520" xmlns="http://www.w3.org/2000/svg" fill="none">
-  <defs>
-    <radialGradient id="pgr" cx="42%" cy="35%" r="60%"><stop offset="0%" stop-color="#F5F0EB" stop-opacity=".92"/><stop offset="55%" stop-color="#E8E0D5" stop-opacity=".85"/><stop offset="100%" stop-color="#D5C9BB" stop-opacity=".75"/></radialGradient>
-    <radialGradient id="ngr" cx="40%" cy="30%" r="60%"><stop offset="0%" stop-color="#F0E4CC" stop-opacity=".95"/><stop offset="50%" stop-color="#D4B880" stop-opacity=".9"/><stop offset="100%" stop-color="#B8963A" stop-opacity=".8"/></radialGradient>
-    <radialGradient id="fgr" cx="45%" cy="35%" r="60%"><stop offset="0%" stop-color="#D4A068" stop-opacity=".95"/><stop offset="40%" stop-color="#B87840" stop-opacity=".9"/><stop offset="100%" stop-color="#7A4818" stop-opacity=".85"/></radialGradient>
-    <radialGradient id="fsk" cx="50%" cy="40%" r="55%"><stop offset="0%" stop-color="#E8B870" stop-opacity=".9"/><stop offset="45%" stop-color="#C88840" stop-opacity=".85"/><stop offset="100%" stop-color="#8A5020" stop-opacity=".8"/></radialGradient>
-    <linearGradient id="lgr" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#F0E060" stop-opacity=".9"/><stop offset="100%" stop-color="#D4B820" stop-opacity=".85"/></linearGradient>
-    <radialGradient id="sgr" cx="50%" cy="50%" r="55%"><stop offset="0%" stop-color="#8A5020" stop-opacity=".72"/><stop offset="100%" stop-color="#4A2808" stop-opacity=".5"/></radialGradient>
-    <radialGradient id="glowr" cx="50%" cy="50%" r="55%"><stop offset="0%" stop-color="rgba(200,132,90,.16)"/><stop offset="100%" stop-color="transparent"/></radialGradient>
-    <filter id="sfb"><feGaussianBlur stdDeviation="4"/></filter>
-    <filter id="dsh"><feDropShadow dx="0" dy="20" stdDeviation="32" flood-color="#000" flood-opacity=".45"/></filter>
-    <filter id="stm"><feGaussianBlur stdDeviation="8"/></filter>
-  </defs>
-  <ellipse cx="300" cy="280" rx="240" ry="180" fill="url(#glowr)" filter="url(#sfb)" opacity=".7"/>
-  <g filter="url(#dsh)">
-    <ellipse cx="300" cy="280" rx="210" ry="148" fill="url(#pgr)"/>
-    <ellipse cx="300" cy="280" rx="210" ry="148" fill="none" stroke="rgba(255,255,255,.22)" stroke-width="4"/>
-    <ellipse cx="300" cy="280" rx="188" ry="132" fill="none" stroke="rgba(200,180,155,.22)" stroke-width="2"/>
-    <ellipse cx="300" cy="280" rx="184" ry="128" fill="rgba(248,242,234,.35)"/>
-  </g>
-  <g><ellipse cx="246" cy="288" rx="96" ry="66" fill="url(#ngr)"/><ellipse cx="246" cy="272" rx="82" ry="54" fill="#EEE0B8" fill-opacity=".9"/><ellipse cx="246" cy="258" rx="64" ry="40" fill="#F4EAC8" fill-opacity=".88"/><ellipse cx="232" cy="246" rx="28" ry="16" fill="rgba(255,255,255,.2)"/></g>
-  <g>
-    <ellipse cx="356" cy="295" rx="130" ry="52" fill="rgba(0,0,0,.22)" filter="url(#sfb)"/>
-    <ellipse cx="352" cy="278" rx="126" ry="50" fill="url(#fgr)"/>
-    <ellipse cx="344" cy="270" rx="112" ry="42" fill="url(#fsk)"/>
-    <ellipse cx="344" cy="270" rx="112" ry="42" fill="none" stroke="rgba(180,100,40,.22)" stroke-width="2"/>
-    <line x1="298" y1="234" x2="310" y2="318" stroke="rgba(160,90,30,.2)" stroke-width="2.2"/>
-    <line x1="322" y1="228" x2="330" y2="316" stroke="rgba(160,90,30,.18)" stroke-width="2"/>
-    <line x1="348" y1="228" x2="354" y2="316" stroke="rgba(160,90,30,.18)" stroke-width="2"/>
-    <ellipse cx="336" cy="260" rx="64" ry="18" fill="rgba(255,210,140,.14)"/>
-    <path d="M 284 278 Q 266 245 272 278 Q 266 312 284 278 Z" fill="#7A4018" fill-opacity=".8"/>
-    <path d="M 312 240 Q 326 278 312 316" stroke="rgba(55,18,2,.68)" stroke-width="6.5" fill="none" stroke-linecap="round"/>
-    <path d="M 340 236 Q 352 278 340 318" stroke="rgba(55,18,2,.62)" stroke-width="6" fill="none" stroke-linecap="round"/>
-    <path d="M 368 238 Q 378 278 368 316" stroke="rgba(55,18,2,.58)" stroke-width="5.5" fill="none" stroke-linecap="round"/>
-    <ellipse cx="462" cy="276" rx="30" ry="38" fill="#9A5828" fill-opacity=".88"/>
-    <ellipse cx="470" cy="268" rx="18" ry="24" fill="#B86830" fill-opacity=".85"/>
-    <circle cx="476" cy="262" r="9" fill="#1A0A02" fill-opacity=".9"/>
-    <circle cx="476" cy="262" r="5.5" fill="#2C1208" fill-opacity=".85"/>
-    <circle cx="479" cy="259" r="2.5" fill="rgba(255,255,255,.68)"/>
-  </g>
-  <ellipse cx="300" cy="342" rx="170" ry="30" fill="url(#sgr)" opacity=".6"/>
-  <g opacity=".85"><ellipse cx="270" cy="192" rx="52" ry="24" fill="#4A7A30" fill-opacity=".88" transform="rotate(-18,270,192)"/><ellipse cx="300" cy="184" rx="44" ry="20" fill="#5A8A3A" fill-opacity=".85" transform="rotate(-5,300,184)"/><ellipse cx="328" cy="190" rx="40" ry="18" fill="#4A7A30" fill-opacity=".88" transform="rotate(10,328,190)"/><line x1="254" y1="206" x2="278" y2="180" stroke="rgba(25,75,8,.4)" stroke-width="2"/><line x1="296" y1="202" x2="306" y2="176" stroke="rgba(25,75,8,.35)" stroke-width="1.8"/></g>
-  <g><circle cx="200" cy="348" r="36" fill="url(#lgr)"/><circle cx="200" cy="348" r="30" fill="rgba(240,220,60,.56)"/><circle cx="200" cy="348" r="22" fill="rgba(250,235,100,.46)"/><line x1="200" y1="318" x2="200" y2="378" stroke="rgba(200,160,20,.42)" stroke-width="2.2"/><line x1="172" y1="332" x2="228" y2="364" stroke="rgba(200,160,20,.42)" stroke-width="2.2"/><line x1="172" y1="364" x2="228" y2="332" stroke="rgba(200,160,20,.42)" stroke-width="2.2"/><circle cx="200" cy="348" r="7" fill="rgba(255,235,80,.65)"/><circle cx="200" cy="348" r="36" fill="none" stroke="rgba(220,180,30,.36)" stroke-width="3"/></g>
-  <g opacity=".7"><ellipse cx="388" cy="230" rx="8" ry="3.5" fill="#5A8A30" transform="rotate(22,388,230)"/><ellipse cx="406" cy="220" rx="7" ry="3" fill="#4A7A28" transform="rotate(-10,406,220)"/><ellipse cx="372" cy="224" rx="6" ry="2.5" fill="#5A8A30" transform="rotate(34,372,224)"/></g>
-  <g filter="url(#stm)" opacity=".32"><path d="M 268 160 Q 256 120 270 82 Q 284 44 268 14" stroke="rgba(255,255,255,.55)" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M 300 148 Q 288 108 302 70 Q 316 34 300 6" stroke="rgba(255,255,255,.48)" stroke-width="5.5" fill="none" stroke-linecap="round"/><path d="M 334 154 Q 322 114 336 76 Q 350 38 334 10" stroke="rgba(255,255,255,.5)" stroke-width="6" fill="none" stroke-linecap="round"/></g>
-  <ellipse cx="300" cy="280" rx="200" ry="142" fill="none" stroke="rgba(210,160,90,.06)" stroke-width="55"/>
-</svg>`;
-
 function normalizeText(value: string) {
   return value.toLowerCase().trim();
 }
@@ -466,7 +418,24 @@ export default function MenuPage() {
               <p className={styles.hdnpName}>{signatureDish?.name ?? 'Chambo & Nsima'}</p>
               <p className={styles.hdnpQuote}>“{buildHeroQuote(signatureDish)}”</p>
             </div>
-            <div className={styles.mheroDish} aria-hidden="true" dangerouslySetInnerHTML={{ __html: heroDishSvg }} />
+            <div className={styles.mheroDishShell} aria-hidden="true">
+              <div className={styles.mheroDishGhost} />
+              <div className={styles.mheroDish}>
+                {signatureImage ? (
+                  <Image
+                    src={signatureImage}
+                    alt={signatureDish?.name ?? 'Signature dish'}
+                    fill
+                    priority
+                    sizes="(max-width: 768px) 84vw, 520px"
+                    unoptimized={shouldSkipImageOptimization(signatureImage)}
+                    className={styles.mheroDishImage}
+                  />
+                ) : (
+                  <div className={styles.mheroDishFallback}>Signature dish</div>
+                )}
+              </div>
+            </div>
             <div className={styles.heroStatRow}>
               <div className={styles.heroStatPill}>
                 <p className={styles.hspVal}>{signatureDish ? formatKwacha(signatureDish.price) : 'MWK 7,500'}</p>
@@ -557,39 +526,6 @@ export default function MenuPage() {
             ))}
           </div>
         </div>
-        {signatureDish && (
-          <div className={styles.fbDishRow}>
-            <div className={styles.fbDishImg}>
-              {signatureImage ? (
-                <Image
-                  src={signatureImage}
-                  alt={signatureDish.name}
-                  fill
-                  sizes="52px"
-                  unoptimized={shouldSkipImageOptimization(signatureImage)}
-                />
-              ) : null}
-            </div>
-            <div className={styles.fbDishInfo}>
-              <p className={styles.fbDishName}>{signatureDish.name}</p>
-              <div className={styles.fbDishTags}>
-                <span className={`${styles.fbDishTag} ${styles.fbDishTagHi}`}>Signature</span>
-                <span className={styles.fbDishTag}>{formatRegionName(signatureDish.region as RegionSectionId)}</span>
-              </div>
-              <p className={styles.fbDishDesc}>{signatureDish.description}</p>
-            </div>
-            <div className={styles.fbDishStats}>
-              <div className={styles.fbStat}>
-                <p className={styles.fbStatN}>{signatureDish.average_rating ? signatureDish.average_rating.toFixed(1) : '4.9'}</p>
-                <p className={styles.fbStatL}>Rating</p>
-              </div>
-              <div className={styles.fbStat}>
-                <p className={styles.fbStatN}>{formatKwacha(signatureDish.price)}</p>
-                <p className={styles.fbStatL}>Price</p>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
 
       <div className={styles.menuBody}>
