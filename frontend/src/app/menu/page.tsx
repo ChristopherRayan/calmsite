@@ -420,7 +420,6 @@ export default function MenuPage() {
               <p className={styles.hdnpQuote}>“{buildHeroQuote(signatureDish)}”</p>
             </div>
             <div className={styles.mheroDishShell} aria-hidden="true">
-              <div className={styles.mheroDishGhost} />
               <div className={styles.mheroDish}>
                 {heroSignatureImage && (
                   <Image
